@@ -195,7 +195,7 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
 
 /* cifre colorate per posizione */
 .nm { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.d-u { color: #e63946; } .d-da { color: #1d6fe0; } .d-h { color: #2a9d5c; } .d-k { color: #8338ec; } .d-mi { color: #f77f00; } .d-g { color: #6d4c41; } .d-dec { color: #0096a8; }
+.d-u { color: #1d6fe0; } .d-da { color: #e63946; } .d-h { color: #2a9d5c; } .d-k { color: #8338ec; } .d-mi { color: #f77f00; } .d-g { color: #6d4c41; } .d-dec { color: #0096a8; }
 .nm [class^="d-"] { font-weight: 900; }
 .sep-k { color: #4a4f63; font-weight: 900; font-size: .95em; margin: 0 .16em; }
 .sep-dec { color: #111; font-weight: 900; font-size: 1.25em; margin: 0 .06em; }
@@ -211,7 +211,7 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
 .swrap { overflow-x: auto; display: flex; justify-content: center; padding: 4px; }
 .sgrid { --rh: 42px; display: grid; grid-auto-rows: var(--rh); font-size: 28px; font-weight: 900; font-variant-numeric: tabular-nums; }
 .sc { display: grid; place-items: center; color: #1d3557; position: relative; }
-.sc.d-u { color: #e63946; } .sc.d-da { color: #1d6fe0; } .sc.d-h { color: #2a9d5c; } .sc.d-k { color: #8338ec; } .sc.d-mi { color: #f77f00; } .sc.d-g { color: #6d4c41; } .sc.d-dec { color: #0096a8; } .sc.pad { color: #9aa3b5; }
+.sc.d-u { color: #1d6fe0; } .sc.d-da { color: #e63946; } .sc.d-h { color: #2a9d5c; } .sc.d-k { color: #8338ec; } .sc.d-mi { color: #f77f00; } .sc.d-g { color: #6d4c41; } .sc.d-dec { color: #0096a8; } .sc.pad { color: #9aa3b5; }
 .sc.ctop { font-size: 17px; align-items: end; color: #e63946; }
 .sc.carry { color: #e63946; font-size: 17px; }
 .sc.borrow { color: #d00000; font-size: 17px; }
@@ -305,9 +305,9 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
   V.base10 = function (h, d, u) {
     const s = 7; let x = 8, b = '';
     for (let i = 0; i < h; i++) { b += `<rect x="${x}" y="8" width="${10 * s}" height="${10 * s}" fill="#95d5b2" stroke="#2a9d5c"/>`; for (let k = 1; k < 10; k++) b += `<line x1="${x + k * s}" y1="8" x2="${x + k * s}" y2="${8 + 10 * s}" stroke="#2a9d5c" stroke-width=".5"/><line x1="${x}" y1="${8 + k * s}" x2="${x + 10 * s}" y2="${8 + k * s}" stroke="#2a9d5c" stroke-width=".5"/>`; x += 10 * s + 8; }
-    for (let i = 0; i < d; i++) { b += `<rect x="${x}" y="8" width="${s}" height="${10 * s}" fill="#8ab8f5" stroke="#1d6fe0"/>`; for (let k = 1; k < 10; k++) b += `<line x1="${x}" y1="${8 + k * s}" x2="${x + s}" y2="${8 + k * s}" stroke="#1d6fe0" stroke-width=".5"/>`; x += s + 5; }
+    for (let i = 0; i < d; i++) { b += `<rect x="${x}" y="8" width="${s}" height="${10 * s}" fill="#f4a3a8" stroke="#e63946"/>`; for (let k = 1; k < 10; k++) b += `<line x1="${x}" y1="${8 + k * s}" x2="${x + s}" y2="${8 + k * s}" stroke="#e63946" stroke-width=".5"/>`; x += s + 5; }
     if (d) x += 4;
-    for (let i = 0; i < u; i++) { b += `<rect x="${x + (i % 3) * (s + 3)}" y="${8 + 10 * s - s - Math.floor(i / 3) * (s + 3)}" width="${s}" height="${s}" fill="#f4a3a8" stroke="#e63946"/>`; }
+    for (let i = 0; i < u; i++) { b += `<rect x="${x + (i % 3) * (s + 3)}" y="${8 + 10 * s - s - Math.floor(i / 3) * (s + 3)}" width="${s}" height="${s}" fill="#8ab8f5" stroke="#1d6fe0"/>`; }
     x += u ? 3 * (s + 3) + 4 : 0;
     return svg(Math.max(60, x + 4), 10 * s + 16, b);
   };
@@ -489,7 +489,7 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
     const sa = String(a), sb = String(b), n = Math.max(sa.length, sb.length) + 1, cw = 26, w = (n + 1) * cw + 10;
     let s = '';
     // cifre colorate per posizione (unità rosso, decine blu, centinaia verde, migliaia viola)
-    const PC = ['#e63946', '#1d6fe0', '#2a9d5c', '#8338ec', '#8338ec', '#8338ec', '#f77f00'];
+    const PC = ['#1d6fe0', '#e63946', '#2a9d5c', '#8338ec', '#8338ec', '#8338ec', '#f77f00'];
     const row = (str, y) => { const off = n - str.length; for (let i = 0; i < str.length; i++) s += T(14 + (off + i + 1) * cw, y, str[i], 26, PC[str.length - 1 - i] || '#6d4c41', 'middle', 800); };
     row(sa, 34); row(sb, 70); s += T(18, 70, op, 26, '#e63946', 'middle', 700);
     s += `<line x1="8" y1="82" x2="${w - 4}" y2="82" stroke="#1d3557" stroke-width="3"/>`;
@@ -1471,7 +1471,7 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
     $('#tSound').textContent = D.sound ? '🔊' : '🔇';
   }
   /* ---------------- numeri colorati per posizione ----------------
-     unità rosso, decine blu, centinaia verde, migliaia viola, milioni arancio, decimali azzurro;
+     unità blu, decine rosso, centinaia verde, migliaia viola, milioni arancio, decimali azzurro;
      il punto delle migliaia è piccolo e grigio, la virgola dei decimali grande e marcata */
   const POS = ['u', 'da', 'h', 'k', 'k', 'k', 'mi', 'mi', 'mi', 'g', 'g', 'g'];
   const NUM_RE = EN ? /\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?/g : /\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:,\d+)?/g;
