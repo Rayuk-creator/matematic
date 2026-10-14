@@ -1,0 +1,2002 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><title>Matematica in gioco</title>
+<style>:root {
+  color-scheme: light;
+  --bg: #f4f7fb; --ink: #23263b; --muted: #6b7088; --card: #ffffff; --line: #dfe5ef;
+  --pri: #4361ee; --ok: #2a9d5c; --no: #e63946; --gold: #ffb703;
+  --r: 18px; --shadow: 0 6px 18px rgba(30, 40, 90, .12);
+  --font: "Nunito", "Segoe UI Rounded", "Arial Rounded MT Bold", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; font-family: var(--font); color: var(--ink); background: var(--bg); -webkit-tap-highlight-color: transparent; user-select: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+[hidden] { display: none !important; }
+.app { min-height: 100%; display: flex; flex-direction: column; }
+.top { display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: var(--card); box-shadow: 0 1px 0 var(--line); position: sticky; top: 0; z-index: 5; }
+.top .title { font-weight: 900; font-size: 20px; flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.top .title span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; background: #fff7e0; border: 2px solid #ffe08a; padding: 4px 12px; border-radius: 999px; font-weight: 800; }
+.icon-btn { border: 0; background: #eef2fb; border-radius: 12px; min-width: 44px; height: 44px; font-size: 20px; padding: 0 10px; font-weight: 800; }
+.lang-btn { display: inline-grid; place-items: center; text-decoration: none; color: #1d3557; font-size: 15px; }
+.icon-btn:hover { background: #e2e8f8; }
+.screen { flex: 1; padding: 18px; max-width: 1100px; width: 100%; margin: 0 auto; }
+h1 { font-size: 30px; margin: 6px 0 16px; text-align: center; }
+h2 { font-size: 22px; margin: 18px 0 10px; }
+.sub { text-align: center; color: var(--muted); margin: -8px 0 18px; font-size: 17px; }
+.btn { border: 0; border-radius: 16px; padding: 14px 22px; font-size: 19px; font-weight: 800; background: var(--pri); color: #fff; box-shadow: 0 4px 0 #2f47b8; transition: transform .08s; }
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #2f47b8; }
+.btn.alt { background: #fff; color: var(--ink); box-shadow: 0 4px 0 #c7cfdf; border: 2px solid var(--line); }
+.btn.ok { background: var(--ok); box-shadow: 0 4px 0 #1d6f40; }
+.btn:disabled { opacity: .45; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+/* profili */
+.players { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.player { background: var(--card); border: 3px solid transparent; border-radius: var(--r); padding: 16px 8px; text-align: center; box-shadow: var(--shadow); position: relative; }
+.player:hover { border-color: var(--pri); }
+.player .av { font-size: 54px; line-height: 1.1; }
+.player .nm { font-weight: 900; font-size: 19px; margin-top: 4px; }
+.player .st { color: var(--muted); font-size: 14px; margin-top: 2px; }
+.player .del { position: absolute; top: 6px; right: 6px; border: 0; background: transparent; font-size: 16px; opacity: .5; }
+.player.new { border: 3px dashed #b6c2dc; box-shadow: none; background: transparent; }
+.avatars { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 8px; margin: 10px 0 16px; }
+.avatars button { font-size: 36px; background: #fff; border: 3px solid var(--line); border-radius: 14px; padding: 6px 0; }
+.avatars button[aria-pressed="true"] { border-color: var(--pri); background: #eef2ff; }
+.field { width: 100%; font-size: 22px; padding: 12px 14px; border: 3px solid var(--line); border-radius: 14px; font-family: inherit; font-weight: 800; }
+.field:focus { outline: none; border-color: var(--pri); }
+
+/* mondi */
+.worlds { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+.world { border: 0; border-radius: 22px; padding: 18px 14px 16px; color: #fff; text-align: left; box-shadow: var(--shadow); position: relative; overflow: hidden; min-height: 170px; display: flex; flex-direction: column; }
+.world .num { font-size: 15px; font-weight: 900; opacity: .9; text-transform: uppercase; letter-spacing: .06em; }
+.world .wn { font-size: 22px; font-weight: 900; line-height: 1.15; margin: 6px 0 10px; }
+.world .em { position: absolute; right: 10px; bottom: 4px; font-size: 64px; opacity: .9; }
+.world .prog { margin-top: auto; font-weight: 800; background: rgba(0,0,0,.18); align-self: flex-start; padding: 3px 10px; border-radius: 999px; }
+.t-prato { background: linear-gradient(140deg, #52b788, #2d6a4f); }
+.t-bosco { background: linear-gradient(140deg, #6a994e, #386641); }
+.t-mare { background: linear-gradient(140deg, #4cc9f0, #3a56d4); }
+.t-montagna { background: linear-gradient(140deg, #9d8189, #5e548e); }
+.t-spazio { background: linear-gradient(140deg, #3c096c, #10002b); }
+
+/* moduli e livelli (mappa a sentiero) */
+.module { background: var(--card); border-radius: 22px; padding: 14px 16px 18px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.module h2 { margin: 2px 0 10px; display: flex; align-items: center; gap: 10px; }
+.module h2 .ms { margin-left: auto; font-size: 15px; color: var(--muted); font-weight: 800; }
+.path { display: flex; flex-wrap: wrap; gap: 14px 10px; align-items: flex-start; }
+.lvl { width: 128px; border: 0; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px; border-radius: 16px; }
+.lvl .dot { width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; font-weight: 900; color: #fff; background: var(--pri); box-shadow: 0 5px 0 rgba(0,0,0,.18); position: relative; }
+.lvl.done .dot { background: var(--ok); }
+.lvl.locked .dot { background: #b8c0d0; }
+.lvl.locked { cursor: not-allowed; }
+.lvl .lt { font-size: 14px; font-weight: 800; text-align: center; line-height: 1.2; }
+.lvl .stars { font-size: 17px; letter-spacing: 1px; color: #d0d5df; height: 20px; }
+.lvl .stars b { color: var(--gold); font-weight: 400; }
+.lvl:not(.locked):hover .dot { transform: scale(1.06); }
+
+/* livello */
+.intro { background: var(--card); border-radius: 22px; padding: 22px; box-shadow: var(--shadow); max-width: 760px; margin: 0 auto; }
+.intro .how { background: #fff8e1; border-left: 6px solid var(--gold); border-radius: 12px; padding: 14px 16px; font-size: 19px; line-height: 1.5; margin: 12px 0 18px; }
+.game { max-width: 860px; margin: 0 auto; }
+.progress { display: flex; gap: 6px; margin: 4px 0 14px; }
+.progress i { flex: 1; height: 12px; border-radius: 6px; background: #dde3ee; }
+.progress i.ok { background: var(--ok); }
+.progress i.no { background: var(--no); }
+.progress i.cur { background: var(--pri); }
+.qcard { background: var(--card); border-radius: 24px; padding: 20px; box-shadow: var(--shadow); text-align: center; position: relative; }
+.qtext { font-size: 26px; font-weight: 800; line-height: 1.35; margin: 4px 0 12px; }
+.qvis { display: flex; justify-content: center; margin: 6px 0 12px; overflow-x: auto; }
+.qvis svg { max-width: 100%; height: auto; font-family: var(--font); }
+.mg-title { font-size: 15px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+/* minigioco palloncini */
+.balloons { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; padding: 10px 0 4px; }
+.balloon { border: 0; background: none; padding: 0; display: flex; flex-direction: column; align-items: center; animation: bob 2.6s ease-in-out infinite; }
+.balloon:nth-child(2) { animation-delay: -.7s; } .balloon:nth-child(3) { animation-delay: -1.3s; } .balloon:nth-child(4) { animation-delay: -1.9s; }
+.balloon .b { min-width: 118px; min-height: 118px; max-width: 220px; padding: 14px; border-radius: 50% 50% 48% 48%; display: grid; place-items: center; font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 2px 2px rgba(0,0,0,.25); box-shadow: inset -10px -12px 0 rgba(0,0,0,.12); line-height: 1.15; }
+.balloon .s { width: 2px; height: 38px; background: #9aa3b5; }
+.balloon.pop { animation: pop .35s forwards; }
+.balloon.good .b { outline: 5px solid var(--ok); }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes pop { to { transform: scale(1.5); opacity: 0; } }
+
+/* coccodrillo */
+.crocs { display: flex; justify-content: center; gap: 16px; margin-top: 8px; flex-wrap: wrap; }
+.croc { border: 0; width: 120px; height: 120px; border-radius: 26px; background: #2a9d5c; color: #fff; font-size: 64px; font-weight: 900; box-shadow: 0 6px 0 #1d6f40; display: grid; place-items: center; }
+.croc small { font-size: 13px; display: block; margin-top: -10px; }
+.croc:active { transform: translateY(4px); box-shadow: 0 2px 0 #1d6f40; }
+
+/* forziere con tastierino */
+.chest { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.answer-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: flex-end; }
+.ansbox { min-width: 150px; min-height: 64px; border: 4px solid #c7cfdf; border-radius: 16px; font-size: 34px; font-weight: 900; display: flex; align-items: center; justify-content: center; padding: 0 14px; background: #fff; }
+.ansbox.focus { border-color: var(--pri); box-shadow: 0 0 0 4px #dfe6ff; }
+.ansbox.ok { border-color: var(--ok); background: #e9f8ef; }
+.ansbox.no { border-color: var(--no); background: #fdecee; }
+.anslbl { font-size: 14px; font-weight: 800; color: var(--muted); text-align: center; margin-bottom: 4px; }
+.frac { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.frac .bar { width: 120px; height: 5px; background: var(--ink); border-radius: 3px; }
+.keypad { display: grid; grid-template-columns: repeat(3, 76px); gap: 10px; }
+.keypad button { height: 64px; border: 0; border-radius: 16px; font-size: 30px; font-weight: 900; background: #eef2fb; box-shadow: 0 4px 0 #c9d2e6; }
+.keypad button:active { transform: translateY(3px); box-shadow: 0 1px 0 #c9d2e6; }
+.keypad .k-ok { background: var(--ok); color: #fff; box-shadow: 0 4px 0 #1d6f40; font-size: 24px; }
+.keypad .k-del { background: #ffe3e3; box-shadow: 0 4px 0 #f1b0b0; }
+.unit { font-size: 22px; font-weight: 800; color: var(--muted); align-self: center; }
+
+/* spiegazione dopo l'errore */
+.feedback { margin-top: 16px; border-radius: 20px; padding: 16px 18px; text-align: left; font-size: 19px; line-height: 1.45; animation: rise .25s ease-out; }
+.feedback.ok { background: #e9f8ef; border: 3px solid #9bdcb5; }
+.feedback.no { background: #fff4e6; border: 3px solid #ffc98a; }
+.feedback .fh { font-weight: 900; font-size: 22px; margin-bottom: 6px; }
+.feedback .ans { display: inline-block; background: #fff; border-radius: 10px; padding: 2px 10px; font-weight: 900; border: 2px solid var(--line); }
+.feedback .how { margin-top: 8px; color: #5b4a2e; font-size: 16px; }
+.feedback .row { justify-content: flex-start; margin-top: 12px; }
+@keyframes rise { from { transform: translateY(10px); opacity: 0; } }
+
+/* risultato */
+.result { text-align: center; background: var(--card); border-radius: 24px; padding: 26px; box-shadow: var(--shadow); max-width: 560px; margin: 20px auto; }
+.bigstars { font-size: 64px; letter-spacing: 6px; color: #d7dce6; }
+.bigstars b { color: var(--gold); font-weight: 400; display: inline-block; animation: star .5s backwards; }
+.bigstars b:nth-child(2) { animation-delay: .25s; } .bigstars b:nth-child(3) { animation-delay: .5s; }
+@keyframes star { from { transform: scale(0) rotate(-90deg); } }
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 50; }
+.confetti i { position: absolute; top: -20px; width: 10px; height: 16px; border-radius: 3px; animation: fall 2.2s linear forwards; }
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
+.modal { position: fixed; inset: 0; background: rgba(20, 25, 50, .45); display: grid; place-items: center; z-index: 40; padding: 16px; }
+.modal .box { background: #fff; border-radius: 22px; padding: 22px; max-width: 520px; width: 100%; box-shadow: var(--shadow); }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 12px; font-weight: 700; z-index: 60; }
+.note { color: var(--muted); font-size: 15px; text-align: center; }
+
+@media (max-width: 640px) {
+  .qtext { font-size: 21px; }
+  .keypad { grid-template-columns: repeat(3, 64px); }
+  .keypad button { height: 56px; font-size: 26px; }
+  .balloon .b { min-width: 96px; min-height: 96px; font-size: 18px; }
+  .croc { width: 96px; height: 96px; font-size: 52px; }
+  .screen { padding: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .balloon { animation: none; } .confetti { display: none; } }
+@media print { .top { display: none; } }
+
+/* «Lo sai che…?» */
+.fact { display: flex; gap: 14px; align-items: flex-start; text-align: left; background: linear-gradient(135deg, #eef4ff, #f6efff); border: 3px solid #c9d6ff; border-radius: 20px; padding: 14px 16px; margin: 16px 0 18px; animation: rise .4s ease-out .3s backwards; }
+.fact .fi { font-size: 42px; line-height: 1; flex: none; width: 52px; text-align: center; }
+.fact .ft { font-weight: 900; font-size: 20px; color: #3a0ca3; margin-bottom: 4px; }
+.fact .fx { font-size: 18px; line-height: 1.45; }
+
+/* verifica finale */
+.lvl.verif .dot { background: linear-gradient(135deg, #ffb703, #fb8500); font-size: 32px; }
+.lvl.verif.locked .dot { background: #b8c0d0; }
+.lvl .vg { font-size: 13px; font-weight: 900; color: #2a9d5c; height: 20px; }
+.giudizio { display: inline-block; color: #fff; font-weight: 900; font-size: 22px; padding: 8px 18px; border-radius: 999px; margin: 4px 0 10px; }
+.review { text-align: left; margin-top: 10px; }
+.rv { border: 2px solid #ffd8a8; background: #fff9f0; border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; font-size: 17px; line-height: 1.45; }
+.rv-l { font-size: 13px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.rv-q { font-size: 20px; font-weight: 800; margin: 4px 0; }
+.rv .how { margin-top: 6px; color: #5b4a2e; font-size: 15px; }
+.ans.no { border-color: #f5a3aa; background: #fdecee; text-decoration: line-through; }
+.result .ans { display: inline-block; background: #fff; border-radius: 10px; padding: 1px 9px; font-weight: 900; border: 2px solid var(--line); }
+
+/* minigioco: pesci che nuotano */
+.mg-pesci { flex-direction: column; align-items: stretch; gap: 10px; background: linear-gradient(#cdefff, #8fd3f4); border-radius: 20px; padding: 14px; }
+.mg-pesci .balloon { animation: swim 5s ease-in-out infinite alternate; align-self: flex-start; }
+.mg-pesci .balloon:nth-child(2) { animation-duration: 6s; } .mg-pesci .balloon:nth-child(3) { animation-duration: 4.4s; } .mg-pesci .balloon:nth-child(4) { animation-duration: 5.6s; }
+.mg-pesci .b { min-width: 150px; min-height: 64px; max-width: none; border-radius: 50% 40% 40% 50% / 50%; position: relative; padding: 10px 40px 10px 22px; }
+.mg-pesci .b::after { content: ''; position: absolute; right: -24px; top: 50%; transform: translateY(-50%); border-left: 30px solid currentColor; border-top: 20px solid transparent; border-bottom: 20px solid transparent; color: inherit; }
+.mg-pesci .b::before { content: ''; position: absolute; left: 16px; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: #222; }
+@keyframes swim { from { transform: translateX(0); } to { transform: translateX(min(42vw, 360px)); } }
+/* minigioco: carte da girare */
+.mg-carte { gap: 14px; }
+.mg-carte .balloon { animation: none; perspective: 600px; }
+.mg-carte .b { border-radius: 16px; min-width: 120px; min-height: 150px; box-shadow: 0 6px 0 rgba(0,0,0,.18); border: 4px solid #fff; transition: transform .35s; }
+.mg-carte .balloon:hover .b { transform: translateY(-4px) rotate(-1deg); }
+.mg-carte .balloon.flip .b { transform: rotateY(180deg) scale(.9); opacity: .4; }
+.mg-carte .balloon.good .b { outline: 5px solid var(--ok); opacity: 1; transform: none; }
+
+/* cifre colorate per posizione */
+.nm { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.d-u { color: #e63946; } .d-da { color: #1d6fe0; } .d-h { color: #2a9d5c; } .d-k { color: #8338ec; } .d-mi { color: #f77f00; } .d-g { color: #6d4c41; } .d-dec { color: #0096a8; }
+.nm [class^="d-"] { font-weight: 900; }
+.sep-k { color: #4a4f63; font-weight: 900; font-size: .95em; margin: 0 .16em; }
+.sep-dec { color: #111; font-weight: 900; font-size: 1.25em; margin: 0 .06em; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin: -4px 0 10px; font-size: 14px; font-weight: 800; color: var(--muted); }
+.legend .lg { display: inline-flex; align-items: center; gap: 4px; }
+.legend i { font-style: normal; font-size: 16px; }
+.balloon .lab { background: #fff; border-radius: 12px; padding: 2px 10px; text-shadow: none; color: var(--ink); box-shadow: 0 1px 0 rgba(0,0,0,.15); }
+.ansbox .nm { font-size: 1em; }
+
+/* calcolo passo per passo */
+.steps { --cw: 38px; margin-top: 14px; background: #fff; border: 3px solid #c9d6ff; border-radius: 18px; padding: 12px; text-align: center; }
+.stitle { font-weight: 900; color: #3a0ca3; margin-bottom: 8px; }
+.swrap { overflow-x: auto; display: flex; justify-content: center; padding: 4px; }
+.sgrid { --rh: 42px; display: grid; grid-auto-rows: var(--rh); font-size: 28px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.sc { display: grid; place-items: center; color: #1d3557; position: relative; }
+.sc.d-u { color: #e63946; } .sc.d-da { color: #1d6fe0; } .sc.d-h { color: #2a9d5c; } .sc.d-k { color: #8338ec; } .sc.d-mi { color: #f77f00; } .sc.d-g { color: #6d4c41; } .sc.d-dec { color: #0096a8; } .sc.pad { color: #9aa3b5; }
+.sc.ctop { font-size: 17px; align-items: end; color: #e63946; }
+.sc.carry { color: #e63946; font-size: 17px; }
+.sc.borrow { color: #d00000; font-size: 17px; }
+.sc.struck::after { content: ''; position: absolute; left: 18%; right: 18%; top: 50%; border-top: 3px solid #d00000; transform: rotate(-20deg); }
+.sc.line { border-top: 3px solid #1d3557; }
+.sc.hl { background: #fff3bf; border-radius: 6px; }
+.sc.op { color: #e63946; }
+.sc.pad { color: #9aa3b5; }
+.sc.res { animation: pop-in .3s ease-out; }
+.sc.comma, .sc.commaR::after { color: #111; }
+.sc.commaR::after { content: ','; position: absolute; right: -6px; bottom: 4px; }
+.sc.dotR::after { content: '.'; position: absolute; right: -5px; bottom: 2px; color: #111; }
+.sc.ul { border-bottom: 3px solid #1d3557; }
+.sc.vbar { border-left: 3px solid #1d3557; }
+.sc.hbar { border-bottom: 3px solid #1d3557; }
+.sc.q { color: #2a9d5c; }
+.sc.rem { color: #1d6fe0; }
+.sc.down { color: #8338ec; }
+.sc.dvs { color: #e76f51; }
+@keyframes pop-in { from { transform: scale(1.6); opacity: 0; } }
+.qcol { --cw: 38px; display: flex; justify-content: center; margin: 4px auto 12px; padding: 8px 14px; background: #fffdf3; border: 2px dashed #f2c94c; border-radius: 16px; width: fit-content; max-width: 100%; }
+.handnote { max-width: 520px; margin: -4px auto 12px; text-align: center; font-size: 15px; font-weight: 700; color: #6b4f00; background: #fff6d6; border-radius: 12px; padding: 7px 12px; }
+.stag { display: inline-block; background: #3a0ca3; color: #fff; font-size: 13px; font-weight: 800; border-radius: 999px; padding: 1px 9px; margin-right: 4px; vertical-align: 2px; }
+.snote { font-size: 18px; line-height: 1.45; margin: 10px 4px; min-height: 52px; text-align: left; background: #f6f8ff; border-radius: 12px; padding: 10px 12px; }
+.sctl { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.sbtn { padding: 10px 16px; font-size: 16px; }
+.scnt { font-weight: 800; color: var(--muted); }
+.steps-holder { margin-top: 10px; }
+@media (max-width: 640px) { .steps, .qcol { --cw: 30px; } .sgrid { font-size: 22px; --rh: 34px; } }
+</style>
+<div class="app" id="app">
+  <header class="top">
+    <button class="icon-btn" id="tBack" type="button" aria-label="Indietro" hidden>←</button>
+    <div class="title" id="tTitle"></div>
+    <span class="chip" id="tCoins" hidden></span>
+    <button class="icon-btn" id="tPlayer" type="button" title="Cambia giocatore" hidden></button>
+    <button class="icon-btn" id="tSound" type="button" aria-label="Suoni">🔊</button>
+    <a class="icon-btn lang-btn" href="english.html" title="English version" aria-label="English version">EN</a>
+    <button class="icon-btn" id="tSet" type="button" aria-label="Impostazioni">⚙️</button>
+  </header>
+  <main class="screen" id="screen"></main>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+<script>window.LANG = 'it';
+/* Disegni SVG per gli esercizi: oggetti da contare, blocchi in base 10, linea dei numeri,
+   orologio, monete, frazioni, figure, grafici. Tutti restituiscono una stringa SVG. */
+(function (root) {
+  'use strict';
+  const V = {};
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const svg = (w, h, body, extra = '') => `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" class="vis" ${extra} xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+  V.svg = svg;
+  const T = (x, y, s, size = 16, fill = '#2b2d42', anchor = 'middle', weight = 600) => `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" text-anchor="${anchor}" font-weight="${weight}" font-family="inherit">${esc(s)}</text>`;
+  V.T = T;
+  const ICONS = {
+    mela: (x, y, r) => `<circle cx="${x}" cy="${y + 1}" r="${r}" fill="#e63946"/><path d="M${x} ${y - r + 2} q2 -6 6 -7" stroke="#6b4226" stroke-width="2" fill="none"/><ellipse cx="${x + 5}" cy="${y - r}" rx="4" ry="2" fill="#52b788"/>`,
+    stella: (x, y, r) => { let p = ''; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; p += (i ? 'L' : 'M') + (x + rr * Math.cos(a)).toFixed(1) + ' ' + (y + rr * Math.sin(a)).toFixed(1); } return `<path d="${p}Z" fill="#ffb703" stroke="#e09f00"/>`; },
+    pallina: (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#4895ef"/><circle cx="${x - r / 3}" cy="${y - r / 3}" r="${r / 4}" fill="#fff" opacity=".6"/>`,
+    fiore: (x, y, r) => { let s = ''; for (let i = 0; i < 5; i++) { const a = i * 2 * Math.PI / 5; s += `<circle cx="${x + r * 0.55 * Math.cos(a)}" cy="${y + r * 0.55 * Math.sin(a)}" r="${r * 0.45}" fill="#f28482"/>`; } return s + `<circle cx="${x}" cy="${y}" r="${r * 0.35}" fill="#ffd166"/>`; },
+    pesce: (x, y, r) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.6}" fill="#f4a261"/><path d="M${x + r - 2} ${y} l${r * 0.7} ${-r * 0.5} v${r} Z" fill="#e76f51"/><circle cx="${x - r * 0.45}" cy="${y - 2}" r="2" fill="#222"/>`,
+  };
+  V.ICONS = Object.keys(ICONS);
+  // n oggetti uguali, a righe da 5 (come nelle cornici del dieci)
+  V.objects = function (n, kind = 'mela', perRow = 5) {
+    const r = 13, gap = 34, rows = Math.max(1, Math.ceil(n / perRow));
+    const w = Math.max(1, Math.min(n, perRow)) * gap + 10, h = rows * gap + 6;
+    let b = '';
+    for (let i = 0; i < n; i++) { const cx = 22 + (i % perRow) * gap, cy = 20 + Math.floor(i / perRow) * gap; b += ICONS[kind](cx, cy, r); }
+    return svg(w, h, b);
+  };
+  // gruppi uguali (moltiplicazione come addizione ripetuta)
+  V.groups = function (g, k, kind = 'pallina') {
+    const per = Math.min(k, 5), rr = 9, gw = per * 22 + 16, rows = Math.ceil(k / 5), gh = rows * 22 + 16;
+    const cols = Math.min(g, 4), w = cols * (gw + 10) + 10, h = Math.ceil(g / 4) * (gh + 10) + 10;
+    let b = '';
+    for (let i = 0; i < g; i++) {
+      const gx = 10 + (i % 4) * (gw + 10), gy = 10 + Math.floor(i / 4) * (gh + 10);
+      b += `<rect x="${gx}" y="${gy}" width="${gw}" height="${gh}" rx="12" fill="#eef4ff" stroke="#9db4e8" stroke-dasharray="4 3"/>`;
+      for (let j = 0; j < k; j++) b += ICONS[kind](gx + 18 + (j % 5) * 22, gy + 19 + Math.floor(j / 5) * 22, rr);
+    }
+    return svg(w, h, b);
+  };
+  // schieramento righe × colonne
+  V.array = function (r, c) {
+    const s = 24, w = c * s + 20, h = r * s + 20;
+    let b = '';
+    for (let i = 0; i < r; i++) for (let j = 0; j < c; j++) b += `<circle cx="${20 + j * s}" cy="${20 + i * s}" r="8" fill="#7209b7" opacity=".85"/>`;
+    return svg(w, h, b);
+  };
+  // blocchi in base 10: centinaia (quadrati), decine (barrette), unità (cubetti)
+  V.base10 = function (h, d, u) {
+    const s = 7; let x = 8, b = '';
+    for (let i = 0; i < h; i++) { b += `<rect x="${x}" y="8" width="${10 * s}" height="${10 * s}" fill="#95d5b2" stroke="#2a9d5c"/>`; for (let k = 1; k < 10; k++) b += `<line x1="${x + k * s}" y1="8" x2="${x + k * s}" y2="${8 + 10 * s}" stroke="#2a9d5c" stroke-width=".5"/><line x1="${x}" y1="${8 + k * s}" x2="${x + 10 * s}" y2="${8 + k * s}" stroke="#2a9d5c" stroke-width=".5"/>`; x += 10 * s + 8; }
+    for (let i = 0; i < d; i++) { b += `<rect x="${x}" y="8" width="${s}" height="${10 * s}" fill="#8ab8f5" stroke="#1d6fe0"/>`; for (let k = 1; k < 10; k++) b += `<line x1="${x}" y1="${8 + k * s}" x2="${x + s}" y2="${8 + k * s}" stroke="#1d6fe0" stroke-width=".5"/>`; x += s + 5; }
+    if (d) x += 4;
+    for (let i = 0; i < u; i++) { b += `<rect x="${x + (i % 3) * (s + 3)}" y="${8 + 10 * s - s - Math.floor(i / 3) * (s + 3)}" width="${s}" height="${s}" fill="#f4a3a8" stroke="#e63946"/>`; }
+    x += u ? 3 * (s + 3) + 4 : 0;
+    return svg(Math.max(60, x + 4), 10 * s + 16, b);
+  };
+  // linea dei numeri con eventuali salti (frecce) e un punto da trovare
+  V.numberLine = function (from, to, opts = {}) {
+    const n = to - from, w = Math.min(680, Math.max(300, n * 34)), x0 = 20, step = (w - 40) / n;
+    const X = v => x0 + (v - from) * step;
+    let b = `<line x1="${x0 - 10}" y1="60" x2="${w - 10}" y2="60" stroke="#333" stroke-width="2"/><path d="M${w - 10} 60 l-8 -5 v10z" fill="#333"/>`;
+    const lbEvery = opts.every || (n > 20 ? 5 : 1);
+    for (let v = from; v <= to; v++) {
+      const big = (v - from) % lbEvery === 0;
+      b += `<line x1="${X(v)}" y1="${big ? 52 : 55}" x2="${X(v)}" y2="${big ? 68 : 65}" stroke="#333" stroke-width="${big ? 2 : 1}"/>`;
+      if (big && !(opts.hide || []).includes(v)) b += T(X(v), 86, String(opts.label ? opts.label(v) : v), 13, '#333');
+    }
+    for (const [a, c] of (opts.jumps || [])) { const xa = X(a), xc = X(c), mid = (xa + xc) / 2, hgt = Math.min(40, Math.abs(xc - xa) / 2 + 10); b += `<path d="M${xa} 55 Q${mid} ${55 - hgt * 1.6} ${xc} 55" fill="none" stroke="#f3722c" stroke-width="2.5"/><path d="M${xc} 55 l${xc > xa ? -9 : 9} -6 l${xc > xa ? 2 : -2} 8z" fill="#f3722c"/>`; }
+    for (const v of (opts.mark || [])) b += `<circle cx="${X(v)}" cy="60" r="7" fill="#e63946"/>`;
+    for (const v of (opts.ask || [])) b += `<rect x="${X(v) - 13}" y="72" width="26" height="22" rx="5" fill="#fff3bf" stroke="#f59f00"/>` + T(X(v), 88, '?', 15, '#d9480f');
+    return svg(w, 100, b);
+  };
+  // orologio analogico
+  V.clock = function (h, m) {
+    const c = 80, r = 70;
+    let b = `<circle cx="${c}" cy="${c}" r="${r}" fill="#fff" stroke="#264653" stroke-width="5"/>`;
+    for (let i = 0; i < 60; i++) { const a = i * Math.PI / 30, big = i % 5 === 0; b += `<line x1="${c + (r - (big ? 11 : 5)) * Math.sin(a)}" y1="${c - (r - (big ? 11 : 5)) * Math.cos(a)}" x2="${c + (r - 2) * Math.sin(a)}" y2="${c - (r - 2) * Math.cos(a)}" stroke="#264653" stroke-width="${big ? 2.5 : 1}"/>`; }
+    for (let i = 1; i <= 12; i++) { const a = i * Math.PI / 6; b += T(c + (r - 22) * Math.sin(a), c - (r - 22) * Math.cos(a) + 5, String(i), 14, '#264653'); }
+    const ah = ((h % 12) + m / 60) * Math.PI / 6, am = m * Math.PI / 30;
+    b += `<line x1="${c}" y1="${c}" x2="${c + 38 * Math.sin(ah)}" y2="${c - 38 * Math.cos(ah)}" stroke="#264653" stroke-width="6" stroke-linecap="round"/>`;
+    b += `<line x1="${c}" y1="${c}" x2="${c + 56 * Math.sin(am)}" y2="${c - 56 * Math.cos(am)}" stroke="#e76f51" stroke-width="4" stroke-linecap="round"/><circle cx="${c}" cy="${c}" r="5" fill="#264653"/>`;
+    return svg(160, 160, b);
+  };
+  // monete e banconote in centesimi
+  V.money = function (list) {
+    let x = 6, b = '';
+    for (const v of list) {
+      if (v >= 500) { const col = { 500: '#9fa8a3', 1000: '#e07a7a', 2000: '#6c9bd2', 5000: '#e9a05a' }[v] || '#999'; b += `<rect x="${x}" y="18" width="78" height="44" rx="4" fill="${col}" stroke="#555"/>` + T(x + 39, 47, root.LANG === 'en' ? '€' + (v / 100) : (v / 100) + ' €', 16, '#fff', 'middle', 800); x += 86; }
+      else { const r = v >= 100 ? 22 : v >= 10 ? 19 : 15; const fill = v >= 100 ? '#d4b44a' : v >= 10 ? '#e6c35c' : '#c9783a'; b += `<circle cx="${x + r}" cy="40" r="${r}" fill="${fill}" stroke="#8a6d1f" stroke-width="2"/>` + T(x + r, 45, v >= 100 ? (root.LANG === 'en' ? '€' + (v / 100) : (v / 100) + '€') : v + 'c', v >= 100 ? 13 : 11, '#3d2b00', 'middle', 800); x += 2 * r + 6; }
+    }
+    return svg(Math.max(60, x + 4), 80, b);
+  };
+  // frazione: torta o barra con parti colorate
+  V.fraction = function (n, d, kind = 'pie') {
+    let b = '';
+    if (kind === 'pie') {
+      const c = 70, r = 60;
+      for (let i = 0; i < d; i++) {
+        const a0 = -Math.PI / 2 + i * 2 * Math.PI / d, a1 = a0 + 2 * Math.PI / d;
+        const p = d === 1 ? `M${c} ${c - r} A${r} ${r} 0 1 1 ${c - 0.01} ${c - r}Z` : `M${c} ${c} L${c + r * Math.cos(a0)} ${c + r * Math.sin(a0)} A${r} ${r} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${c + r * Math.cos(a1)} ${c + r * Math.sin(a1)}Z`;
+        b += `<path d="${p}" fill="${i < n ? '#f77f00' : '#fff'}" stroke="#333" stroke-width="2"/>`;
+      }
+      return svg(140, 140, b);
+    }
+    const w = 300, h = 46, pw = w / d;
+    for (let i = 0; i < d; i++) b += `<rect x="${10 + i * pw}" y="10" width="${pw}" height="${h}" fill="${i < n ? '#2a9d8f' : '#fff'}" stroke="#333" stroke-width="2"/>`;
+    return svg(w + 20, h + 20, b);
+  };
+  // poligono con le misure dei lati
+  V.polygon = function (pts, labels = [], opts = {}) {
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    const mnx = Math.min(...xs), mny = Math.min(...ys), mxx = Math.max(...xs), mxy = Math.max(...ys);
+    const sc = Math.min(220 / Math.max(1, mxx - mnx), 150 / Math.max(1, mxy - mny));
+    const P = pts.map(p => [40 + (p[0] - mnx) * sc, 30 + (mxy - p[1]) * sc]);
+    let b = `<path d="M${P.map(p => p.join(' ')).join(' L')}Z" fill="${opts.fill || '#cdeccf'}" stroke="#2d6a4f" stroke-width="3"/>`;
+    const cx = P.reduce((s, p) => s + p[0], 0) / P.length, cy = P.reduce((s, p) => s + p[1], 0) / P.length;
+    labels.forEach((lb, i) => {
+      if (lb === null || lb === undefined || lb === '') return;
+      const a = P[i], c = P[(i + 1) % P.length]; const mx = (a[0] + c[0]) / 2, my = (a[1] + c[1]) / 2;
+      const dx = mx - cx, dy = my - cy, l = Math.hypot(dx, dy) || 1;
+      b += T(mx + dx / l * 18, my + dy / l * 18 + 5, lb, 14, '#1b4332');
+    });
+    if (opts.h) { const [a, c] = opts.h.map(p => [40 + (p[0] - mnx) * sc, 30 + (mxy - p[1]) * sc]); b += `<line x1="${a[0]}" y1="${a[1]}" x2="${c[0]}" y2="${c[1]}" stroke="#d00000" stroke-width="2" stroke-dasharray="5 4"/>` + T(c[0] + 8, (a[1] + c[1]) / 2 + 5, opts.hLabel || 'h', 14, '#d00000', 'start'); }
+    return svg(Math.max(...P.map(p => p[0])) + 50, Math.max(...P.map(p => p[1])) + 40, b);
+  };
+  // figura su quadretti (aree e perimetri contando)
+  V.gridShape = function (w, h) {
+    const s = 22; let b = '';
+    for (let i = 0; i <= w + 2; i++) b += `<line x1="${10 + i * s}" y1="10" x2="${10 + i * s}" y2="${10 + (h + 2) * s}" stroke="#d0d7de"/>`;
+    for (let j = 0; j <= h + 2; j++) b += `<line x1="10" y1="${10 + j * s}" x2="${10 + (w + 2) * s}" y2="${10 + j * s}" stroke="#d0d7de"/>`;
+    b += `<rect x="${10 + s}" y="${10 + s}" width="${w * s}" height="${h * s}" fill="#90e0ef" fill-opacity=".7" stroke="#0077b6" stroke-width="3"/>`;
+    return svg((w + 2) * s + 20, (h + 2) * s + 20, b);
+  };
+  // figure piane semplici
+  V.shape = function (name, color = '#ffafcc') {
+    const st = `fill="${color}" stroke="#333" stroke-width="3"`;
+    const S = {
+      cerchio: `<circle cx="70" cy="60" r="48" ${st}/>`,
+      quadrato: `<rect x="22" y="12" width="96" height="96" ${st}/>`,
+      rettangolo: `<rect x="5" y="30" width="130" height="64" ${st}/>`,
+      triangolo: `<path d="M70 10 L130 108 L10 108Z" ${st}/>`,
+      rombo: `<path d="M70 6 L126 60 L70 114 L14 60Z" ${st}/>`,
+      pentagono: `<path d="M70 8 L126 50 L104 112 L36 112 L14 50Z" ${st}/>`,
+      esagono: `<path d="M40 12 L100 12 L130 60 L100 108 L40 108 L10 60Z" ${st}/>`,
+      ovale: `<ellipse cx="70" cy="60" rx="62" ry="38" ${st}/>`,
+      trapezio: `<path d="M40 20 L100 20 L132 104 L8 104Z" ${st}/>`,
+    };
+    return svg(140, 120, S[name]);
+  };
+  // angolo con l'ampiezza data (gradi)
+  V.angle = function (deg, label = true) {
+    const c = [40, 120], L = 110, a = deg * Math.PI / 180;
+    const p = [c[0] + L * Math.cos(a), c[1] - L * Math.sin(a)];
+    let b = `<line x1="${c[0]}" y1="${c[1]}" x2="${c[0] + L}" y2="${c[1]}" stroke="#333" stroke-width="3"/><line x1="${c[0]}" y1="${c[1]}" x2="${p[0]}" y2="${p[1]}" stroke="#333" stroke-width="3"/>`;
+    if (Math.abs(deg - 90) < 0.01) b += `<path d="M${c[0] + 18} ${c[1]} V${c[1] - 18} H${c[0]}" fill="none" stroke="#e63946" stroke-width="2"/>`;
+    else { const r = 26; b += `<path d="M${c[0] + r} ${c[1]} A${r} ${r} 0 ${deg > 180 ? 1 : 0} 0 ${c[0] + r * Math.cos(a)} ${c[1] - r * Math.sin(a)}" fill="none" stroke="#e63946" stroke-width="2"/>`; }
+    const minx = Math.min(c[0], p[0]) - 10;
+    return svg(Math.max(c[0] + L, p[0]) - minx + 20, 140, `<g transform="translate(${-minx + 10} 0)">${b}</g>`);
+  };
+  // coppie di rette
+  V.lines = function (kind) {
+    const s = 'stroke="#3a0ca3" stroke-width="4" stroke-linecap="round"';
+    const L = { parallele: `<line x1="10" y1="35" x2="190" y2="25" ${s}/><line x1="10" y1="85" x2="190" y2="75" ${s}/>`, perpendicolari: `<line x1="10" y1="60" x2="190" y2="60" ${s}/><line x1="100" y1="5" x2="100" y2="115" ${s}/>`, incidenti: `<line x1="10" y1="20" x2="190" y2="100" ${s}/><line x1="20" y1="105" x2="180" y2="35" ${s}/>` };
+    return svg(200, 120, L[kind]);
+  };
+  // linee aperte/chiuse, curve/spezzate
+  V.curve = function (kind) {
+    const s = 'fill="none" stroke="#d62828" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"';
+    const K = {
+      'aperta curva': `<path d="M15 90 C45 10 90 120 120 50 S175 30 185 80" ${s}/>`,
+      'chiusa curva': `<path d="M100 15 C160 15 185 60 150 95 C120 125 50 115 30 80 C10 45 50 15 100 15Z" ${s}/>`,
+      'aperta spezzata': `<path d="M15 95 L55 25 L95 90 L140 30 L185 85" ${s}/>`,
+      'chiusa spezzata': `<path d="M30 30 L170 20 L185 100 L90 110 L20 90Z" ${s}/>`,
+      retta: `<line x1="5" y1="90" x2="195" y2="30" ${s}/>`,
+    };
+    return svg(200, 120, K[kind]);
+  };
+  // istogramma
+  V.bars = function (labels, values, title = '') {
+    const w = labels.length * 60 + 60, H = 160, mx = Math.max(...values), top = Math.ceil(mx / 2) * 2 || 2;
+    let b = '';
+    for (let v = 0; v <= top; v += (top > 10 ? 2 : 1)) { const y = H - v / top * (H - 30); b += `<line x1="40" y1="${y}" x2="${w - 10}" y2="${y}" stroke="#e5e5e5"/>` + T(32, y + 4, String(v), 11, '#555', 'end', 400); }
+    labels.forEach((l, i) => { const x = 54 + i * 60, hh = values[i] / top * (H - 30); b += `<rect x="${x}" y="${H - hh}" width="36" height="${hh}" fill="${['#4361ee', '#f72585', '#4cc9f0', '#7209b7', '#ff9f1c', '#2ec4b6'][i % 6]}" rx="3"/>` + T(x + 18, H + 18, l, 12, '#333', 'middle', 500); });
+    b += `<line x1="40" y1="${H}" x2="${w - 10}" y2="${H}" stroke="#333"/>`;
+    return svg(w, H + 30, (title ? T(w / 2, 14, title, 13, '#333') : '') + b);
+  };
+  // sacchetto di palline colorate (probabilità)
+  V.bag = function (counts) {
+    const cols = { rosse: '#e63946', blu: '#3a86ff', verdi: '#2a9d8f', gialle: '#ffbe0b' };
+    let b = `<path d="M30 40 Q20 150 100 150 Q180 150 170 40 Z" fill="#d9c5a0" stroke="#8d6e3f" stroke-width="3"/><path d="M45 40 Q100 20 155 40" fill="none" stroke="#8d6e3f" stroke-width="3"/>`;
+    let i = 0;
+    for (const [k, n] of Object.entries(counts)) for (let j = 0; j < n; j++) { const x = 60 + (i % 5) * 20, y = 70 + Math.floor(i / 5) * 20; b += `<circle cx="${x}" cy="${y}" r="9" fill="${cols[k]}" stroke="#333"/>`; i++; }
+    return svg(200, 160, b);
+  };
+  // sequenza di figure colorate (ritmi)
+  V.sequence = function (items) {
+    let b = '', x = 10;
+    const d = { c: (x, col) => `<circle cx="${x + 18}" cy="30" r="16" fill="${col}" stroke="#333" stroke-width="2"/>`, q: (x, col) => `<rect x="${x + 2}" y="14" width="32" height="32" fill="${col}" stroke="#333" stroke-width="2"/>`, t: (x, col) => `<path d="M${x + 18} 12 L${x + 36} 46 L${x} 46Z" fill="${col}" stroke="#333" stroke-width="2"/>`, '?': x => `<rect x="${x + 2}" y="12" width="32" height="36" rx="6" fill="#fff3bf" stroke="#f59f00" stroke-width="2"/>` + T(x + 18, 37, '?', 20, '#d9480f') };
+    for (const it of items) { b += it === '?' ? d['?'](x) : d[it[0]](x, it[1]); x += 44; }
+    return svg(x + 6, 60, b);
+  };
+  // un oggetto in una griglia di posizioni (sopra, sotto, destra, sinistra)
+  V.scene = function (ref, obj, pos) {
+    const C = [100, 70];
+    const off = { sopra: [0, -48], sotto: [0, 48], destra: [62, 0], sinistra: [-62, 0] }[pos];
+    const draw = (k, x, y) => k === 'casa' ? `<path d="M${x - 22} ${y + 18} V${y - 4} L${x} ${y - 24} L${x + 22} ${y - 4} V${y + 18}Z" fill="#e9c46a" stroke="#333" stroke-width="2"/><rect x="${x - 6}" y="${y + 4}" width="12" height="14" fill="#8d5524"/>` : k === 'albero' ? `<rect x="${x - 4}" y="${y}" width="8" height="20" fill="#8d5524"/><circle cx="${x}" cy="${y - 8}" r="18" fill="#52b788"/>` : `<circle cx="${x}" cy="${y}" r="14" fill="#ffb703" stroke="#333" stroke-width="2"/>` + T(x, y + 5, '☺', 16, '#333');
+    return svg(200, 150, draw(ref, C[0], C[1]) + draw(obj, C[0] + off[0], C[1] + off[1]));
+  };
+  // termometro per i numeri relativi
+  V.thermo = function (t) {
+    const y0 = 20, y1 = 180, mn = -20, mx = 30, Y = v => y1 - (v - mn) / (mx - mn) * (y1 - y0);
+    let b = `<rect x="40" y="${y0 - 6}" width="20" height="${y1 - y0 + 12}" rx="10" fill="#fff" stroke="#333" stroke-width="2"/><circle cx="50" cy="${y1 + 14}" r="16" fill="#e63946" stroke="#333" stroke-width="2"/>`;
+    b += `<rect x="45" y="${Y(t)}" width="10" height="${y1 + 4 - Y(t)}" fill="#e63946"/>`;
+    for (let v = mn; v <= mx; v += 5) b += `<line x1="60" y1="${Y(v)}" x2="70" y2="${Y(v)}" stroke="#333"/>` + T(74, Y(v) + 4, (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + '°', 11, v < 0 ? '#1d4ed8' : '#333', 'start', 500);
+    return svg(120, 210, b);
+  };
+  // solidi (disegno semplice)
+  V.solid = function (name) {
+    const st = 'stroke="#333" stroke-width="2.5" stroke-linejoin="round"';
+    const S = {
+      cubo: `<path d="M30 50 L90 50 L90 110 L30 110Z" fill="#a2d2ff" ${st}/><path d="M30 50 L55 25 L115 25 L90 50Z" fill="#cde7ff" ${st}/><path d="M90 50 L115 25 L115 85 L90 110Z" fill="#7db9f0" ${st}/>`,
+      parallelepipedo: `<path d="M20 55 L110 55 L110 105 L20 105Z" fill="#ffc8dd" ${st}/><path d="M20 55 L45 30 L135 30 L110 55Z" fill="#ffe0ec" ${st}/><path d="M110 55 L135 30 L135 80 L110 105Z" fill="#f4a3c0" ${st}/>`,
+      piramide: `<path d="M25 100 L75 120 L125 95 L75 15Z" fill="#ffd6a5" ${st}/><path d="M75 15 L75 120" ${st}/><path d="M25 100 L75 15" ${st}/>`,
+      cilindro: `<path d="M30 30 V100 A45 14 0 0 0 120 100 V30" fill="#caffbf" ${st}/><ellipse cx="75" cy="30" rx="45" ry="14" fill="#e3ffdc" ${st}/>`,
+      cono: `<path d="M75 12 L120 100 A45 14 0 0 1 30 100Z" fill="#fdffb6" ${st}/>`,
+      sfera: `<circle cx="75" cy="65" r="50" fill="#bdb2ff" ${st}/><ellipse cx="75" cy="65" rx="50" ry="14" fill="none" stroke="#333" stroke-dasharray="4 3"/>`,
+    };
+    return svg(150, 130, S[name]);
+  };
+  // operazione in colonna (incolonnata, con lo spazio del risultato)
+  V.column = function (a, b, op) {
+    const sa = String(a), sb = String(b), n = Math.max(sa.length, sb.length) + 1, cw = 26, w = (n + 1) * cw + 10;
+    let s = '';
+    // cifre colorate per posizione (unità rosso, decine blu, centinaia verde, migliaia viola)
+    const PC = ['#e63946', '#1d6fe0', '#2a9d5c', '#8338ec', '#8338ec', '#8338ec', '#f77f00'];
+    const row = (str, y) => { const off = n - str.length; for (let i = 0; i < str.length; i++) s += T(14 + (off + i + 1) * cw, y, str[i], 26, PC[str.length - 1 - i] || '#6d4c41', 'middle', 800); };
+    row(sa, 34); row(sb, 70); s += T(18, 70, op, 26, '#e63946', 'middle', 700);
+    s += `<line x1="8" y1="82" x2="${w - 4}" y2="82" stroke="#1d3557" stroke-width="3"/>`;
+    for (let i = 0; i < n; i++) s += `<rect x="${14 + (i + 1) * cw - 11}" y="90" width="22" height="30" rx="4" fill="#fff3bf" stroke="#f59f00"/>`;
+    return svg(w, 126, s);
+  };
+  root.Vis = V;
+  if (typeof module !== 'undefined') module.exports = V;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Programma di matematica della scuola primaria (Indicazioni nazionali): 5 mondi (classi),
+   moduli (argomenti) e livelli (sottocapitoli). Ogni livello ha una spiegazione e un generatore di domande.
+   Domanda: { t: testo, v: disegno SVG, k: 'num' | 'choice' | 'cmp' | 'multi', a: risposta,
+   o: opzioni (choice), f: campi (multi) [{l, a}], x: spiegazione della soluzione } */
+(function (root) {
+  'use strict';
+  const V = root.Vis || require('./vis.js');
+  const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  // numeri all'italiana: 12.345 e 3,75
+  const F = n => { const neg = n < 0; let s = String(Math.abs(Math.round(n))); s = s.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); return (neg ? '−' : '') + s; };
+  // decimale a partire da un intero e dal numero di cifre decimali (niente errori di virgola mobile)
+  const D = (k, dec) => { if (!dec) return F(k); const neg = k < 0; const s = String(Math.abs(k)).padStart(dec + 1, '0'); const ip = s.slice(0, -dec), fp = s.slice(-dec).replace(/0+$/, ''); return (neg ? '−' : '') + F(+ip) + (fp ? ',' + fp : ''); };
+  const val = (k, dec) => k / Math.pow(10, dec);
+  // domanda a scelta: la risposta giusta tra le distrazioni (senza doppioni)
+  function choice(t, correct, wrong, extra = {}) {
+    const opts = [String(correct)];
+    for (const w of wrong) { const s = String(w); if (!opts.includes(s) && opts.length < (extra.n || 4)) opts.push(s); }
+    const o = extra.keep ? opts : shuffle(opts);
+    return { t, k: 'choice', o, a: o.indexOf(String(correct)), ...extra };
+  }
+  const num = (t, a, extra = {}) => ({ t, k: 'num', a, ...extra });
+  const near = (a, spread, n = 3, min = 0) => { const s = new Set(); let g = 0; while (s.size < n && g++ < 100) { const v = a + R(-spread, spread); if (v !== a && v >= min) s.add(v); } return [...s]; };
+  const cmpQ = (a, b, ta, tb, x) => ({ t: `Scegli il segno giusto: <b>${ta}</b> ☐ <b>${tb}</b>`, k: 'cmp', a: a > b ? '>' : a < b ? '<' : '=', x });
+  const NOMI = ['Luca', 'Sara', 'Marco', 'Giulia', 'Ahmed', 'Sofia', 'Leo', 'Emma', 'Matteo', 'Aurora', 'Yuki', 'Nina'];
+  const OGG = [['mele', 'mela'], ['caramelle', 'caramella'], ['figurine', 'figurina'], ['biglie', 'biglia'], ['matite', 'matita'], ['conchiglie', 'conchiglia']];
+  const UNITA = { m: 'metri', dm: 'decimetri', cm: 'centimetri', mm: 'millimetri' };
+  const CIFRE = ['zero', 'uno', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto', 'nove'];
+  // numero in lettere (fino a 999.999)
+  function lettere(n) {
+    const u = ['', 'uno', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto', 'nove', 'dieci', 'undici', 'dodici', 'tredici', 'quattordici', 'quindici', 'sedici', 'diciassette', 'diciotto', 'diciannove'];
+    const d = ['', '', 'venti', 'trenta', 'quaranta', 'cinquanta', 'sessanta', 'settanta', 'ottanta', 'novanta'];
+    const sotto100 = x => { if (x < 20) return u[x]; const t = d[Math.floor(x / 10)], r = x % 10; return (r === 1 || r === 8 ? t.slice(0, -1) : t) + u[r]; };
+    const sotto1000 = x => { const c = Math.floor(x / 100), r = x % 100; let s = c ? (c === 1 ? 'cento' : u[c] + 'cento') : ''; if (c && Math.floor(r / 10) === 8) s = s.slice(0, -1); return s + sotto100(r); };
+    if (n === 0) return 'zero';
+    const m = Math.floor(n / 1000), r = n % 1000;
+    const w = (m ? (m === 1 ? 'mille' : sotto1000(m) + 'mila') : '') + sotto1000(r);
+    // l'accento va solo sul «tre» finale: ventitré, centotré (ma ventitremila)
+    return w.length > 3 && w.endsWith('tre') ? w.slice(0, -3) + 'tré' : w;
+  }
+  const ROM = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+  const romano = n => { let s = ''; for (const [v, r] of ROM) while (n >= v) { s += r; n -= v; } return s; };
+  const gcd = (a, b) => b ? gcd(b, a % b) : a;
+  // equivalenze: scala di unità (ogni passo ×10)
+  function equiv(units, names, maxSteps = 3) {
+    let i = R(0, units.length - 1), j;
+    do { j = R(0, units.length - 1); } while (j === i || Math.abs(j - i) > maxSteps);
+    const diff = j - i; // >0: verso unità più piccole (si moltiplica)
+    let k, dec = 0, ans, ansDec = 0;
+    if (diff > 0) { k = R(1, 99); if (Math.random() < 0.4) { dec = 1; k = R(11, 99); } ans = k * Math.pow(10, diff); ansDec = dec; }
+    else { k = R(1, 9) * Math.pow(10, R(0, 3)); ans = k; ansDec = -diff; }
+    const a = val(ans, ansDec);
+    return num(`${D(k, dec)} ${units[i]} = ? ${units[j]}`, a, { x: `Da ${names[i]} a ${names[j]} ${Math.abs(diff) === 1 ? 'c\'è 1 passo' : 'ci sono ' + Math.abs(diff) + ' passi'} sulla scala: ${diff > 0 ? 'si moltiplica' : 'si divide'} per ${F(Math.pow(10, Math.abs(diff)))}. Risultato: ${D(ans, ansDec)} ${units[j]}.`, unit: units[j] });
+  }
+
+  /* ---------------------------- MONDI ---------------------------- */
+  const W = [];
+  const world = (n, name, theme, modules) => W.push({ n, name, theme, modules });
+  const mod = (id, title, icon, levels) => ({ id, title, icon, levels });
+  const lv = (id, title, theory, gen, game) => ({ id, title, theory, gen, game });
+
+  /* ======================= CLASSE 1 ======================= */
+  world(1, 'Il Prato dei Numeri', 'prato', [
+    mod('c1n', 'Numeri fino a 20', '🔢', [
+      lv('conta', 'Contare gli oggetti', 'Tocca ogni oggetto una volta sola e conta ad alta voce: 1, 2, 3… L\'ultimo numero che dici è quanti sono.', () => { const n = R(1, 20), k = pick(V.ICONS); return num('Quanti sono?', n, { v: V.objects(n, k), x: `${n === 1 ? 'È' : 'Sono'} ${n}: ${CIFRE[n] || lettere(n)}.` }); }),
+      lv('precsucc', 'Prima e dopo', 'Il numero che viene <b>dopo</b> (successivo) è più grande di 1. Quello che viene <b>prima</b> (precedente) è più piccolo di 1.', () => { const n = R(1, 19), dopo = Math.random() < 0.5 || n === 0; return dopo ? num(`Quale numero viene <b>dopo</b> ${n}?`, n + 1, { v: V.numberLine(0, 20, { mark: [n], ask: [n + 1] }), x: `${n} + 1 = ${n + 1}` }) : num(`Quale numero viene <b>prima</b> di ${n}?`, n - 1, { v: V.numberLine(0, 20, { mark: [n], ask: [n - 1] }), x: `${n} − 1 = ${n - 1}` }); }),
+      lv('confronta', 'Più, meno, uguale', 'Il coccodrillo apre la bocca verso il numero più grande: 7 <b>&gt;</b> 3, 2 <b>&lt;</b> 9, 5 <b>=</b> 5.', () => { const a = R(0, 20), b = Math.random() < 0.15 ? a : R(0, 20); return cmpQ(a, b, a, b, `${a} ${a > b ? 'è maggiore di' : a < b ? 'è minore di' : 'è uguale a'} ${b}.`); }, 'coccodrillo'),
+      lv('du20', 'Decine e unità', 'Dieci unità fanno una <b>decina</b>. 14 = 1 decina e 4 unità.', () => { const n = R(10, 20), d = Math.floor(n / 10), u = n % 10; return Math.random() < 0.5 ? num('Quale numero è formato da questi blocchi?', n, { v: V.base10(0, d, u), x: `${d} ${d === 1 ? 'decina' : 'decine'} e ${u} unità = ${n}` }) : { t: `Quante decine e quante unità ci sono in <b>${n}</b>?`, k: 'multi', f: [{ l: 'decine', a: d }, { l: 'unità', a: u }], x: `${n} = ${d} da e ${u} u` }; }),
+      lv('ordina', 'Il più grande e il più piccolo', 'Per trovare il più grande guarda chi viene per ultimo sulla linea dei numeri.', () => { const s = new Set(); while (s.size < 4) s.add(R(0, 20)); const a = [...s], big = Math.random() < 0.5; const c = big ? Math.max(...a) : Math.min(...a); return choice(`Tocca il numero più ${big ? 'grande' : 'piccolo'}.`, c, a.filter(x => x !== c), { x: `Il più ${big ? 'grande' : 'piccolo'} è ${c}.` }); }, 'palloncini'),
+    ]),
+    mod('c1op', 'Addizioni e sottrazioni', '➕', [
+      lv('add10', 'Addizioni fino a 10', 'Addizionare vuol dire mettere insieme. 3 + 4: parti da 3 e conta ancora 4 → 7.', () => { const a = R(0, 9), b = R(0, 10 - a); return num(`${a} + ${b} = ?`, a + b, { v: V.numberLine(0, 10, { jumps: [[a, a + b]], mark: [a] }), x: `Parti da ${a} e fai ${b} ${b === 1 ? 'salto' : 'salti'} avanti: ${a + b}.` }); }),
+      lv('sot10', 'Sottrazioni fino a 10', 'Sottrarre vuol dire togliere. 8 − 3: parti da 8 e torna indietro di 3 → 5.', () => { const a = R(1, 10), b = R(0, a); return num(`${a} − ${b} = ?`, a - b, { v: V.numberLine(0, 10, { jumps: [[a, a - b]], mark: [a] }), x: `Parti da ${a} e torna indietro di ${b}: ${a - b}.` }); }),
+      lv('amici10', 'Gli amici del 10', 'Le coppie che fanno 10: 1+9, 2+8, 3+7, 4+6, 5+5. Ricordale: ti aiutano tanto!', () => { const a = R(0, 10); return num(`${a} + ? = 10`, 10 - a, { v: V.objects(10, 'stella'), x: `${a} + ${10 - a} = 10` }); }),
+      lv('add20', 'Addizioni fino a 20', 'Arriva prima a 10 e poi aggiungi il resto: 8 + 5 = 8 + 2 + 3 = 13.', () => { const a = R(2, 18), b = R(1, 20 - a); return num(`${a} + ${b} = ?`, a + b, { v: V.numberLine(0, 20, { jumps: [[a, a + b]], mark: [a] }), x: `${a} + ${b} = ${a + b}` }); }),
+      lv('sot20', 'Sottrazioni fino a 20', 'Torna indietro fino a 10 e poi togli il resto: 13 − 5 = 13 − 3 − 2 = 8.', () => { const a = R(5, 20), b = R(1, a); return num(`${a} − ${b} = ?`, a - b, { v: V.numberLine(0, 20, { jumps: [[a, a - b]], mark: [a] }), x: `${a} − ${b} = ${a - b}` }); }),
+      lv('mancante', 'Il numero nascosto', 'Se 4 + ? = 9, conta quanto manca da 4 a 9: 5.', () => { const a = R(0, 10), b = R(0, 10), s = a + b; return Math.random() < 0.5 ? num(`${a} + ? = ${s}`, b, { x: `Da ${a} a ${s} mancano ${b}.` }) : num(`${s} − ? = ${a}`, b, { x: `${s} − ${b} = ${a}` }); }),
+    ]),
+    mod('c1pr', 'Problemi', '🧩', [
+      lv('prob1', 'Problemi con + e −', 'Leggi bene: «in tutto», «insieme» fanno pensare all\'addizione; «ne restano», «quanti in meno» alla sottrazione.', () => { const [pl, sg] = pick(OGG), n = pick(NOMI); const a = R(3, 12), b = R(1, 8); return Math.random() < 0.5 ? num(`${n} ha ${a} ${pl}. Ne riceve ${b}. Quante ${pl} ha in tutto?`, a + b, { v: V.objects(Math.min(a + b, 20), 'mela'), x: `${a} + ${b} = ${a + b}` }) : num(`${n} ha ${a + b} ${pl}. Ne regala ${b}. Quante ${pl} restano a ${n}?`, a, { x: `${a + b} − ${b} = ${a}` }); }),
+    ]),
+    mod('c1sp', 'Spazio e figure', '🔷', [
+      lv('figure1', 'Le figure piane', 'Il <b>cerchio</b> è rotondo, il <b>quadrato</b> ha 4 lati uguali, il <b>rettangolo</b> ha 4 lati (due lunghi e due corti), il <b>triangolo</b> ha 3 lati.', () => { const f = pick(['cerchio', 'quadrato', 'rettangolo', 'triangolo']); return choice('Come si chiama questa figura?', f, shuffle(['cerchio', 'quadrato', 'rettangolo', 'triangolo'].filter(x => x !== f)), { v: V.shape(f, pick(['#ffafcc', '#bde0fe', '#caffbf', '#ffd6a5'])), x: `È un ${f}.` }); }, 'palloncini'),
+      lv('posizioni', 'Sopra, sotto, destra, sinistra', 'Guarda dove si trova la pallina rispetto alla casa (o all\'albero).', () => { const p = pick(['sopra', 'sotto', 'destra', 'sinistra']), ref = pick(['casa', 'albero']); const w = { sopra: 'sopra', sotto: 'sotto', destra: 'a destra', sinistra: 'a sinistra' }; return choice(`Dove si trova la pallina rispetto ${ref === 'casa' ? 'alla casa' : 'all\'albero'}?`, w[p], Object.values(w).filter(x => x !== w[p]), { v: V.scene(ref, 'palla', p), x: `La pallina è ${w[p]}.` }); }, 'palloncini'),
+    ]),
+    mod('c1dt', 'Ritmi e dati', '🎨', [
+      lv('ritmi', 'Ritmi e sequenze', 'Un ritmo si ripete sempre uguale. Trova il pezzo che si ripete e continua.', () => {
+        const P = [['c', '#e63946'], ['q', '#3a86ff'], ['t', '#ffbe0b'], ['c', '#2a9d8f'], ['q', '#f72585']];
+        const len = R(2, 3), base = shuffle(P).slice(0, len), seq = []; for (let i = 0; i < 7; i++) seq.push(base[i % len]);
+        const nxt = base[7 % len]; const name = it => ({ c: 'cerchio', q: 'quadrato', t: 'triangolo' }[it[0]] + ' ' + ({ '#e63946': 'rosso', '#3a86ff': 'blu', '#ffbe0b': 'giallo', '#2a9d8f': 'verde', '#f72585': 'rosa' }[it[1]]));
+        return choice('Che cosa viene dopo?', name(nxt), base.filter(b => b !== nxt).map(name).concat(P.map(name)), { v: V.sequence([...seq, '?']), x: `Il ritmo è: ${base.map(name).join(', ')}. Dopo viene il ${name(nxt)}.` });
+      }, 'palloncini'),
+    ]),
+  ]);
+
+  /* ======================= CLASSE 2 ======================= */
+  world(2, 'Il Bosco delle Decine', 'bosco', [
+    mod('c2n', 'Numeri fino a 100', '💯', [
+      lv('du100', 'Decine e unità', '47 = 4 decine e 7 unità = 40 + 7. Il posto della cifra conta!', () => { const n = R(10, 99), d = Math.floor(n / 10), u = n % 10; const r = Math.random(); if (r < 0.35) return num('Quale numero è formato da questi blocchi?', n, { v: V.base10(0, d, u), x: `${d} da e ${u} u = ${n}` }); if (r < 0.7) return { t: `Scomponi <b>${n}</b>`, k: 'multi', f: [{ l: 'decine', a: d }, { l: 'unità', a: u }], x: `${n} = ${d} da e ${u} u` }; return num(`${d} decine e ${u} unità = ?`, n, { x: `${d * 10} + ${u} = ${n}` }); }),
+      lv('cfr100', 'Confrontare i numeri', 'Confronta prima le decine; se sono uguali confronta le unità.', () => { const a = R(10, 99), b = Math.random() < 0.3 ? Math.floor(a / 10) * 10 + R(0, 9) : R(10, 99); return cmpQ(a, b, a, b, `${a} ${a > b ? '>' : a < b ? '<' : '='} ${b}`); }, 'coccodrillo'),
+      lv('pari', 'Pari e dispari', 'Un numero è <b>pari</b> se finisce con 0, 2, 4, 6, 8; è <b>dispari</b> se finisce con 1, 3, 5, 7, 9.', () => { const n = R(1, 99); return choice(`Il numero <b>${n}</b> è…`, n % 2 ? 'dispari' : 'pari', [n % 2 ? 'pari' : 'dispari'], { keep: true, x: `${n} finisce con ${n % 10}: è ${n % 2 ? 'dispari' : 'pari'}.` }); }, 'palloncini'),
+      lv('salti', 'Contare a salti', 'Contare a salti di 2, 5 o 10: aggiungi sempre lo stesso numero.', () => { const s = pick([2, 3, 5, 10]), st = R(0, 30), i = R(1, 4); const seq = [0, 1, 2, 3, 4].map(k => st + k * s); const ans = seq[i]; return num(`Completa: ${seq.map((v, k) => k === i ? '☐' : v).join(', ')}`, ans, { x: `Si va avanti di ${s} alla volta: il numero mancante è ${ans}.` }); }),
+    ]),
+    mod('c2op', 'Addizione e sottrazione', '➕', [
+      lv('mente', 'Calcolo veloce', 'Con le decine intere è facile: 30 + 40 = 70 (3 da + 4 da = 7 da).', () => { const r = Math.random(); if (r < 0.4) { const a = R(1, 8) * 10, b = R(1, (100 - a) / 10) * 10; return num(`${a} + ${b} = ?`, a + b, { x: `${a / 10} da + ${b / 10} da = ${(a + b) / 10} da` }); } if (r < 0.7) { const a = R(2, 9) * 10, b = R(1, a / 10) * 10; return num(`${a} − ${b} = ?`, a - b, { x: `${a - b}` }); } const a = R(10, 89), b = R(1, 9); return num(`${a} + ${b} = ?`, a + b, { x: `${a + b}` }); }),
+      lv('col1', 'Addizioni in colonna', 'Metti le unità sotto le unità e le decine sotto le decine. Se le unità fanno 10 o più, scrivi le unità e porta 1 decina (il riporto).', () => { const a = R(11, 79), b = R(11, 99 - a); return num(`Calcola in colonna: ${a} + ${b}`, a + b, { calc: { op: '+', a, b }, x: `${a} + ${b} = ${a + b}${(a % 10) + (b % 10) >= 10 ? ' (con il riporto)' : ''}` }); }),
+      lv('col2', 'Sottrazioni in colonna', 'Se in alto le unità sono meno di quelle in basso, cambia 1 decina in 10 unità (il prestito).', () => { const a = R(20, 99), b = R(10, a - 1); return num(`Calcola in colonna: ${a} − ${b}`, a - b, { calc: { op: '−', a, b }, x: `${a} − ${b} = ${a - b}${(a % 10) < (b % 10) ? ' (con il prestito)' : ''}` }); }),
+    ]),
+    mod('c2mol', 'Moltiplicazione e divisione', '✖️', [
+      lv('ripetuta', 'Gruppi uguali', '3 gruppi da 4 = 4 + 4 + 4 = 3 × 4 = 12.', () => { const g = R(2, 5), k = R(2, 5); return num(`Quanti sono in tutto? (${g} gruppi da ${k})`, g * k, { v: V.groups(g, k), x: `${Array(g).fill(k).join(' + ')} = ${g} × ${k} = ${g * k}` }); }),
+      lv('schier', 'Gli schieramenti', 'Righe × colonne: 3 righe da 5 = 3 × 5 = 15.', () => { const r = R(2, 6), c = R(2, 8); return num(`Quanti pallini? (${r} righe da ${c})`, r * c, { v: V.array(r, c), x: `${r} × ${c} = ${r * c}` }); }),
+      lv('tab25', 'Tabelline del 2, 3, 4, 5', 'Ripeti le tabelline cantando! 5 × 6 = 30, 4 × 7 = 28…', () => { const a = R(2, 5), b = R(0, 10); return Math.random() < 0.5 ? num(`${a} × ${b} = ?`, a * b, { x: `${a} × ${b} = ${a * b}` }) : num(`${b} × ${a} = ?`, a * b, { x: `${b} × ${a} = ${a * b}` }); }),
+      lv('tab610', 'Tabelline dal 6 al 10', '6 × 7 = 42, 7 × 8 = 56, 8 × 9 = 72… Per il 9: 9 × 4 = 40 − 4 = 36.', () => { const a = R(6, 10), b = R(1, 10); return num(`${a} × ${b} = ?`, a * b, { x: `${a} × ${b} = ${a * b}` }); }),
+      lv('ripart', 'Dividere in parti uguali', 'Dividere vuol dire fare parti uguali: 12 caramelle a 3 bambini → 4 ciascuno (12 : 3 = 4).', () => { const k = R(2, 5), q = R(2, 6); return num(`${k * q} caramelle divise tra ${k} bambini. Quante a ciascuno?`, q, { v: V.groups(k, q, 'stella'), x: `${k * q} : ${k} = ${q}` }); }),
+      lv('doppio', 'Doppio, triplo e metà', 'Il doppio è × 2, il triplo è × 3, la metà è : 2.', () => { const n = R(1, 20), t = pick(['doppio', 'triplo', 'metà']); if (t === 'metà') { const m = R(1, 25) * 2; return num(`Qual è la metà di ${m}?`, m / 2, { x: `${m} : 2 = ${m / 2}` }); } return num(`Qual è il ${t} di ${n}?`, t === 'doppio' ? 2 * n : 3 * n, { x: `${n} × ${t === 'doppio' ? 2 : 3} = ${t === 'doppio' ? 2 * n : 3 * n}` }); }),
+    ]),
+    mod('c2mis', 'Orologio e soldi', '⏰', [
+      lv('ore', 'Le ore e le mezz\'ore', 'La lancetta corta indica le ore, quella lunga i minuti. Lunga sul 12 = ora giusta; lunga sul 6 = e mezza.', () => { const h = R(1, 12), m = pick([0, 30]); const ora = (x, mz) => (x === 1 ? 'l\'una' : 'le ' + x) + (mz ? ' e mezza' : ''); const il = x => ([1, 8, 11].includes(x) ? 'l\'' : 'il ') + x, sul = x => ([1, 8, 11].includes(x) ? 'sull\'' : 'sul ') + x; const s = ora(h, m); const opts = [s, ora(h, !m), ora((h % 12) + 1, true), ora((h + 10) % 12 + 1, false)]; return choice('Che ore sono?', s, opts, { v: V.clock(h, m), x: `La corta è ${m ? 'tra ' + il(h) + ' e ' + il((h % 12) + 1) : sul(h)}, la lunga è ${sul(m ? 6 : 12)}: ${h === 1 ? 'è' : 'sono'} ${s}.` }); }, 'palloncini'),
+      lv('euro', 'Contare gli euro', 'Somma il valore di ogni moneta e banconota.', () => { const pool = [100, 200, 500, 1000]; const list = []; const n = R(2, 4); for (let i = 0; i < n; i++) list.push(pick(pool)); list.sort((a, b) => b - a); const tot = list.reduce((s, v) => s + v, 0) / 100; return num('Quanti euro ci sono?', tot, { v: V.money(list), unit: '€', x: `${list.map(v => v / 100).join(' + ')} = ${tot} €` }); }),
+    ]),
+    mod('c2sp', 'Linee e simmetria', '〰️', [
+      lv('linee', 'Linee aperte e chiuse', 'Una linea <b>chiusa</b> non ha né inizio né fine e racchiude uno spazio; una linea <b>aperta</b> ha due estremi. Può essere <b>curva</b> o <b>spezzata</b>.', () => { const k = pick(['aperta curva', 'chiusa curva', 'aperta spezzata', 'chiusa spezzata']); return choice('Che linea è?', 'linea ' + k, ['linea aperta curva', 'linea chiusa curva', 'linea aperta spezzata', 'linea chiusa spezzata'], { v: V.curve(k), x: `È una linea ${k}.` }); }, 'palloncini'),
+      lv('simm', 'La simmetria', 'Una figura è simmetrica se piegandola a metà le due parti combaciano perfettamente.', () => { const s = Math.random() < 0.5; const v = s ? V.shape(pick(['cerchio', 'quadrato', 'rettangolo', 'rombo', 'esagono'])) : V.svg(140, 120, `<path d="M20 100 L40 20 L120 30 L100 70 L130 105Z" fill="#bde0fe" stroke="#333" stroke-width="3"/>`); return choice('Questa figura ha un asse di simmetria?', s ? 'sì' : 'no', [s ? 'no' : 'sì'], { keep: true, v, x: s ? 'Sì: si può piegare a metà e le parti combaciano.' : 'No: nessuna piega fa combaciare le due parti.' }); }, 'palloncini'),
+    ]),
+    mod('c2dt', 'Dati', '📊', [
+      lv('isto', 'Leggere un istogramma', 'Ogni colonna mostra quante volte c\'è una cosa: guarda dove arriva e leggi il numero a sinistra.', () => { const L = shuffle(['gelato', 'torta', 'frutta', 'biscotti']); const vals = L.map(() => R(1, 9)); const i = R(0, 3); const kind = Math.random(); if (kind < 0.6) return num(`Quanti bambini preferiscono <b>${L[i]}</b>?`, vals[i], { v: V.bars(L, vals, 'Merenda preferita'), x: `La colonna «${L[i]}» arriva a ${vals[i]}.` }); const mx = Math.max(...vals); if (vals.filter(v => v === mx).length > 1) return num('Quanti bambini in tutto?', vals.reduce((s, v) => s + v, 0), { v: V.bars(L, vals, 'Merenda preferita'), x: `${vals.join(' + ')} = ${vals.reduce((s, v) => s + v, 0)}` }); return choice('Qual è la merenda preferita (la più votata)?', L[vals.indexOf(mx)], L, { v: V.bars(L, vals, 'Merenda preferita'), x: `La colonna più alta è «${L[vals.indexOf(mx)]}».` }); }),
+    ]),
+  ]);
+
+  /* ======================= CLASSE 3 ======================= */
+  world(3, 'Il Mare delle Centinaia', 'mare', [
+    mod('c3n', 'Numeri fino a 1000', '🔢', [
+      lv('hdu', 'Centinaia, decine, unità', '365 = 3 centinaia, 6 decine, 5 unità = 300 + 60 + 5.', () => { const n = R(100, 999), h = Math.floor(n / 100), d = Math.floor(n / 10) % 10, u = n % 10; const r = Math.random(); if (r < 0.3) return num('Che numero è?', n, { v: V.base10(h, d, u), x: `${h} h, ${d} da, ${u} u = ${n}` }); if (r < 0.65) { const pos = pick([['centinaia', h], ['decine', d], ['unità', u]]); return num(`Nel numero <b>${n}</b>, quante sono le <b>${pos[0]}</b>? (la cifra)`, pos[1], { x: `${n}: h = ${h}, da = ${d}, u = ${u}` }); } return num(`${h} h + ${d} da + ${u} u = ?`, n, { x: `${h * 100} + ${d * 10} + ${u} = ${n}` }); }),
+      lv('cfr1000', 'Confrontare e ordinare', 'Confronta prima le centinaia, poi le decine, poi le unità.', () => { const a = R(100, 999), b = Math.random() < 0.4 ? Math.floor(a / 100) * 100 + R(0, 99) : R(100, 999); return cmpQ(a, b, a, b, `${a} ${a > b ? '>' : a < b ? '<' : '='} ${b}`); }, 'coccodrillo'),
+      lv('arr', 'Arrotondare', 'Per arrotondare alle decine guarda le unità: da 0 a 4 si va giù, da 5 a 9 si va su. 347 → 350.', () => { const n = R(101, 989), t = Math.random() < 0.6 ? 10 : 100; const r = Math.round(n / t) * t; return num(`Arrotonda <b>${n}</b> alle ${t === 10 ? 'decine' : 'centinaia'}`, r, { x: `Guarda la cifra ${t === 10 ? 'delle unità (' + (n % 10) : 'delle decine (' + (Math.floor(n / 10) % 10)}): ${n} → ${r}` }); }),
+    ]),
+    mod('c3op', 'Le quattro operazioni', '🧮', [
+      lv('add3', 'Addizioni in colonna', 'Unità con unità, decine con decine, centinaia con centinaia. Non dimenticare i riporti!', () => { const a = R(100, 600), b = R(100, 999 - a); return num(`${a} + ${b} = ?`, a + b, { calc: { op: '+', a, b }, x: `${a} + ${b} = ${a + b}` }); }),
+      lv('sot3', 'Sottrazioni in colonna', 'Se la cifra in alto è più piccola, chiedi un prestito alla cifra a sinistra.', () => { const a = R(200, 999), b = R(100, a - 1); return num(`${a} − ${b} = ?`, a - b, { calc: { op: '−', a, b }, x: `${a} − ${b} = ${a - b}. Prova: ${a - b} + ${b} = ${a}` }); }),
+      lv('mul1', 'Moltiplicare per una cifra', '124 × 3: 4 × 3 = 12 (scrivo 2, riporto 1), 2 × 3 + 1 = 7, 1 × 3 = 3 → 372.', () => { const a = R(12, 249), b = R(2, 4); return num(`${a} × ${b} = ?`, a * b, { calc: { op: '×', a, b }, x: `${a} × ${b} = ${a * b}` }); }),
+      lv('per10', '× 10, 100, 1000', 'Moltiplicare per 10 aggiunge uno zero, per 100 due zeri, per 1000 tre zeri: 7 × 100 = 700.', () => { const a = R(1, 99), m = pick([10, 100, 1000]); return Math.random() < 0.7 || a % 10 ? num(`${a} × ${F(m)} = ?`, a * m, { x: `Aggiungi ${m === 10 ? 'uno zero' : String(m).length - 1 + ' zeri'}: ${F(a * m)}` }) : num(`${F(a * 10)} : 10 = ?`, a, { x: `Dividere per 10 toglie uno zero: ${a}` }); }),
+      lv('divr', 'Divisione con il resto', '17 : 5 = 3 con resto 2, perché 5 × 3 = 15 e 17 − 15 = 2. Il resto è sempre minore del divisore.', () => { const d = R(2, 9), q = R(2, 10), r = R(0, d - 1), a = d * q + r; return { t: `${a} : ${d} = ?`, k: 'multi', calc: { op: ':', a, b: d }, f: [{ l: 'quoziente', a: q }, { l: 'resto', a: r }], x: `${d} × ${q} = ${d * q}; ${a} − ${d * q} = ${r}. Quindi ${q} con resto ${r}.` }; }),
+    ]),
+    mod('c3fr', 'Frazioni e decimali', '🍕', [
+      lv('frfig', 'La frazione di una figura', 'Il <b>denominatore</b> (sotto) dice in quante parti uguali è diviso l\'intero; il <b>numeratore</b> (sopra) quante parti prendo.', () => { const d = R(2, 8), n = R(1, d); return { t: 'Che frazione è colorata?', k: 'multi', fr: true, v: V.fraction(n, d, Math.random() < 0.5 ? 'pie' : 'bar'), f: [{ l: 'numeratore', a: n }, { l: 'denominatore', a: d }], x: `L'intero è diviso in ${d} parti, ne sono colorate ${n}: ${n}/${d}.` }; }),
+      lv('frnum', 'La frazione di un numero', 'Per calcolare 2/3 di 12: dividi per il denominatore (12 : 3 = 4) e moltiplica per il numeratore (4 × 2 = 8).', () => { const d = R(2, 6), n = R(1, d - 1 || 1), k = R(2, 8), t = d * k; return num(`Quanto è ${n}/${d} di ${t}?`, n * k, { x: `${t} : ${d} = ${k}; ${k} × ${n} = ${n * k}` }); }),
+      lv('frdec', 'Frazioni decimali e numeri decimali', '1/10 = 0,1 (un decimo); 1/100 = 0,01 (un centesimo). 37/100 = 0,37.', () => { const den = pick([10, 100]), n = den === 10 ? R(1, 9) : R(1, 99); return Math.random() < 0.5 ? num(`Scrivi come numero decimale: ${n}/${den}`, n / den, { x: `${n}/${den} = ${D(n, den === 10 ? 1 : 2)}` }) : choice(`A quale frazione è uguale ${D(n, den === 10 ? 1 : 2)}?`, `${n}/${den}`, [`${n}/${den === 10 ? 100 : 10}`, `${n}/1000`, `${den}/${n}`], { x: `${D(n, den === 10 ? 1 : 2)} = ${n}/${den}` }); }),
+      lv('cfrdec', 'Confrontare i decimali', 'Confronta prima la parte intera; se è uguale, i decimi, poi i centesimi. 2,5 > 2,38 perché 5 decimi > 3 decimi.', () => { const ai = R(0, 9), a = ai * 100 + R(0, 99), b = Math.random() < 0.6 ? ai * 100 + R(0, 99) : R(0, 999); return cmpQ(a, b, D(a, 2), D(b, 2), `${D(a, 2)} ${a > b ? '>' : a < b ? '<' : '='} ${D(b, 2)}`); }, 'coccodrillo'),
+    ]),
+    mod('c3mis', 'Le misure', '📏', [
+      lv('lung', 'Misure di lunghezza', 'm → dm → cm → mm: ogni passo verso destra ×10, verso sinistra :10. 1 m = 10 dm = 100 cm = 1000 mm.', () => equiv(['m', 'dm', 'cm', 'mm'], ['metri', 'decimetri', 'centimetri', 'millimetri'])),
+      lv('massa', 'Misure di massa', 'kg → hg → dag → g: ogni passo ×10. 1 kg = 1000 g.', () => equiv(['kg', 'hg', 'dag', 'g'], ['chilogrammi', 'ettogrammi', 'decagrammi', 'grammi'])),
+      lv('capac', 'Misure di capacità', 'l → dl → cl → ml: ogni passo ×10. 1 l = 1000 ml.', () => equiv(['l', 'dl', 'cl', 'ml'], ['litri', 'decilitri', 'centilitri', 'millilitri'])),
+      lv('ore3', 'Leggere l\'orologio', 'La lancetta lunga: ogni numero vale 5 minuti. Sul 3 = 15 minuti, sul 9 = 45 minuti.', () => { const h = R(1, 12), m = R(0, 11) * 5; return { t: 'Che ore sono? (ore e minuti)', k: 'multi', v: V.clock(h, m), f: [{ l: 'ore', a: h }, { l: 'minuti', a: m }], x: `La corta indica ${h === 1 ? 'l\'una' : 'le ' + h}, la lunga è ${[1, 8, 11].includes(m / 5 || 12) ? 'sull\'' : 'sul '}${m / 5 || 12}: ${m} minuti. ${h === 1 ? 'È l\'una' : 'Sono le ' + h} e ${m} (${h}:${String(m).padStart(2, '0')}).` }; }),
+    ]),
+    mod('c3geo', 'Geometria', '📐', [
+      lv('angoli', 'Gli angoli', 'Un angolo <b>retto</b> è come l\'angolo di un foglio (90°). Più chiuso è <b>acuto</b>, più aperto è <b>ottuso</b>.', () => { const k = pick(['acuto', 'retto', 'ottuso']); const deg = k === 'retto' ? 90 : k === 'acuto' ? R(20, 70) : R(110, 160); return choice('Che angolo è?', k, ['acuto', 'retto', 'ottuso', 'piatto'], { v: V.angle(deg), x: `È ${k === 'retto' ? 'retto (90°)' : k + ' (' + (k === 'acuto' ? 'meno' : 'più') + ' di un retto)'}.` }); }, 'palloncini'),
+      lv('rette', 'Le rette', '<b>Parallele</b>: non si incontrano mai. <b>Incidenti</b>: si incontrano in un punto. <b>Perpendicolari</b>: si incontrano formando 4 angoli retti.', () => { const k = pick(['parallele', 'incidenti', 'perpendicolari']); return choice('Come sono queste rette?', k, ['parallele', 'incidenti', 'perpendicolari'], { keep: true, v: V.lines(k), x: `Sono ${k}.` }); }, 'palloncini'),
+      lv('perim3', 'Il perimetro', 'Il perimetro è la lunghezza del contorno: somma tutti i lati.', () => { const k = pick(['tri', 'ret', 'pol']); if (k === 'ret') { const a = R(3, 15), b = R(2, 12); return num('Quanto misura il perimetro? (cm)', 2 * (a + b), { v: V.polygon([[0, 0], [a, 0], [a, b], [0, b]], [a + ' cm', b + ' cm', a + ' cm', b + ' cm']), unit: 'cm', x: `${a} + ${b} + ${a} + ${b} = ${2 * (a + b)} cm` }); } if (k === 'tri') { const a = R(4, 12), b = R(4, 12), c = R(Math.abs(a - b) + 2, a + b - 2); return num('Quanto misura il perimetro? (cm)', a + b + c, { v: V.polygon([[0, 0], [a, 0], [(a * a + c * c - b * b) / (2 * a), Math.sqrt(Math.max(1, c * c - ((a * a + c * c - b * b) / (2 * a)) ** 2))]], [a + ' cm', b + ' cm', c + ' cm']), unit: 'cm', x: `${a} + ${b} + ${c} = ${a + b + c} cm` }); } const s = [R(3, 9), R(3, 9), R(3, 9), R(3, 9), R(3, 9)]; return num('Quanto misura il perimetro? (cm)', s.reduce((x, y) => x + y, 0), { v: V.polygon([[0, 2], [3, 0], [6, 2], [5, 5], [1, 5]], s.map(x => x + ' cm')), unit: 'cm', x: `${s.join(' + ')} = ${s.reduce((x, y) => x + y, 0)} cm` }); }),
+    ]),
+    mod('c3dt', 'Probabilità', '🎲', [
+      lv('prob', 'Certo, probabile, impossibile', 'Se nel sacchetto ci sono solo palline rosse, pescare una rossa è <b>certo</b>; una blu è <b>impossibile</b>. Con palline di più colori è <b>probabile</b>.', () => { const cols = ['rosse', 'blu', 'verdi', 'gialle']; const c1 = pick(cols); const two = Math.random() < 0.6; const c2 = pick(cols.filter(c => c !== c1)); const counts = two ? { [c1]: R(2, 6), [c2]: R(1, 5) } : { [c1]: R(4, 8) }; const ask = pick(cols); const sing = { rosse: 'rossa', blu: 'blu', verdi: 'verde', gialle: 'gialla' }[ask]; const ans = !counts[ask] ? 'impossibile' : Object.keys(counts).length === 1 ? 'certo' : 'probabile'; return choice(`Pescare una pallina <b>${sing}</b> è…`, ans, ['certo', 'probabile', 'impossibile'], { keep: true, v: V.bag(counts), x: ans === 'impossibile' ? `Non ci sono palline ${ask}: è impossibile.` : ans === 'certo' ? `Ci sono solo palline ${ask}: è certo.` : `Ci sono palline ${ask}, ma anche di altri colori: è probabile.` }); }, 'palloncini'),
+    ]),
+  ]);
+
+  /* ======================= CLASSE 4 ======================= */
+  world(4, 'La Montagna delle Migliaia', 'montagna', [
+    mod('c4n', 'Grandi numeri', '🏔️', [
+      lv('migl', 'Le migliaia', 'Nel numero 45.207: 4 decine di migliaia, 5 unità di migliaia, 2 centinaia, 0 decine, 7 unità.', () => { const n = R(1000, 999999), s = String(n); const nomi = ['unità', 'decine', 'centinaia', 'unità di migliaia', 'decine di migliaia', 'centinaia di migliaia']; const i = R(0, s.length - 1); const cifra = +s[s.length - 1 - i]; return Math.random() < 0.6 ? num(`Nel numero <b>${F(n)}</b> qual è la cifra delle <b>${nomi[i]}</b>?`, cifra, { x: `La cifra delle ${nomi[i]} è ${cifra}.` }) : num(`Nel numero <b>${F(n)}</b> quanto vale la cifra delle <b>${nomi[i]}</b>?`, cifra * Math.pow(10, i), { x: `La cifra delle ${nomi[i]} è ${cifra}: vale ${cifra} ${nomi[i]} = ${F(cifra * Math.pow(10, i))}.` }); }),
+      lv('lettere', 'Leggere e scrivere i numeri', 'I numeri si leggono a gruppi di tre cifre: 23.415 = ventitremilaquattrocentoquindici.', () => { const n = R(1000, 99999); const w = lettere(n); const wrongs = [lettere(n + R(1, 9) * 10), lettere(Math.max(1000, n - R(1, 9) * 100)), lettere(n + 1000 * R(1, 3))]; return choice(`Come si scrive in cifre «${w}»?`, F(n), [F(n + R(1, 9) * 10), F(Math.max(1000, n - R(1, 9) * 100)), F(n + 1000 * R(1, 3)), F(+String(n).split('').reverse().join('') || n + 7)], { x: `${w} = ${F(n)}` }); }),
+      lv('arr4', 'Arrotondare e stimare', 'Arrotondare alle migliaia: guarda le centinaia. 46.512 → 47.000.', () => { const n = R(1001, 99999), t = pick([100, 1000]); const r = Math.round(n / t) * t; return num(`Arrotonda <b>${F(n)}</b> alle ${t === 100 ? 'centinaia' : 'migliaia'}`, r, { x: `${F(n)} → ${F(r)}` }); }),
+    ]),
+    mod('c4dec', 'Numeri decimali', '🔟', [
+      lv('dmc', 'Decimi, centesimi, millesimi', 'Dopo la virgola: decimi, centesimi, millesimi. In 3,472 il 4 vale 4 decimi, il 7 sette centesimi, il 2 due millesimi.', () => { const k = R(1001, 99999), s = String(k); const txt = F(Math.floor(k / 1000)) + ',' + s.slice(-3); const pos = pick([['decimi', 3], ['centesimi', 2], ['millesimi', 1]]); const digit = +s[s.length - pos[1]]; return num(`In <b>${txt}</b> qual è la cifra dei <b>${pos[0]}</b>?`, digit, { x: `${txt}: decimi ${s[s.length - 3]}, centesimi ${s[s.length - 2]}, millesimi ${s[s.length - 1]}.` }); }),
+      lv('x10dec', '× e : per 10, 100, 1000', 'Moltiplicare per 10 sposta la virgola di un posto a destra; dividere per 10 di un posto a sinistra.', () => { const k = R(11, 9999), dec = pick([1, 2]), m = pick([10, 100, 1000]); const mul = Math.random() < 0.5; const e = String(m).length - 1; const ans = mul ? val(k, dec - e) : val(k, dec + e); return num(`${D(k, dec)} ${mul ? '×' : ':'} ${F(m)} = ?`, ans, { x: `La virgola si sposta di ${e} ${e === 1 ? 'posto' : 'posti'} verso ${mul ? 'destra' : 'sinistra'}: ${dec - (mul ? e : -e) >= 0 ? D(k, dec - (mul ? e : -e)) : F(k * Math.pow(10, -(dec - e)))}` }); }),
+      lv('adddec', 'Addizioni e sottrazioni con la virgola', 'Incolonna virgola sotto virgola, aggiungi gli zeri che mancano e calcola come sempre.', () => { const a = R(100, 9999), b = R(100, 9999); const plus = Math.random() < 0.5 || a < b; const [x, y] = plus ? [a, b] : [Math.max(a, b), Math.min(a, b)]; const r = plus ? x + y : x - y; return num(`${D(x, 2)} ${plus ? '+' : '−'} ${D(y, 2)} = ?`, val(r, 2), { calc: { op: plus ? '+' : '−', a: x, b: y, dec: 2 }, x: `${D(x, 2)} ${plus ? '+' : '−'} ${D(y, 2)} = ${D(r, 2)}` }); }),
+    ]),
+    mod('c4op', 'Operazioni', '🧮', [
+      lv('mul2', 'Moltiplicazioni a due cifre', '34 × 26: prima 34 × 6, poi 34 × 2 decine (lascia il posto vuoto delle unità), infine somma.', () => { const a = R(12, 99), b = R(12, 49); return num(`${a} × ${b} = ?`, a * b, { calc: { op: '×', a, b }, x: `${a} × ${b % 10} = ${a * (b % 10)}; ${a} × ${Math.floor(b / 10) * 10} = ${F(a * Math.floor(b / 10) * 10)}; somma: ${F(a * b)}` }); }),
+      lv('div1', 'Divisioni a una cifra', '845 : 5: quante volte il 5 sta nell\'8? 1, resto 3; abbasso il 4 → 34 : 5 = 6 resto 4; abbasso il 5 → 45 : 5 = 9. Risultato 169.', () => { const d = R(2, 9), q = R(21, 299), r = Math.random() < 0.5 ? 0 : R(1, d - 1), a = d * q + r; return { t: `${F(a)} : ${d} = ?`, k: 'multi', calc: { op: ':', a, b: d }, f: [{ l: 'quoziente', a: q }, { l: 'resto', a: r }], x: `${d} × ${q} = ${F(d * q)}; resto ${F(a)} − ${F(d * q)} = ${r}` }; }),
+      lv('div2', 'Divisioni a due cifre', 'Con il divisore a due cifre si stima: 252 : 12 → quante volte 12 in 25? 2 (24), resto 1, abbasso il 2 → 12 : 12 = 1. Risultato 21.', () => { const d = R(11, 35), q = R(5, 40), r = Math.random() < 0.6 ? 0 : R(1, d - 1), a = d * q + r; return { t: `${F(a)} : ${d} = ?`, k: 'multi', calc: { op: ':', a, b: d }, f: [{ l: 'quoziente', a: q }, { l: 'resto', a: r }], x: `${d} × ${q} = ${F(d * q)}; resto ${r}` }; }),
+      lv('multdiv', 'Multipli e divisori', 'I multipli di 4 sono 4, 8, 12, 16… Un numero è divisore di un altro se lo divide senza resto: 3 è divisore di 12.', () => { const n = R(2, 12), m = n * R(2, 10); if (Math.random() < 0.5) return choice(`Quale di questi è un multiplo di <b>${n}</b>?`, m, [m + 1, m - 1, m + (n > 2 ? 2 : 3)].filter(x => x % n), { x: `${m} = ${n} × ${m / n}` }); const divs = []; for (let k = 2; k < m; k++) if (m % k === 0) divs.push(k); const dv = pick(divs.length ? divs : [1]); const wrong = []; for (let k = 2; k < 15 && wrong.length < 3; k++) if (m % k) wrong.push(k); return choice(`Quale di questi è un divisore di <b>${m}</b>?`, dv, shuffle(wrong), { x: `${m} : ${dv} = ${m / dv} senza resto.` }); }, 'palloncini'),
+      lv('propr', 'Le proprietà delle operazioni', 'Commutativa: 4 × 7 = 7 × 4. Associativa: (2 × 5) × 3 = 2 × (5 × 3). Distributiva: 6 × 13 = 6 × 10 + 6 × 3.', () => { const r = Math.random(); if (r < 0.5) { const a = R(2, 9), b = R(11, 29), t = Math.floor(b / 10) * 10, u = b % 10; return num(`${a} × ${b} = ${a} × ${t} + ${a} × ? `, u, { x: `${b} = ${t} + ${u}, quindi ${a} × ${b} = ${a * t} + ${a * u} = ${a * b}` }); } const a = R(12, 99), b = R(12, 99); return num(`${a} + ${b} = ${b} + ?`, a, { x: 'Proprietà commutativa: cambiando l\'ordine degli addendi la somma non cambia.' }); }),
+    ]),
+    mod('c4fr', 'Frazioni', '🍰', [
+      lv('equiv', 'Frazioni equivalenti', 'Moltiplicando (o dividendo) numeratore e denominatore per lo stesso numero si ottiene una frazione equivalente: 1/2 = 2/4 = 3/6.', () => { const d = R(2, 6), n = R(1, d - 1), k = R(2, 5); return Math.random() < 0.5 ? num(`${n}/${d} = ?/${d * k}`, n * k, { x: `Ho moltiplicato il denominatore per ${k}: anche il numeratore × ${k} = ${n * k}.` }) : num(`${n * k}/${d * k} = ${n}/?`, d, { x: `Divido sopra e sotto per ${k}: ${n}/${d}.` }); }),
+      lv('tipifr', 'Proprie, improprie, apparenti', '<b>Propria</b>: numeratore minore del denominatore (meno di un intero). <b>Impropria</b>: numeratore maggiore. <b>Apparente</b>: il numeratore è un multiplo del denominatore (interi esatti).', () => { const d = R(2, 9); const t = pick(['propria', 'impropria', 'apparente']); const n = t === 'propria' ? R(1, d - 1) : t === 'apparente' ? d * R(1, 4) : (() => { let x; do { x = R(d + 1, 4 * d); } while (x % d === 0); return x; })(); return choice(`La frazione <b>${n}/${d}</b> è…`, t, ['propria', 'impropria', 'apparente'], { keep: true, x: t === 'apparente' ? `${n} : ${d} = ${n / d} interi esatti: apparente.` : `${n} ${t === 'propria' ? '<' : '>'} ${d}: ${t}.` }); }, 'palloncini'),
+      lv('cfrfr', 'Confrontare le frazioni', 'Con lo stesso denominatore è maggiore quella con il numeratore più grande. Con lo stesso numeratore è maggiore quella con il denominatore più piccolo.', () => { const same = Math.random() < 0.5; if (same) { const d = R(3, 12), a = R(1, d), b = R(1, d); return cmpQ(a, b, `${a}/${d}`, `${b}/${d}`, 'Stesso denominatore: confronta i numeratori.'); } const n = R(1, 5), a = R(n + 1, 12), b = R(n + 1, 12); return cmpQ(n / a, n / b, `${n}/${a}`, `${n}/${b}`, 'Stesso numeratore: è maggiore quella con il denominatore più piccolo (le parti sono più grandi).'); }, 'coccodrillo'),
+      lv('compl', 'La frazione complementare', 'La frazione complementare è quella che manca per fare l\'intero: 3/8 + 5/8 = 8/8.', () => { const d = R(3, 12), n = R(1, d - 1); return { t: `Quale frazione manca a ${n}/${d} per fare l'intero?`, k: 'multi', fr: true, f: [{ l: 'numeratore', a: d - n }, { l: 'denominatore', a: d }], x: `${d}/${d} − ${n}/${d} = ${d - n}/${d}` }; }),
+    ]),
+    mod('c4mis', 'Misure e soldi', '⚖️', [
+      lv('equiv4', 'Equivalenze', 'km hm dam m dm cm mm: ogni passo vale 10. Verso le unità più piccole moltiplica, verso le più grandi dividi.', () => pick([() => equiv(['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm'], ['chilometri', 'ettometri', 'decametri', 'metri', 'decimetri', 'centimetri', 'millimetri']), () => equiv(['kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg'], ['chilogrammi', 'ettogrammi', 'decagrammi', 'grammi', 'decigrammi', 'centigrammi', 'milligrammi']), () => equiv(['hl', 'dal', 'l', 'dl', 'cl', 'ml'], ['ettolitri', 'decalitri', 'litri', 'decilitri', 'centilitri', 'millilitri'])])()),
+      lv('spesa', 'Spesa, ricavo, guadagno', 'Guadagno = ricavo − spesa. Spesa = ricavo − guadagno. Ricavo = spesa + guadagno.', () => { const s = R(20, 300), g = R(5, 150), r = s + g; const t = pick(['g', 's', 'r']); if (t === 'g') return num(`Un negoziante spende ${s} € e ricava ${r} €. Quanto guadagna?`, g, { unit: '€', x: `${r} − ${s} = ${g} €` }); if (t === 's') return num(`Un negoziante ricava ${r} € e guadagna ${g} €. Quanto aveva speso?`, s, { unit: '€', x: `${r} − ${g} = ${s} €` }); return num(`Un negoziante spende ${s} € e guadagna ${g} €. Quanto ricava?`, r, { unit: '€', x: `${s} + ${g} = ${r} €` }); }),
+    ]),
+    mod('c4geo', 'Geometria', '📐', [
+      lv('gradi', 'Misurare gli angoli', 'L\'angolo retto misura 90°, il piatto 180°, il giro 360°. Acuto: meno di 90°; ottuso: tra 90° e 180°.', () => { const deg = pick([R(10, 85), 90, R(95, 175), 180]); const t = deg < 90 ? 'acuto' : deg === 90 ? 'retto' : deg < 180 ? 'ottuso' : 'piatto'; if (Math.random() < 0.6) return choice(`Un angolo di <b>${deg}°</b> è…`, t, ['acuto', 'retto', 'ottuso', 'piatto'], { keep: true, x: `${deg}°: ${t}.` }); const a = R(10, 80); return num(`Quanto misura l'angolo che manca a ${a}° per fare un angolo retto?`, 90 - a, { unit: '°', x: `90° − ${a}° = ${90 - a}° (angoli complementari)` }); }, 'palloncini'),
+      lv('poligoni', 'I poligoni', 'Triangolo 3 lati, quadrilatero 4, pentagono 5, esagono 6, ettagono 7, ottagono 8.', () => { const P = [['triangolo', 3], ['quadrilatero', 4], ['pentagono', 5], ['esagono', 6], ['ettagono', 7], ['ottagono', 8]]; const [nm, n] = pick(P); const pts = []; for (let i = 0; i < n; i++) pts.push([Math.cos(i * 2 * Math.PI / n + 0.3) * 10, Math.sin(i * 2 * Math.PI / n + 0.3) * 10]); return Math.random() < 0.5 ? num(`Quanti lati ha un <b>${nm}</b>?`, n, { x: `${/^[aeiou]/.test(nm) ? 'L\'' : 'Il '}${nm} ha ${n} lati.` }) : choice('Come si chiama questo poligono?', nm, P.map(p => p[0]), { v: V.polygon(pts, [], { fill: '#ffd6a5' }), x: `Ha ${n} lati: è un ${nm}.` }); }),
+      lv('perim4', 'Perimetro di quadrato e rettangolo', 'Quadrato: P = lato × 4. Rettangolo: P = (base + altezza) × 2.', () => { if (Math.random() < 0.5) { const l = R(3, 25); return Math.random() < 0.6 ? num(`Il lato di un quadrato misura ${l} cm. Quanto misura il perimetro?`, 4 * l, { v: V.polygon([[0, 0], [1, 0], [1, 1], [0, 1]], [l + ' cm']), unit: 'cm', x: `${l} × 4 = ${4 * l} cm` }) : num(`Il perimetro di un quadrato è ${4 * l} cm. Quanto misura il lato?`, l, { unit: 'cm', x: `${4 * l} : 4 = ${l} cm` }); } const b = R(5, 30), h = R(2, b - 1); return num(`Un rettangolo ha base ${b} cm e altezza ${h} cm. Quanto misura il perimetro?`, 2 * (b + h), { v: V.polygon([[0, 0], [b, 0], [b, h], [0, h]], [b + ' cm', h + ' cm']), unit: 'cm', x: `(${b} + ${h}) × 2 = ${2 * (b + h)} cm` }); }),
+      lv('area4', 'Area di quadrato e rettangolo', 'L\'area è la superficie dentro la figura. Rettangolo: A = base × altezza. Quadrato: A = lato × lato. Si misura in cm² (quadretti).', () => { const b = R(2, 9), h = R(2, 7); if (Math.random() < 0.4) return num('Quanti quadretti misura l\'area della figura?', b * h, { v: V.gridShape(b, h), unit: 'quadretti', x: `${b} × ${h} = ${b * h} quadretti` }); const B = R(4, 20), H = R(2, 15); return num(`Un rettangolo ha base ${B} cm e altezza ${H} cm. Quanto misura l'area?`, B * H, { unit: 'cm²', x: `${B} × ${H} = ${B * H} cm²` }); }),
+    ]),
+    mod('c4dt', 'Statistica', '📈', [
+      lv('media', 'Media e moda', 'La <b>media</b> si trova sommando i valori e dividendo per quanti sono. La <b>moda</b> è il valore che compare più volte.', () => { if (Math.random() < 0.6) { const n = R(3, 5), m = R(4, 9); let v = []; for (let i = 0; i < n - 1; i++) v.push(R(1, 10)); const last = m * n - v.reduce((s, x) => s + x, 0); if (last < 0 || last > 15) { v = Array(n).fill(m); } else v.push(last); v = shuffle(v); return num(`Voti: ${v.join(', ')}. Qual è la media?`, m, { x: `(${v.join(' + ')}) : ${n} = ${m * n} : ${n} = ${m}` }); } const mo = R(1, 9); const v = shuffle([mo, mo, mo, ...near(mo, 4, 3, 1)]); return num(`Valori: ${v.join(', ')}. Qual è la moda?`, mo, { x: `Il ${mo} compare 3 volte.` }); }),
+    ]),
+  ]);
+
+  /* ======================= CLASSE 5 ======================= */
+  world(5, 'Lo Spazio dei Milioni', 'spazio', [
+    mod('c5n', 'Numeri', '🚀', [
+      lv('milioni', 'Milioni e miliardi', 'Le classi: unità, migliaia, milioni, miliardi. 3.250.000 = tre milioni duecentocinquantamila.', () => { const n = R(1, 999) * 1000000 + R(0, 999) * 1000 + R(0, 999); const s = String(n); const nomi = { 6: 'unità di milioni', 7: 'decine di milioni', 8: 'centinaia di milioni', 3: 'unità di migliaia', 4: 'decine di migliaia', 5: 'centinaia di migliaia' }; const keys = Object.keys(nomi).map(Number).filter(k => k < s.length); const i = pick(keys); return num(`Nel numero <b>${F(n)}</b> qual è la cifra delle <b>${nomi[i]}</b>?`, +s[s.length - 1 - i], { x: `Contando le classi da destra: ${nomi[i]} = ${s[s.length - 1 - i]}.` }); }),
+      lv('relativi', 'I numeri relativi', 'Sotto lo zero ci sono i numeri negativi: −5 è più freddo di −2. Da −3 salendo di 5 si arriva a +2.', () => { const t = R(-15, 20), d = R(2, 12), up = Math.random() < 0.5; const r = up ? t + d : t - d; return num(`Il termometro segna ${t > 0 ? '+' : t < 0 ? '−' : ''}${Math.abs(t)}°. La temperatura ${up ? 'sale' : 'scende'} di ${d}°. Che temperatura segna? (usa il tasto ± per i negativi)`, r, { v: V.thermo(t), unit: '°', x: `${t < 0 ? '−' + -t : t}° ${up ? '+' : '−'} ${d}° = ${r < 0 ? '−' + -r : r}°` }); }),
+      lv('potenze', 'Le potenze', '2³ = 2 × 2 × 2 = 8: la base si moltiplica per sé stessa tante volte quanto dice l\'esponente. 10⁴ = 10.000.', () => { const b = R(2, 10), e = b === 10 ? R(2, 6) : R(2, b <= 3 ? 5 : 3); const sup = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶'][e]; return num(`${b}${sup} = ?`, Math.pow(b, e), { x: `${Array(e).fill(b).join(' × ')} = ${F(Math.pow(b, e))}` }); }),
+      lv('romani', 'I numeri romani', 'I = 1, V = 5, X = 10, L = 50, C = 100, D = 500, M = 1000. Un simbolo più piccolo prima di uno più grande si sottrae: IV = 4, XC = 90.', () => { const n = R(1, 2026); return Math.random() < 0.6 ? num(`Quanto vale <b>${romano(n)}</b>?`, n, { x: `${romano(n)} = ${n}` }) : choice(`Come si scrive ${n} in numeri romani?`, romano(n), [romano(n + 1), romano(Math.max(1, n - 10)), romano(n + 50)], { x: `${n} = ${romano(n)}` }); }),
+      lv('divis', 'Criteri di divisibilità', 'Per 2: ultima cifra pari. Per 3: la somma delle cifre è divisibile per 3. Per 5: finisce con 0 o 5. Per 9: la somma delle cifre è divisibile per 9. Per 10: finisce con 0.', () => { const d = pick([2, 3, 5, 9, 10]); let n; if (Math.random() < 0.5) n = d * R(12, 300); else { do { n = R(100, 3000); } while (n % d === 0); } const yes = n % d === 0; const sum = String(n).split('').reduce((s, c) => s + +c, 0); return choice(`${F(n)} è divisibile per ${d}?`, yes ? 'sì' : 'no', [yes ? 'no' : 'sì'], { keep: true, x: d === 3 || d === 9 ? `Somma delle cifre: ${sum}; ${sum} ${sum % d ? 'non ' : ''}è divisibile per ${d}.` : `Guarda l'ultima cifra (${n % 10}): ${yes ? 'sì' : 'no'}.` }); }, 'palloncini'),
+      lv('primi', 'Numeri primi', 'Un numero è <b>primo</b> se si può dividere solo per 1 e per sé stesso: 2, 3, 5, 7, 11, 13… Il numero 1 non è primo.', () => { const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]; const p = pick(primes); const comp = []; for (let k = 4; k < 100; k++) if (!primes.includes(k)) comp.push(k); return choice('Quale di questi numeri è primo?', p, shuffle(comp).slice(0, 3), { x: `${p} si divide solo per 1 e per ${p}.` }); }, 'palloncini'),
+    ]),
+    mod('c5op', 'Espressioni e percentuali', '🧮', [
+      lv('espr', 'Le espressioni', 'Prima le parentesi tonde, poi moltiplicazioni e divisioni (da sinistra), infine addizioni e sottrazioni.', () => { const r = Math.random(); if (r < 0.35) { const a = R(2, 20), b = R(2, 9), c = R(2, 9); return num(`${a} + ${b} × ${c} = ?`, a + b * c, { x: `Prima la moltiplicazione: ${b} × ${c} = ${b * c}; poi ${a} + ${b * c} = ${a + b * c}` }); } if (r < 0.7) { const a = R(2, 20), b = R(2, 20), c = R(2, 9); return num(`(${a} + ${b}) × ${c} = ?`, (a + b) * c, { x: `Prima la parentesi: ${a + b}; poi × ${c} = ${(a + b) * c}` }); } const c = R(2, 9), q = R(2, 9), a = c * q, b = R(1, 30), d = R(1, b); return num(`${a} : ${c} + ${b} − ${d} = ?`, q + b - d, { x: `${a} : ${c} = ${q}; ${q} + ${b} = ${q + b}; − ${d} = ${q + b - d}` }); }),
+      lv('perc', 'La percentuale', 'Il 25% di 80 = 80 : 100 × 25 = 20. Il 50% è la metà, il 25% è un quarto, il 10% è un decimo.', () => { const p = pick([10, 20, 25, 50, 75, 5, 30, 40]); const t = R(1, 40) * (100 / gcd(p, 100)); return num(`Quanto è il ${p}% di ${F(t)}?`, t * p / 100, { x: `${F(t)} : 100 × ${p} = ${F(t * p / 100)}` }); }),
+      lv('sconto', 'Lo sconto', 'Prezzo scontato = prezzo − sconto. Uno sconto del 20% su 50 € è 10 €: si paga 40 €.', () => { const p = pick([10, 20, 25, 30, 50]); const pr = R(2, 30) * (100 / gcd(p, 100)); const sc = pr * p / 100; return Math.random() < 0.5 ? num(`Un gioco costa ${pr} €. C'è lo sconto del ${p}%. Quanto si paga?`, pr - sc, { unit: '€', x: `Sconto: ${pr} : 100 × ${p} = ${sc} €; prezzo: ${pr} − ${sc} = ${pr - sc} €` }) : num(`Un gioco costa ${pr} €, scontato del ${p}%. A quanti euro corrisponde lo sconto?`, sc, { unit: '€', x: `${pr} : 100 × ${p} = ${sc} €` }); }),
+      lv('divdec', 'Divisioni con i decimali', 'Se il divisore è decimale, moltiplica dividendo e divisore per 10 (o 100) per togliere la virgola: 7,5 : 2,5 = 75 : 25 = 3.', () => { const q = R(2, 12), dk = R(11, 99); const a = q * dk; return num(`${D(a, 1)} : ${D(dk, 1)} = ?`, q, { calc: { op: ':', a, b: dk, shift: 1 }, x: `Moltiplico tutti e due per 10: ${F(a)} : ${dk} = ${q}` }); }),
+    ]),
+    mod('c5fr', 'Frazioni', '🍫', [
+      lv('addfr', 'Addizioni e sottrazioni di frazioni', 'Con lo stesso denominatore si sommano (o sottraggono) i numeratori e il denominatore resta: 2/7 + 3/7 = 5/7.', () => { const d = R(3, 15), a = R(1, d - 1), b = R(1, d - 1); const plus = Math.random() < 0.5 || a === b; const [x, y] = plus ? [a, b] : [Math.max(a, b), Math.min(a, b)]; return { t: `${x}/${d} ${plus ? '+' : '−'} ${y}/${d} = ?`, k: 'multi', fr: true, f: [{ l: 'numeratore', a: plus ? x + y : x - y }, { l: 'denominatore', a: d }], x: `${x} ${plus ? '+' : '−'} ${y} = ${plus ? x + y : x - y}; il denominatore resta ${d}.` }; }),
+      lv('frperc', 'Frazioni e percentuali', 'Una frazione con denominatore 100 è una percentuale: 35/100 = 35%. 1/2 = 50%, 1/4 = 25%, 3/4 = 75%, 1/5 = 20%.', () => { const L = [[1, 2], [1, 4], [3, 4], [1, 5], [2, 5], [3, 5], [4, 5], [1, 10], [3, 10], [7, 10], [1, 20], [1, 25]]; const [n, d] = pick(L); return num(`${n}/${d} = ?%`, n * 100 / d, { unit: '%', x: `${n}/${d} = ${n * 100 / d}/100 = ${n * 100 / d}%` }); }),
+      lv('frinv', 'Dall\'unità frazionaria all\'intero', 'Se 3/5 di un numero è 24: 24 : 3 = 8 (un quinto), 8 × 5 = 40 (l\'intero).', () => { const d = R(3, 9), n = R(1, d - 1), k = R(2, 12); return num(`I ${n}/${d} di un numero sono ${n * k}. Qual è il numero?`, d * k, { x: `${n * k} : ${n} = ${k}; ${k} × ${d} = ${d * k}` }); }),
+    ]),
+    mod('c5mis', 'Misure', '🛒', [
+      lv('lordo', 'Peso lordo, netto e tara', 'Peso lordo = peso netto + tara (la confezione). Netto = lordo − tara.', () => { const n = R(10, 90) * 10, t = R(2, 30) * 5, l = n + t; const k = pick(['n', 't', 'l']); if (k === 'n') return num(`Una scatola di biscotti pesa ${l} g (lordo). La scatola pesa ${t} g. Quanto pesano i biscotti?`, n, { unit: 'g', x: `${l} − ${t} = ${n} g` }); if (k === 't') return num(`Peso lordo ${l} g, peso netto ${n} g. Quanto pesa la tara?`, t, { unit: 'g', x: `${l} − ${n} = ${t} g` }); return num(`Peso netto ${n} g, tara ${t} g. Qual è il peso lordo?`, l, { unit: 'g', x: `${n} + ${t} = ${l} g` }); }),
+      lv('superf', 'Misure di superficie', 'm² → dm² → cm² → mm²: ogni passo vale <b>100</b>. 1 m² = 100 dm² = 10.000 cm².', () => { const U = ['m²', 'dm²', 'cm²', 'mm²']; let i = R(0, 2), j = i + R(1, Math.min(2, 3 - i)); const k = R(1, 99), steps = j - i; if (Math.random() < 0.5) return num(`${k} ${U[i]} = ? ${U[j]}`, k * Math.pow(100, steps), { unit: U[j], x: `Ogni passo × 100: ${k} × ${F(Math.pow(100, steps))} = ${F(k * Math.pow(100, steps))} ${U[j]}` }); return num(`${F(k * Math.pow(100, steps))} ${U[j]} = ? ${U[i]}`, k, { unit: U[i], x: `Ogni passo : 100: ${k} ${U[i]}` }); }),
+    ]),
+    mod('c5geo', 'Aree e figure', '📐', [
+      lv('areatri', 'Area del triangolo', 'Area del triangolo = base × altezza : 2 (è metà di un rettangolo).', () => { const b = R(2, 20) * 2, h = R(2, 15); return num(`Un triangolo ha base ${b} cm e altezza ${h} cm. Quanto misura l'area?`, b * h / 2, { v: V.polygon([[0, 0], [b, 0], [b * 0.35, h]], [b + ' cm'], { h: [[b * 0.35, h], [b * 0.35, 0]], hLabel: h + ' cm' }), unit: 'cm²', x: `${b} × ${h} : 2 = ${b * h / 2} cm²` }); }),
+      lv('areapar', 'Parallelogramma, rombo, trapezio', 'Parallelogramma: b × h. Rombo: D × d : 2. Trapezio: (B + b) × h : 2.', () => { const k = pick(['par', 'rombo', 'trap']); if (k === 'par') { const b = R(4, 20), h = R(2, 12); return num(`Parallelogramma: base ${b} cm, altezza ${h} cm. Area?`, b * h, { v: V.polygon([[0, 0], [b, 0], [b + 3, h], [3, h]], [b + ' cm'], { h: [[3, h], [3, 0]], hLabel: h + ' cm' }), unit: 'cm²', x: `${b} × ${h} = ${b * h} cm²` }); } if (k === 'rombo') { const D1 = R(3, 15) * 2, d2 = R(2, 12); return num(`Rombo: diagonale maggiore ${D1} cm, minore ${d2} cm. Area?`, D1 * d2 / 2, { v: V.shape('rombo', '#cdb4db'), unit: 'cm²', x: `${D1} × ${d2} : 2 = ${D1 * d2 / 2} cm²` }); } const B = R(8, 20), b = R(3, B - 2), h = R(2, 10) * 2; return num(`Trapezio: base maggiore ${B} cm, minore ${b} cm, altezza ${h} cm. Area?`, (B + b) * h / 2, { v: V.polygon([[0, 0], [B, 0], [(B + b) / 2, h], [(B - b) / 2, h]], [B + ' cm', '', b + ' cm'], { h: [[(B - b) / 2, h], [(B - b) / 2, 0]], hLabel: h + ' cm' }), unit: 'cm²', x: `(${B} + ${b}) × ${h} : 2 = ${(B + b) * h / 2} cm²` }); }),
+      lv('cerchio', 'Circonferenza e cerchio', 'Circonferenza = diametro × 3,14. Area del cerchio = raggio × raggio × 3,14. Il diametro è il doppio del raggio.', () => { const r = R(1, 20); const t = pick(['c', 'a', 'd']); if (t === 'd') return num(`Il raggio di un cerchio è ${r} cm. Quanto misura il diametro?`, 2 * r, { unit: 'cm', x: `${r} × 2 = ${2 * r} cm` }); if (t === 'c') return num(`Raggio ${r} cm. Quanto misura la circonferenza? (usa 3,14)`, 2 * r * 314 / 100, { unit: 'cm', x: `${2 * r} × 3,14 = ${D(2 * r * 314, 2)} cm` }); return num(`Raggio ${r} cm. Quanto misura l'area del cerchio? (usa 3,14)`, r * r * 314 / 100, { unit: 'cm²', x: `${r} × ${r} × 3,14 = ${D(r * r * 314, 2)} cm²` }); }),
+      lv('solidi', 'I solidi', 'Il cubo ha 6 facce quadrate, 12 spigoli e 8 vertici. Cilindro, cono e sfera hanno superfici curve.', () => { const S = [['cubo', 6, 12, 8], ['parallelepipedo', 6, 12, 8], ['piramide', 5, 8, 5]]; if (Math.random() < 0.5) { const s = pick(['cubo', 'parallelepipedo', 'piramide', 'cilindro', 'cono', 'sfera']); return choice('Come si chiama questo solido?', s, shuffle(['cubo', 'parallelepipedo', 'piramide', 'cilindro', 'cono', 'sfera'].filter(x => x !== s)), { v: V.solid(s), x: `È ${s === 'sfera' || s === 'piramide' ? 'una' : 'un'} ${s}.` }); } const [s, fa, sp, ve] = pick(S); const w = pick([['facce', fa], ['spigoli', sp], ['vertici', ve]]); return num(`Quant${w[0] === 'facce' ? 'e' : 'i'} <b>${w[0]}</b> ha ${s === 'piramide' ? 'una piramide a base quadrata' : 'un ' + s}?`, w[1], { v: V.solid(s), x: `${s}: ${fa} facce, ${sp} spigoli, ${ve} vertici.` }); }),
+    ]),
+    mod('c5dt', 'Statistica e probabilità', '🎯', [
+      lv('mediana', 'Media, moda e mediana', 'La <b>mediana</b> è il valore che sta in mezzo quando i dati sono in ordine.', () => { const n = pick([5, 7]); const v = []; for (let i = 0; i < n; i++) v.push(R(1, 20)); const s = v.slice().sort((a, b) => a - b); return num(`Dati: ${v.join(', ')}. Qual è la mediana?`, s[(n - 1) / 2], { x: `In ordine: ${s.join(', ')}. Quello in mezzo è ${s[(n - 1) / 2]}.` }); }),
+      lv('probfr', 'La probabilità come frazione', 'Probabilità = casi favorevoli / casi possibili. Con un dado, uscire il 6 ha probabilità 1/6.', () => { if (Math.random() < 0.5) { const r = R(1, 6), b = R(1, 6); return { t: `In un sacchetto ci sono ${r} palline rosse e ${b} blu. Qual è la probabilità di pescare una rossa?`, k: 'multi', fr: true, v: V.bag({ rosse: r, blu: b }), f: [{ l: 'favorevoli', a: r }, { l: 'possibili', a: r + b }], x: `Favorevoli ${r}, possibili ${r + b}: ${r}/${r + b}.` }; } const k = pick([['un numero pari', 3], ['un numero maggiore di 4', 2], ['il 3', 1], ['un numero minore di 3', 2], ['un numero dispari', 3]]); return { t: `Lanci un dado. Qual è la probabilità che esca ${k[0]}?`, k: 'multi', fr: true, f: [{ l: 'favorevoli', a: k[1] }, { l: 'possibili', a: 6 }], x: `Casi favorevoli ${k[1]} su 6: ${k[1]}/6.` }; }),
+    ]),
+  ]);
+
+  /* ============ ALTRE OPERAZIONI (i moduli delle operazioni vanno sempre al primo posto) ============ */
+  const W_ = n => W.find(w => w.n === n);
+  const M_ = (n, id) => W_(n).modules.find(m => m.id === id);
+  // classe 1
+  M_(1, 'c1op').levels.push(
+    lv('doppi', 'I doppi', 'Il doppio di un numero è il numero più sé stesso: 4 + 4 = 8. I doppi ti aiutano a calcolare veloce: 6 + 7 = 6 + 6 + 1 = 13.', () => { const n = R(1, 10); return Math.random() < 0.7 ? num(`${n} + ${n} = ?`, 2 * n, { v: V.objects(2 * n, 'fiore'), x: `Il doppio di ${n} è ${2 * n}.` }) : num(`${n} + ${n + 1} = ?`, 2 * n + 1, { x: `${n} + ${n} = ${2 * n}, più 1 fa ${2 * n + 1}.` }); }),
+    lv('tre', 'Addizioni con tre numeri', 'Con tre numeri cerca prima una coppia facile, per esempio quella che fa 10: 4 + 3 + 6 = 10 + 3 = 13.', () => { const a = R(1, 9), b = R(1, 9), c = R(0, Math.max(0, 20 - a - b)); return num(`${a} + ${b} + ${c} = ?`, a + b + c, { x: `${a} + ${b} = ${a + b}; ${a + b} + ${c} = ${a + b + c}` }); }),
+    lv('qualeop', 'Più o meno?', 'Se il risultato è più grande del primo numero hai aggiunto (+); se è più piccolo hai tolto (−).', () => { const a = R(2, 15), b = R(1, Math.min(5, a - 1)); const plus = Math.random() < 0.5; const c = plus ? a + b : a - b; return choice(`${a} ☐ ${b} = ${c}. Quale segno va nel quadratino?`, plus ? '+' : '−', [plus ? '−' : '+'], { keep: true, x: `${a} ${plus ? '+' : '−'} ${b} = ${c}: il risultato è ${plus ? 'più grande' : 'più piccolo'} di ${a}.` }); }, 'palloncini'),
+    lv('sfida10', 'Sfida dei calcoli veloci', 'Addizioni e sottrazioni mescolate: leggi bene il segno prima di rispondere!', () => { const plus = Math.random() < 0.5; if (plus) { const a = R(0, 10), b = R(0, 10 - a); return num(`${a} + ${b} = ?`, a + b, { x: `${a} + ${b} = ${a + b}` }); } const a = R(1, 10), b = R(0, a); return num(`${a} − ${b} = ?`, a - b, { x: `${a} − ${b} = ${a - b}` }); }),
+  );
+  // classe 2
+  M_(2, 'c2op').levels.push(
+    lv('decine2', 'Aggiungere e togliere decine', 'Quando aggiungi o togli decine intere cambiano solo le decine: 47 + 30 = 77, 85 − 40 = 45.', () => { const a = R(11, 89), plus = Math.random() < 0.5; if (plus) { const b = R(1, Math.floor((99 - a) / 10)) * 10; return num(`${a} + ${b} = ?`, a + b, { x: `${Math.floor(a / 10)} da + ${b / 10} da = ${Math.floor((a + b) / 10)} da; le unità restano ${a % 10}: ${a + b}` }); } const b = R(1, Math.floor(a / 10)) * 10; return num(`${a} − ${b} = ?`, a - b, { x: `Tolgo ${b / 10} ${b === 10 ? 'decina' : 'decine'}: ${a - b}` }); }),
+    lv('ponte', 'Passare la decina', 'Per fare 38 + 7: arriva prima alla decina (38 + 2 = 40), poi aggiungi il resto (40 + 5 = 45).', () => { const a = R(11, 88), u = a % 10 || 1; const b = R(Math.max(1, 10 - u), 9); if (a + b > 99) return num(`${a - 10} + ${b} = ?`, a - 10 + b, { x: `${a - 10 + b}` }); const to10 = 10 - (a % 10); return num(`${a} + ${b} = ?`, a + b, { x: a % 10 ? `${a} + ${to10} = ${a + to10}; ${a + to10} + ${b - to10} = ${a + b}` : `${a} + ${b} = ${a + b}` }); }),
+    lv('inversa2', 'Il numero misterioso', 'Per trovare il numero misterioso usa l\'operazione inversa: se ? + 25 = 60, allora ? = 60 − 25 = 35.', () => { const a = R(10, 60), b = R(5, 99 - a); return Math.random() < 0.5 ? num(`? + ${b} = ${a + b}`, a, { x: `${a + b} − ${b} = ${a}` }) : num(`? − ${b} = ${a}`, a + b, { x: `${a} + ${b} = ${a + b}` }); }),
+  );
+  M_(2, 'c2mol').levels.push(
+    lv('tabmix', 'Tabelline miste', 'Tutte le tabelline mescolate: ricorda che l\'ordine dei numeri non cambia il risultato (7 × 3 = 3 × 7).', () => { const a = R(2, 10), b = R(2, 10); return num(`${a} × ${b} = ?`, a * b, { x: `${a} × ${b} = ${a * b}` }); }),
+    lv('divtab', 'Divisioni con le tabelline', 'La divisione è l\'inversa della moltiplicazione: 42 : 6 = 7 perché 6 × 7 = 42.', () => { const d = R(2, 10), q = R(1, 10); return num(`${d * q} : ${d} = ?`, q, { x: `${d} × ${q} = ${d * q}, quindi ${d * q} : ${d} = ${q}` }); }),
+    lv('per10b', 'Moltiplicare per 10', 'Moltiplicando per 10 le unità diventano decine: 7 × 10 = 70, si aggiunge uno zero.', () => { const a = R(1, 9); return Math.random() < 0.7 ? num(`${a} × 10 = ?`, a * 10, { x: `${a} unità diventano ${a} decine: ${a * 10}` }) : num(`${a * 10} : 10 = ?`, a, { x: `Si toglie lo zero: ${a}` }); }),
+    lv('mulinv', 'Il fattore nascosto', 'Se ? × 4 = 28, cerca nella tabellina del 4 il numero che dà 28: 7.', () => { const a = R(2, 10), b = R(1, 10); return Math.random() < 0.5 ? num(`? × ${a} = ${a * b}`, b, { x: `${b} × ${a} = ${a * b}` }) : num(`${a} × ? = ${a * b}`, b, { x: `${a} × ${b} = ${a * b}` }); }),
+  );
+  // classe 3
+  M_(3, 'c3op').levels.push(
+    lv('mente3', 'Calcolo a mente con le centinaia', 'Con centinaia e decine intere conta per «pezzi grandi»: 300 + 450 = 750; 700 − 250 = 450.', () => { const a = R(2, 18) * 50, plus = Math.random() < 0.5; if (plus) { const b = R(1, (1000 - a) / 50 - 1) * 50; return num(`${a} + ${b} = ?`, a + b, { x: `${a} + ${b} = ${a + b}` }); } const b = R(1, a / 50 - 1) * 50; return num(`${a} − ${b} = ?`, a - b, { x: `${a} − ${b} = ${a - b}` }); }),
+    lv('divesatta', 'Divisioni esatte', '84 : 4 → 8 decine : 4 = 2 decine, 4 unità : 4 = 1 unità: risultato 21. Controlla: 21 × 4 = 84.', () => { const d = R(2, 9), q = R(11, Math.floor(99 / d)); return num(`${d * q} : ${d} = ?`, q, { calc: { op: ':', a: d * q, b: d }, x: `${q} × ${d} = ${d * q}, quindi ${d * q} : ${d} = ${q}` }); }),
+    lv('mulx2', 'Moltiplicare per due cifre', '23 × 12: prima 23 × 2 = 46, poi 23 × 10 = 230, infine 46 + 230 = 276.', () => { const a = R(11, 49), b = R(11, 19); return num(`${a} × ${b} = ?`, a * b, { calc: { op: '×', a, b }, x: `${a} × ${b % 10} = ${a * (b % 10)}; ${a} × 10 = ${a * 10}; ${a * (b % 10)} + ${a * 10} = ${a * b}` }); }),
+    lv('prova3', 'La prova delle operazioni', 'Ogni operazione ha la sua inversa: la sottrazione controlla l\'addizione, la moltiplicazione controlla la divisione.', () => { const r = Math.random(); if (r < 0.34) { const a = R(100, 600), b = R(20, 300); return num(`? − ${b} = ${a}`, a + b, { x: `Prova con l'addizione: ${a} + ${b} = ${a + b}` }); } if (r < 0.67) { const a = R(100, 600), b = R(20, 300); return num(`${a + b} − ? = ${a}`, b, { x: `${a + b} − ${a} = ${b}` }); } const d = R(2, 9), q = R(5, 30); return num(`? : ${d} = ${q}`, d * q, { x: `Prova con la moltiplicazione: ${q} × ${d} = ${d * q}` }); }),
+  );
+  // classe 4
+  M_(4, 'c4op').levels.push(
+    lv('colgrandi', 'Addizioni e sottrazioni con grandi numeri', 'Incolonna bene: unità sotto unità, migliaia sotto migliaia. Poi calcola da destra con riporti e prestiti.', () => { const a = R(10000, 89999), plus = Math.random() < 0.5; const b = plus ? R(1000, 99999 - a) : R(1000, a - 1); return num(`${F(a)} ${plus ? '+' : '−'} ${F(b)} = ?`, plus ? a + b : a - b, { calc: { op: plus ? '+' : '−', a, b }, x: `${F(a)} ${plus ? '+' : '−'} ${F(b)} = ${F(plus ? a + b : a - b)}` }); }),
+    lv('mul3', 'Moltiplicazioni a tre cifre', '234 × 56: 234 × 6 = 1.404; 234 × 50 = 11.700; somma 13.104.', () => { const a = R(101, 899), b = R(12, 99); return num(`${a} × ${b} = ?`, a * b, { calc: { op: '×', a, b }, x: `${a} × ${b % 10} = ${F(a * (b % 10))}; ${a} × ${Math.floor(b / 10) * 10} = ${F(a * Math.floor(b / 10) * 10)}; somma ${F(a * b)}` }); }),
+    lv('muldecint', 'Moltiplicare un decimale per un intero', 'Moltiplica come se non ci fosse la virgola, poi metti nel risultato tante cifre decimali quante ne ha il numero decimale: 3,25 × 4 = 13,00 = 13.', () => { const dec = pick([1, 2]); let k; do { k = dec === 1 ? R(11, 99) : R(101, 999); } while (k % 10 === 0); const m = R(2, 9); return num(`${D(k, dec)} × ${m} = ?`, val(k * m, dec), { calc: { op: '×', a: k, b: m, decA: dec }, x: `${k} × ${m} = ${F(k * m)}; ${dec} cifr${dec === 1 ? 'a' : 'e'} decimal${dec === 1 ? 'e' : 'i'}: ${D(k * m, dec)}` }); }),
+    lv('stima', 'Stimare il risultato', 'Prima di calcolare arrotonda i numeri: 498 + 302 ≈ 500 + 300 = 800. Serve a capire se il risultato è ragionevole.', () => { const r = Math.random(); let t, est; if (r < 0.5) { const a = R(2, 9) * 100 + R(-4, 4), b = R(1, 9) * 100 + R(-4, 4); t = `${a} + ${b}`; est = Math.round(a / 100) * 100 + Math.round(b / 100) * 100; } else { const a = R(2, 9) * 10 + R(-2, 2), b = R(2, 9) * 10 + R(-2, 2); t = `${a} × ${b}`; est = Math.round(a / 10) * 10 * Math.round(b / 10) * 10; } return choice(`Quale risultato è più vicino a <b>${t}</b>?`, F(est), [F(est * 10), F(est / 10), F(est * 2)], { x: `Arrotondando i numeri: circa ${F(est)}.` }); }, 'palloncini'),
+  );
+  // classe 5: nuovo modulo con le operazioni con i decimali e le espressioni
+  W_(5).modules.unshift(mod('c5calc', 'Operazioni con i decimali', '🧮', [
+    lv('addsubdec', 'Addizioni e sottrazioni con i decimali', 'Incolonna virgola sotto virgola; se un numero ha meno cifre decimali aggiungi gli zeri: 12,5 + 3,75 = 12,50 + 3,75 = 16,25.', () => { const da = pick([1, 2, 3]), db = pick([1, 2, 3]), dm = Math.max(da, db); const a = R(10, 9999), b = R(10, 9999); const A = a * Math.pow(10, dm - da), B = b * Math.pow(10, dm - db); const plus = Math.random() < 0.5 || A < B; const r = plus ? A + B : A - B; return num(`${D(a, da)} ${plus ? '+' : '−'} ${D(b, db)} = ?`, val(r, dm), { calc: { op: plus ? '+' : '−', a: A, b: B, dec: dm }, x: `${D(A, dm)} ${plus ? '+' : '−'} ${D(B, dm)} = ${D(r, dm)} (virgola sotto virgola)` }); }),
+    lv('muldec', 'Moltiplicazioni tra decimali', 'Moltiplica senza le virgole; nel risultato le cifre decimali sono la somma di quelle dei due fattori: 2,5 × 1,2 → 25 × 12 = 300 → 3,00 = 3.', () => { let a, b; do { a = R(11, 99); b = R(11, 49); } while (a % 10 === 0 || b % 10 === 0); return num(`${D(a, 1)} × ${D(b, 1)} = ?`, val(a * b, 2), { calc: { op: '×', a, b, decA: 1, decB: 1 }, x: `${a} × ${b} = ${F(a * b)}; 1 + 1 = 2 cifre decimali: ${D(a * b, 2)}` }); }),
+    lv('divquoz', 'Divisioni con il quoziente decimale', 'Quando c\'è un resto puoi continuare: metti la virgola nel quoziente e aggiungi uno zero al resto. 12 : 5 = 2,4.', () => { const d = pick([2, 4, 5, 8, 20, 25]); let a; do { a = R(d + 1, d * 40); } while (a % d === 0); const q1000 = a * 1000 / d; return num(`${F(a)} : ${d} = ?`, a / d, { calc: { op: ':', a, b: d, maxDec: 3 }, x: `${F(a)} : ${d} = ${Math.floor(a / d)} con resto ${a % d}; continuando con la virgola: ${D(q1000, 3)}` }); }),
+    lv('quadre', 'Espressioni con le parentesi quadre', 'Prima le tonde ( ), poi le quadre [ ]. Dentro ogni parentesi: prima × e :, poi + e −.', () => { const a = R(2, 12), b = R(2, 12), c = R(2, 6), e = pick([2, 3, 4, 5]); let d; const inner = (a + b) * c; const cand = []; for (let x = 1; x < inner; x++) if ((inner - x) % e === 0) cand.push(x); d = pick(cand.length ? cand : [0]); return num(`[(${a} + ${b}) × ${c} − ${d}] : ${e} = ?`, (inner - d) / e, { x: `(${a} + ${b}) = ${a + b}; × ${c} = ${inner}; − ${d} = ${inner - d}; : ${e} = ${(inner - d) / e}` }); }),
+  ]));
+  // i moduli delle operazioni al primo posto in ogni classe
+  const FIRST = { 1: ['c1op'], 2: ['c2op', 'c2mol'], 3: ['c3op'], 4: ['c4op'], 5: ['c5calc', 'c5op'] };
+  for (const w of W) { const ids = FIRST[w.n] || []; w.modules.sort((x, y) => { const ix = ids.indexOf(x.id), iy = ids.indexOf(y.id); return (ix < 0 ? 99 : ix) - (iy < 0 ? 99 : iy); }); }
+
+  // controllo della risposta (numeri all'italiana: virgola decimale, punto delle migliaia)
+  function parseNum(s) {
+    s = String(s).trim().replace(/\s/g, '').replace(/−/g, '-').replace(/[€°%]|cm²|cm|m²|g$/g, '');
+    if (!s) return NaN;
+    if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+    else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+    if (!/^-?\d*\.?\d+$/.test(s)) return NaN;
+    return parseFloat(s);
+  }
+  const same = (x, a) => isFinite(x) && Math.abs(x - a) < 1e-9 * Math.max(1, Math.abs(a));
+  function check(q, given) {
+    if (q.k === 'num') return same(parseNum(given), q.a);
+    if (q.k === 'choice') return +given === q.a;
+    if (q.k === 'cmp') return given === q.a;
+    if (q.k === 'multi') return q.f.every((f, i) => same(parseNum(given[i]), f.a));
+    return false;
+  }
+  // un numero con la sua unità: 12 €, 25°, 30%, 12 cm
+  const unitFmt = (s, unit) => !unit ? s : unit === '°' || unit === '%' ? s + unit : s + ' ' + unit;
+  const unitBefore = () => false;
+  function answerText(q) {
+    const fmt = a => { if (Number.isInteger(a)) return F(a); const s = (Math.round(a * 1e6) / 1e6).toString().split('.'); return (a < 0 ? '−' : '') + F(Math.abs(+s[0])) + ',' + s[1]; };
+    if (q.k === 'num') return unitFmt(fmt(q.a), q.unit);
+    if (q.k === 'choice') return q.o[q.a];
+    if (q.k === 'cmp') return q.a;
+    if (q.k === 'multi') return q.fr ? `${q.f[0].a}/${q.f[1].a}` : q.f.map(f => `${f.l} ${fmt(f.a)}`).join(', ');
+    return '';
+  }
+  const api = { worlds: W, check, parseNum, answerText, unitFmt, unitBefore, F, D, lettere, romano };
+  root.Mate = api;
+  if (typeof module !== 'undefined') module.exports = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Tutte le operazioni in colonna: per ogni domanda si cercano le operazioni (nel testo «… = ?» oppure nelle
+   uguaglianze della spiegazione, per esempio «(26 + 19) × 2 = 90 cm») e si preparano i calcoli in colonna,
+   uno per ogni operazione, nell'ordine in cui si fanno. Si accettano solo se arrivano esattamente alla risposta.
+   q.calc = un solo calcolo; q.calcs = più calcoli in fila (espressioni, perimetri, aree…). */
+(function (root) {
+  'use strict';
+  const M = root.Mate;
+  const EN = root.LANG === 'en';
+  const TH = EN ? ',' : '.', DP = EN ? '.' : ',';
+  const NUM = EN ? '\\d{1,3}(?:,\\d{3})+(?:\\.\\d+)?|\\d+(?:\\.\\d+)?' : '\\d{1,3}(?:\\.\\d{3})+(?:,\\d+)?|\\d+(?:,\\d+)?';
+  const OP = EN ? '[+−×÷]' : '[+−×:]';
+  const UNIT = '(?: ?(?:cm²|dm²|mm²|m²|km|cm|dm|mm|kg|g|m|°))?';
+  const TERM = `[\\[(]*€?(?:${NUM})${UNIT}[)\\]]*`;
+  const EXPR = `${TERM}(?: ${OP} ${TERM})+`;
+  // un'uguaglianza: espressione = numero (o «?» nel testo della domanda)
+  const EQ = new RegExp(`(?<![\\d.,] [−\\-+×:÷] )(?<![\\d.,/−\\-+])(${EXPR}) = (?=(\\?|€?(?:${NUM}))(?![\\d]|[.,]\\d)(?! ?[×:÷+−/]))`, 'g');
+
+  // numero esatto: intero scalato e cifre decimali (3,75 → {k: 375, dec: 2})
+  function parseNum(s) { s = s.replace('€', '').split(TH).join(''); const [ip, fp = ''] = s.split(DP); return { k: +(ip + fp), dec: fp.length }; }
+  function fromValue(v) {
+    if (!isFinite(v) || v < 0) return null;
+    const s = String(Math.round(v * 1e6) / 1e6);
+    if (/e/.test(s)) return null;
+    const [ip, fp = ''] = s.split('.');
+    return { k: +(ip + fp), dec: fp.length };
+  }
+  const value = x => x.k / Math.pow(10, x.dec);
+  const scale = (x, dec) => x.k * Math.pow(10, dec - x.dec);
+  const same = (x, y) => Math.abs(x - y) < 1e-9 * Math.max(1, Math.abs(y));
+
+  // un calcolo in colonna fra due (o più, per l'addizione) numeri esatti
+  function make(op, xs) {
+    if (op === '+') {
+      const dec = Math.max(...xs.map(x => x.dec));
+      const v = xs.map(x => scale(x, dec));
+      const calc = { op: '+', a: v[0], b: v[1], dec };
+      if (v.length > 2) calc.more = v.slice(2);
+      return { calc, value: v.reduce((s, y) => s + y, 0) / Math.pow(10, dec) };
+    }
+    const [x, y] = xs;
+    if (op === '−') {
+      const dec = Math.max(x.dec, y.dec), a = scale(x, dec), b = scale(y, dec);
+      if (a < b) return null;
+      return { calc: { op: '−', a, b, dec }, value: (a - b) / Math.pow(10, dec) };
+    }
+    if (op === '×') return x.k === 0 || y.k === 0 ? null : { calc: { op: '×', a: x.k, b: y.k, decA: x.dec, decB: y.dec }, value: x.k * y.k / Math.pow(10, x.dec + y.dec) };
+    if (op === ':' || op === '÷') {
+      if (y.k === 0) return null;
+      // il divisore diventa intero moltiplicando tutti e due per 10, 100…
+      const shift = y.dec;
+      let a = x.k, decA = x.dec - shift;
+      if (decA < 0) { a = a * Math.pow(10, -decA); decA = 0; }
+      const d = y.k;
+      // cifre decimali in più per finire senza resto (al massimo 3)
+      let extra = -1;
+      for (let e = 0; e <= 3; e++) if ((a * Math.pow(10, e)) % d === 0) { extra = e; break; }
+      const calc = { op: ':', a, b: d, maxDec: Math.max(0, extra) };
+      if (shift) calc.shift = shift;
+      if (decA) calc.decA = decA;
+      return { calc, value: extra >= 0 ? a / d / Math.pow(10, decA) : NaN, q: Math.floor(a / d), r: a % d, decA, exact: extra >= 0 };
+    }
+    return null;
+  }
+
+  // espressione → calcoli nell'ordine giusto (prima le parentesi, poi × e :, poi + e −, da sinistra)
+  function tokenize(e) {
+    const out = [];
+    const re = new RegExp(`\\s*(?:([\\[(])|([\\])])|(${OP})|€?(${NUM})${UNIT})`, 'y');
+    let m;
+    while (re.lastIndex < e.length && (m = re.exec(e))) {
+      if (m[1]) out.push({ t: '(' }); else if (m[2]) out.push({ t: ')' }); else if (m[3]) out.push({ t: 'op', v: m[3] }); else out.push({ t: 'n', v: parseNum(m[4]) });
+    }
+    return re.lastIndex >= e.length ? out : null;
+  }
+  function evaluate(e) {
+    const tk = tokenize(e);
+    if (!tk) return null;
+    // solo addizioni senza parentesi: un'unica addizione in colonna con tutti gli addendi
+    if (tk.every(t => t.t === 'n' || (t.t === 'op' && t.v === '+'))) {
+      const xs = tk.filter(t => t.t === 'n').map(t => t.v);
+      if (xs.length > 6) return null;
+      const r = make('+', xs);
+      return r ? { steps: [r.calc], value: r.value } : null;
+    }
+    let i = 0;
+    const steps = [];
+    const prec = o => (o === '+' || o === '−') ? 1 : 2;
+    function primary() {
+      const t = tk[i++];
+      if (!t) throw 0;
+      if (t.t === 'n') return t.v;
+      if (t.t === '(') {
+        // una parentesi con sole addizioni diventa un'unica addizione in colonna
+        let j = i, xs = [];
+        while (tk[j] && (tk[j].t === 'n' || (tk[j].t === 'op' && tk[j].v === '+'))) { if (tk[j].t === 'n') xs.push(tk[j].v); j++; }
+        if (tk[j] && tk[j].t === ')' && xs.length > 2 && xs.length <= 6) { const r = make('+', xs); i = j + 1; steps.push(r.calc); return fromValue(r.value); }
+        const v = expr(0); if (!tk[i] || tk[i].t !== ')') throw 0; i++; return v; }
+      throw 0;
+    }
+    function expr(minP) {
+      let left = primary();
+      while (tk[i] && tk[i].t === 'op' && prec(tk[i].v) >= minP) {
+        const op = tk[i++].v;
+        const right = expr(prec(op) + 1);
+        const r = make(op, [left, right]);
+        if (!r || !isFinite(r.value)) throw 0;
+        steps.push(r.calc);
+        left = fromValue(r.value);
+        if (!left) throw 0;
+      }
+      return left;
+    }
+    try { const v = expr(0); if (i !== tk.length) return null; return { steps, value: value(v) }; } catch (err) { return null; }
+  }
+
+  const strip = t => String(t || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  function derive(q) {
+    if (q.calc || q.calcs) return null;
+    const ans = q.k === 'num' ? q.a : null;
+    // 1) l'operazione è nel testo della domanda: «… = ?» oppure «Calcola in colonna: a + b»
+    const t = strip(q.t).replace(/^(?:Calcola in colonna|Work it out in columns): (.*)$/, '$1 = ?');
+    for (const m of t.matchAll(EQ)) {
+      if (m[2] !== '?') continue;
+      const ev = evaluate(m[1]);
+      if (!ev || !ev.steps.length) continue;
+      if (ans !== null && same(ev.value, ans)) return ev.steps;
+      // divisione con quoziente e resto
+      if (q.k === 'multi' && ev.steps.length === 1 && ev.steps[0].op === ':' && q.f.length === 2 && !ev.steps[0].decA && !ev.steps[0].shift) {
+        const c = ev.steps[0];
+        if (Math.floor(c.a / c.b) === q.f[0].a && c.a % c.b === q.f[1].a) { c.maxDec = 0; return [c]; }
+      }
+    }
+    // 2) le uguaglianze della spiegazione, fino a quella che dà la risposta
+    if (!q.x) return null;
+    const x = strip(q.x);
+    const all = [], eqs = [];
+    for (const m of x.matchAll(EQ)) {
+      if (m[2] === '?') continue;
+      const ev = evaluate(m[1]);
+      if (!ev || !ev.steps.length) continue;
+      const stated = parseNum(m[2]);
+      if (!same(ev.value, value(stated))) continue; // l'uguaglianza scritta dev'essere giusta
+      all.push(...ev.steps); eqs.push(ev);
+      if (ans !== null && same(ev.value, ans)) return all;
+    }
+    // il numero nascosto (3 + ? = 10) o le domande a scelta: l'operazione completa si vede solo nella spiegazione
+    if (eqs.length && (q.k === 'choice' || (ans !== null && /\?/.test(t)))) { all.hide = true; return all; }
+    return null;
+  }
+  // ogni generatore di domande passa da qui
+  for (const w of M.worlds) for (const m of w.modules) for (const l of m.levels) {
+    const g = l.gen;
+    l.gen = () => {
+      const q = g();
+      const c = derive(q);
+      if (c && c.length === 1) q.calc = c[0]; else if (c && c.length) q.calcs = c.slice();
+      if (c && c.hide) q.calcHide = true;
+      return q;
+    };
+  }
+  M.deriveCalc = derive;
+  M.evalExpr = evaluate;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* «Lo sai che…?»: curiosità sulla storia dei numeri e delle operazioni, mostrate tra un livello e l'altro.
+   tag: argomenti a cui si collegano (numeri, add, mul, div, fraz, dec, mis, tempo, soldi, geo, dati, perc, pot, rel). */
+(function (root) {
+  'use strict';
+  const FACTS = [
+    { tag: ['numeri'], icon: '🦴', text: 'Circa 20.000 anni fa, in Africa, qualcuno contava facendo tante tacche su un osso: è l\'«osso di Ishango», uno dei più antichi oggetti per contare che conosciamo.' },
+    { tag: ['numeri'], icon: '🖐️', text: 'Contiamo a gruppi di dieci (unità, decine, centinaia…) probabilmente perché abbiamo dieci dita: le mani sono state la prima calcolatrice!' },
+    { tag: ['numeri'], icon: '🇮🇳', text: 'Le cifre che usiamo, da 0 a 9, sono nate in India e sono arrivate in Europa grazie ai matematici arabi. Per questo si chiamano cifre «indo-arabiche».' },
+    { tag: ['numeri'], icon: '📖', text: 'In Italia le cifre indo-arabiche le ha fatte conoscere Leonardo Fibonacci, un matematico di Pisa, con un libro scritto nel 1202: il «Liber Abaci».' },
+    { tag: ['numeri'], icon: '0️⃣', text: 'Lo zero non c\'è sempre stato! Nel 628 dopo Cristo il matematico indiano Brahmagupta scrisse le regole per fare i calcoli con lo zero.' },
+    { tag: ['numeri'], icon: '🏛️', text: 'Gli antichi Romani scrivevano i numeri con le lettere (I, V, X, L, C, D, M) e non avevano un simbolo per lo zero. I numeri romani si vedono ancora su orologi e monumenti.' },
+    { tag: ['numeri'], icon: '🔢', text: 'La parola «milione» è nata in Italia: vuol dire «grande mille», cioè mille volte mille.' },
+    { tag: ['numeri'], icon: '♾️', text: 'I numeri non finiscono mai: a qualunque numero puoi sempre aggiungere 1. Per questo si dice che i numeri sono infiniti.' },
+    { tag: ['add'], icon: '🪨', text: 'La parola «calcolo» viene dal latino «calculus», che vuol dire sassolino: nell\'antichità si facevano i conti spostando dei sassolini.' },
+    { tag: ['add'], icon: '🧮', text: 'L\'abaco è uno strumento antichissimo per contare: palline o sassolini su file diverse, una per le unità, una per le decine, una per le centinaia…' },
+    { tag: ['add'], icon: '➕', text: 'I segni + e − sono comparsi stampati per la prima volta in un libro di aritmetica tedesco del 1489. Il + deriva probabilmente dalla parola latina «et», che vuol dire «e».' },
+    { tag: ['add'], icon: '🟰', text: 'Il segno = l\'ha inventato nel 1557 Robert Recorde, un matematico gallese: usò due linee parallele perché, scrisse, «nessuna cosa è più uguale di due linee parallele».' },
+    { tag: ['add'], icon: '🔄', text: 'In un\'addizione puoi cambiare l\'ordine dei numeri e il risultato non cambia: 3 + 5 = 5 + 3. È la proprietà commutativa.' },
+    { tag: ['mul'], icon: '✖️', text: 'Il segno × per la moltiplicazione lo ha usato per primo il matematico inglese William Oughtred, in un libro del 1631.' },
+    { tag: ['mul'], icon: '🔺', text: 'La tavola delle tabelline si chiama «tavola pitagorica» in onore di Pitagora, un matematico greco vissuto circa 2500 anni fa.' },
+    { tag: ['mul'], icon: '🖐️', text: 'Un trucco per la tabellina del 9: apri le dieci dita e abbassa il dito numero 4. A sinistra restano 3 dita, a destra 6: 9 × 4 = 36!' },
+    { tag: ['mul'], icon: '♟️', text: 'Una leggenda racconta che l\'inventore degli scacchi chiese al re 1 chicco di riso sulla prima casella, 2 sulla seconda, 4 sulla terza, raddoppiando ogni volta. Alla fine sarebbe servito più riso di quanto ne esista nel mondo!' },
+    { tag: ['div'], icon: '➗', text: 'Il segno ÷ fu usato per la prima volta nel 1659 dal matematico svizzero Johann Rahn. In Italia per dividere usiamo i due punti «:», come faceva il matematico tedesco Leibniz.' },
+    { tag: ['div'], icon: '🍬', text: 'Dividere per 0 non si può: se hai 6 caramelle e 0 bambini, non c\'è nessun modo di fare le parti!' },
+    { tag: ['fraz'], icon: '🏺', text: 'Gli antichi Egizi, più di 3500 anni fa, usavano soprattutto frazioni con il numeratore 1, come 1/2, 1/3, 1/4. Lo sappiamo da un antico papiro, il papiro di Rhind.' },
+    { tag: ['fraz'], icon: '➖', text: 'La lineetta delle frazioni l\'hanno usata i matematici arabi e Fibonacci l\'ha fatta conoscere in Europa. La parola «frazione» viene dal latino «frangere», che vuol dire «rompere».' },
+    { tag: ['dec'], icon: '🔟', text: 'I numeri decimali li ha resi famosi in Europa Simon Stevin, un matematico delle Fiandre, con un libretto del 1585. Prima si usavano solo le frazioni.' },
+    { tag: ['dec'], icon: '🌍', text: 'In Italia i decimali si scrivono con la virgola (3,5), mentre in Inghilterra e negli Stati Uniti si usa il punto (3.5).' },
+    { tag: ['mis'], icon: '📏', text: 'Il metro è nato in Francia alla fine del Settecento: era la decimilionesima parte della distanza tra il Polo Nord e l\'Equatore.' },
+    { tag: ['mis'], icon: '🦶', text: 'Prima del metro si misurava con piedi, pollici e braccia, che cambiavano da una città all\'altra. Che confusione al mercato!' },
+    { tag: ['mis'], icon: '💧', text: 'All\'inizio il grammo era il peso di un centimetro cubo d\'acqua, e un litro d\'acqua pesa circa un chilogrammo.' },
+    { tag: ['tempo'], icon: '⏳', text: 'Un\'ora ha 60 minuti e un minuto 60 secondi grazie agli antichi Babilonesi, che facevano i conti a gruppi di 60.' },
+    { tag: ['tempo'], icon: '☀️', text: 'Gli antichi Egizi dividevano il giorno in 12 ore e la notte in altre 12: per questo una giornata intera ha 24 ore.' },
+    { tag: ['soldi'], icon: '💶', text: 'In Italia le monete e le banconote in euro si usano dal 1° gennaio 2002. Prima c\'era la lira.' },
+    { tag: ['soldi'], icon: '%', text: 'Il simbolo % è nato dall\'abbreviazione di «per cento» che scrivevano i mercanti italiani nei loro conti.' },
+    { tag: ['geo'], icon: '🌾', text: '«Geometria» vuol dire «misura della terra». Gli antichi Egizi dovevano rimisurare i campi ogni volta che il fiume Nilo straripava e cancellava i confini.' },
+    { tag: ['geo'], icon: '⭕', text: 'Archimede di Siracusa, più di 2000 anni fa, scoprì che la circonferenza è poco più di 3 volte il diametro: è il numero π, circa 3,14.' },
+    { tag: ['geo'], icon: '🐝', text: 'Le api costruiscono le celle dell\'alveare a forma di esagono: con questa forma usano meno cera e non lasciano spazi vuoti.' },
+    { tag: ['geo'], icon: '📐', text: 'L\'angolo giro misura 360 gradi forse per merito dei Babilonesi, che contavano a gruppi di 60 e osservavano che l\'anno ha circa 360 giorni.' },
+    { tag: ['dati'], icon: '🎲', text: 'Il calcolo delle probabilità è nato nel 1654 da alcune lettere tra due matematici francesi, Blaise Pascal e Pierre de Fermat, che parlavano di giochi con i dadi.' },
+    { tag: ['dati'], icon: '⚙️', text: 'Blaise Pascal, a circa 19 anni, costruì una delle prime calcolatrici meccaniche, la «Pascalina», per aiutare il papà a fare i conti.' },
+    { tag: ['rel'], icon: '🥢', text: 'Più di 2000 anni fa in Cina si facevano i calcoli con dei bastoncini: rossi per i numeri positivi e neri per quelli negativi.' },
+    { tag: ['pot', 'numeri'], icon: '🧩', text: 'Più di 2000 anni fa il matematico greco Euclide dimostrò che i numeri primi non finiscono mai: ce ne sono infiniti.' },
+  ];
+  // argomenti di ogni modulo
+  const MOD_TAGS = {
+    c1n: ['numeri'], c1op: ['add'], c1pr: ['add'], c1sp: ['geo'], c1dt: ['dati', 'geo'],
+    c2n: ['numeri'], c2op: ['add'], c2mol: ['mul', 'div'], c2mis: ['tempo', 'soldi'], c2sp: ['geo'], c2dt: ['dati'],
+    c3n: ['numeri'], c3op: ['add', 'mul', 'div'], c3fr: ['fraz', 'dec'], c3mis: ['mis', 'tempo'], c3geo: ['geo'], c3dt: ['dati'],
+    c4n: ['numeri'], c4dec: ['dec'], c4op: ['mul', 'div'], c4fr: ['fraz'], c4mis: ['mis', 'soldi'], c4geo: ['geo'], c4dt: ['dati'],
+    c5calc: ['dec', 'mul', 'div'], c5n: ['numeri', 'rel', 'pot'], c5op: ['soldi', 'add', 'mul'], c5fr: ['fraz', 'soldi'], c5mis: ['mis'], c5geo: ['geo'], c5dt: ['dati'],
+  };
+  // sceglie una curiosità collegata al modulo, possibilmente non ancora vista
+  function pickFact(modId, seen = []) {
+    const tags = MOD_TAGS[modId] || [];
+    const idx = FACTS.map((f, i) => i);
+    const related = idx.filter(i => FACTS[i].tag.some(t => tags.includes(t)));
+    const fresh = a => a.filter(i => !seen.includes(i));
+    const pool = fresh(related).length ? fresh(related) : fresh(idx).length ? fresh(idx) : related.length ? related : idx;
+    const i = pool[Math.floor(Math.random() * pool.length)];
+    return { i, ...FACTS[i] };
+  }
+  const api = { FACTS, MOD_TAGS, pickFact };
+  root.Facts = api;
+  if (typeof module !== 'undefined') module.exports = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Calcoli in colonna passo per passo: addizione (riporti), sottrazione (prestiti), moltiplicazione
+   (riporti e prodotti parziali), divisione con il metodo italiano (resti sotto il dividendo) oppure,
+   nella versione inglese, con la «long division» (quoziente sopra, prodotti e sottrazioni sotto).
+   Ogni funzione restituisce una lista di fotogrammi: { cols, rows, cells: [{r, c, t, k}], note, hl, lines, marks } */
+(function (root) {
+  'use strict';
+  const en = () => root.LANG === 'en';
+  const L = (it, eng) => en() ? eng : it;
+  const PLACE_IT = { '-3': 'millesimi', '-2': 'centesimi', '-1': 'decimi', 0: 'unità', 1: 'decine', 2: 'centinaia', 3: 'migliaia', 4: 'decine di migliaia', 5: 'centinaia di migliaia', 6: 'milioni' };
+  const PLACE_EN = { '-3': 'thousandths', '-2': 'hundredths', '-1': 'tenths', 0: 'ones', 1: 'tens', 2: 'hundreds', 3: 'thousands', 4: 'ten thousands', 5: 'hundred thousands', 6: 'millions' };
+  const ONE_IT = { '-3': 'millesimo', '-2': 'centesimo', '-1': 'decimo', 0: 'unità', 1: 'decina', 2: 'centinaio', 3: 'migliaio', 4: 'decina di migliaia', 5: 'centinaio di migliaia', 6: 'milione' };
+  const ONE_EN = { '-3': 'thousandth', '-2': 'hundredth', '-1': 'tenth', 0: 'one', 1: 'ten', 2: 'hundred', 3: 'thousand', 4: 'ten thousand', 5: 'hundred thousand', 6: 'million' };
+  const place = p => (en() ? PLACE_EN : PLACE_IT)[p] || L('cifre', 'digits');
+  const placeOne = p => (en() ? ONE_EN : ONE_IT)[p] || L('unità', 'one');
+  const rev = n => String(n).split('').reverse().map(Number);
+  // un intero scalato con dec cifre decimali, scritto all'italiana (12.345,6) o all'inglese (12,345.6)
+  function fmt(k, dec) {
+    const TH = L('.', ','), DP = L(',', '.');
+    const neg = k < 0; const s = String(Math.abs(k)).padStart(dec + 1, '0');
+    let ip = dec ? s.slice(0, -dec) : s, fp = dec ? s.slice(-dec) : '';
+    ip = ip.replace(/\B(?=(\d{3})+(?!\d))/g, TH);
+    fp = fp.replace(/0+$/, '');
+    return (neg ? '−' : '') + ip + (fp ? DP + fp : '');
+  }
+  const posCls = p => p < 0 ? 'dec' : ['u', 'da', 'h', 'k', 'k', 'k', 'mi', 'mi', 'mi'][p] || 'g';
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+  // griglia con le colonne delle cifre: posizione k (0 = cifra più a destra) → colonna
+  function grid(Wd, dec, lead = 1) {
+    const colOf = k => lead + (Wd - 1 - k) + (k < dec ? 1 : 0);
+    const commaCol = dec ? lead + (Wd - dec) : -1;
+    return { colOf, commaCol, cols: lead + Wd + (dec ? 1 : 0) };
+  }
+  function snapshot(st, note, hl) { return { cols: st.cols, rows: st.rows, cells: st.cells.map(c => ({ ...c })), note, hl, lines: st.lines ? st.lines.slice() : [], marks: st.marks ? st.marks.map(m => ({ ...m })) : [], layout: st.layout || '' }; }
+  const put = (st, r, c, t, k = '') => { st.cells = st.cells.filter(x => !(x.r === r && x.c === c)); if (t !== null && t !== undefined && t !== '') st.cells.push({ r, c, t: String(t), k }); };
+  const sep = () => L(',', '.');
+
+  /* ---------------- addizione ---------------- */
+  function addition(a, b, dec = 0, more = []) {
+    const nums = [a, b, ...more], N = nums.length;
+    const Ds = nums.map(rev), sum = nums.reduce((x, y) => x + y, 0), S = rev(sum);
+    const Wd = Math.max(...Ds.map(D => D.length), S.length, dec + 1);
+    const g = grid(Wd, dec);
+    const resR = N + 2;
+    const st = { cols: g.cols, rows: resR + 1, cells: [], lines: [N + 1] };
+    const row = (r, D) => { for (let k = 0; k < Math.max(D.length, dec + 1); k++) { const d = D[k] !== undefined ? D[k] : 0; put(st, r, g.colOf(k), d, 'd-' + posCls(k - dec) + (k >= D.length ? ' pad' : '')); } if (dec) put(st, r, g.commaCol, sep(), 'comma'); };
+    Ds.forEach((D, i) => row(i + 1, D)); put(st, N, 0, '+', 'op');
+    const frames = [snapshot(st, dec
+      ? L('Incolonno i numeri: <b>virgola sotto virgola</b>, unità sotto unità, decine sotto decine. Dove mancano cifre decimali metto gli zeri.', 'Line up the numbers: <b>decimal point under decimal point</b>, ones under ones, tens under tens. Where decimal places are missing, write zeros.')
+      : L('Incolonno i numeri: <b>unità sotto unità</b>, decine sotto decine, centinaia sotto centinaia. Si parte dalla colonna di destra.', 'Line up the numbers: <b>ones under ones</b>, tens under tens, hundreds under hundreds. Start from the right-hand column.'), -1)];
+    let carry = 0;
+    const n = Math.max(...Ds.map(D => D.length), dec);
+    for (let k = 0; k < n; k++) {
+      const xs = Ds.map(D => D[k] || 0), s = xs.reduce((x, y) => x + y, 0) + carry;
+      const p = k - dec;
+      put(st, resR, g.colOf(k), s % 10, 'd-' + posCls(p) + ' res');
+      let note = `<b>${cap(place(p))}</b>: ${xs.join(' + ')}${carry ? ' + ' + carry + L(' (riporto)', ' (carried)') : ''} = ${s}.`;
+      const c = Math.floor(s / 10);
+      if (c) { note += L(` Scrivo <b>${s % 10}</b> e <b>riporto ${c}</b> alle ${place(p + 1)}.`, ` Write <b>${s % 10}</b> and <b>carry ${c}</b> to the ${place(p + 1)}.`); put(st, 0, g.colOf(k + 1), c, 'carry'); }
+      else note += L(` Scrivo <b>${s}</b>.`, ` Write <b>${s}</b>.`);
+      if (k === dec - 1 && dec) note += L(' Poi metto la virgola sotto le altre virgole.', ' Then put the decimal point in line with the other decimal points.');
+      carry = c;
+      if (dec && k === dec - 1) put(st, resR, g.commaCol, sep(), 'comma');
+      frames.push(snapshot(st, note, g.colOf(k)));
+    }
+    if (carry) { put(st, resR, g.colOf(n), carry, 'd-' + posCls(n - dec) + ' res'); frames.push(snapshot(st, L(`Il riporto ${carry} non ha più niente da sommare: lo scrivo nel risultato come <b>${place(n - dec)}</b>.`, `The carried ${carry} has nothing left to add to: write it in the answer, in the <b>${place(n - dec)}</b> column.`), g.colOf(n))); }
+    frames.push(snapshot(st, `${L('Risultato', 'Answer')}: ${nums.map(x => fmt(x, dec)).join(' + ')} = <b>${fmt(sum, dec)}</b>.`, -1));
+    return frames;
+  }
+
+  /* ---------------- sottrazione (con il prestito) ---------------- */
+  function subtraction(a, b, dec = 0) {
+    const A = rev(a), B = rev(b), diff = a - b;
+    const Wd = Math.max(A.length, B.length, dec + 1);
+    const g = grid(Wd, dec);
+    const st = { cols: g.cols, rows: 5, cells: [], lines: [3] };
+    const cur = A.slice();
+    while (cur.length < Wd) cur.push(0);
+    for (let k = 0; k < Math.max(A.length, dec); k++) put(st, 1, g.colOf(k), A[k] !== undefined ? A[k] : 0, 'd-' + posCls(k - dec) + (k >= A.length ? ' pad' : ''));
+    for (let k = 0; k < Math.max(B.length, dec); k++) put(st, 2, g.colOf(k), B[k] !== undefined ? B[k] : 0, 'd-' + posCls(k - dec) + (k >= B.length ? ' pad' : ''));
+    if (dec) { put(st, 1, g.commaCol, sep(), 'comma'); put(st, 2, g.commaCol, sep(), 'comma'); }
+    put(st, 2, 0, '−', 'op');
+    const frames = [snapshot(st, (dec
+      ? L('Incolonno: <b>virgola sotto virgola</b>; dove mancano cifre decimali metto gli zeri. ', 'Line up: <b>decimal point under decimal point</b>; where decimal places are missing, write zeros. ')
+      : L('Incolonno: <b>unità sotto unità</b>. ', 'Line up: <b>ones under ones</b>. ')) + L('Il numero più grande sta sopra. Si parte da destra.', 'The bigger number goes on top. Start from the right.'), -1)];
+    const n = Math.max(A.length, dec);
+    const strike = k => { const c = st.cells.find(x => x.r === 1 && x.c === g.colOf(k)); if (c && !/struck/.test(c.k)) c.k += ' struck'; };
+    for (let k = 0; k < n; k++) {
+      const y = B[k] || 0, p = k - dec;
+      let note = '';
+      if (cur[k] < y) {
+        // prestito: si cerca a sinistra la prima cifra diversa da 0
+        let j = k + 1; while (cur[j] === 0) j++;
+        cur[j] -= 1; strike(j); put(st, 0, g.colOf(j), cur[j], 'borrow');
+        for (let m = j - 1; m > k; m--) { cur[m] = 9; strike(m); put(st, 0, g.colOf(m), 9, 'borrow'); }
+        const before = cur[k];
+        cur[k] += 10; strike(k); put(st, 0, g.colOf(k), cur[k], 'borrow');
+        note = L(`<b>${cap(place(p))}</b>: ${before} − ${y} non si può. `, `<b>${cap(place(p))}</b>: you can't take ${y} from ${before}. `);
+        if (j === k + 1) note += L(`Chiedo in prestito 1 ${placeOne(p + 1)} alle ${place(p + 1)} (che diventano ${cur[j]}): 1 ${placeOne(p + 1)} = 10 ${place(p)}, quindi ho ${cur[k]} ${place(p)}. `,
+          `Borrow 1 ${placeOne(p + 1)} from the ${place(p + 1)} (they become ${cur[j]}): 1 ${placeOne(p + 1)} = 10 ${place(p)}, so now you have ${cur[k]} ${place(p)}. `);
+        else note += L(`Le ${place(p + 1)} sono 0: chiedo alle ${place(j - dec)} (che diventano ${cur[j]}); gli zeri in mezzo diventano 9 e qui ho ${cur[k]}. `,
+          `The ${place(p + 1)} digit is 0, so borrow from the ${place(j - dec)} (they become ${cur[j]}); the zeros in between become 9s and here you have ${cur[k]}. `);
+        note += `${cur[k]} − ${y} = <b>${cur[k] - y}</b>.`;
+      } else note = `<b>${cap(place(p))}</b>: ${cur[k]} − ${y} = <b>${cur[k] - y}</b>.`;
+      const dgt = cur[k] - y;
+      put(st, 4, g.colOf(k), dgt, 'd-' + posCls(p) + ' res');
+      if (dec && k === dec - 1) put(st, 4, g.commaCol, sep(), 'comma');
+      frames.push(snapshot(st, note, g.colOf(k)));
+    }
+    // gli zeri a sinistra del risultato non si scrivono
+    const Ld = String(diff).length;
+    for (let k = Math.max(Ld, dec + 1); k < n; k++) st.cells = st.cells.filter(x => !(x.r === 4 && x.c === g.colOf(k)));
+    frames.push(snapshot(st, L(`Risultato: ${fmt(a, dec)} − ${fmt(b, dec)} = <b>${fmt(diff, dec)}</b>. Prova: ${fmt(diff, dec)} + ${fmt(b, dec)} = ${fmt(a, dec)}.`,
+      `Answer: ${fmt(a, dec)} − ${fmt(b, dec)} = <b>${fmt(diff, dec)}</b>. Check: ${fmt(diff, dec)} + ${fmt(b, dec)} = ${fmt(a, dec)}.`), -1));
+    return frames;
+  }
+
+  /* ---------------- moltiplicazione ---------------- */
+  function multiplication(a, b, decA = 0, decB = 0) {
+    const A = rev(a), B = rev(b), prod = a * b;
+    const m = B.length;
+    const Wd = Math.max(String(prod).length, A.length, B.length);
+    const g = grid(Wd, 0);
+    const resRow = m > 1 ? 3 + m + 1 : 4;
+    const st = { cols: g.cols, rows: resRow + 1, cells: [], lines: m > 1 ? [3, 3 + m] : [3] };
+    A.forEach((d, k) => put(st, 1, g.colOf(k), d, 'd-' + posCls(k)));
+    B.forEach((d, k) => put(st, 2, g.colOf(k), d, 'd-' + posCls(k)));
+    put(st, 2, 0, '×', 'op');
+    const frames = [snapshot(st, m > 1
+      ? L(`Moltiplico ${a} per ogni cifra di ${b}, partendo dalle unità; poi sommo i risultati parziali.`, `Multiply ${a} by each digit of ${b}, starting with the ones; then add up the partial products.`)
+      : L(`Moltiplico la cifra ${b} per ogni cifra di ${a}, partendo dalle unità.`, `Multiply each digit of ${a} by ${b}, starting with the ones.`), -1)];
+    const partials = [];
+    for (let j = 0; j < m; j++) {
+      const r = m > 1 ? 3 + j : 4;
+      const bj = B[j];
+      // si cancellano i riporti della riga precedente
+      st.cells = st.cells.filter(x => x.r !== 0);
+      if (j > 0) {
+        // segnaposto: trattino nella versione italiana, zero in quella inglese
+        for (let z = 0; z < j; z++) put(st, r, g.colOf(z), L('–', '0'), 'pad');
+        frames.push(snapshot(st, L(`Ora moltiplico per la cifra delle <b>${place(j)}</b> (${bj}). Scrivo un trattino al posto ${j === 1 ? 'delle unità' : 'delle ultime ' + j + ' cifre'}: ogni risultato si sposta di ${j === 1 ? 'un posto' : j + ' posti'} a sinistra.`,
+          `Now multiply by the <b>${place(j)}</b> digit (${bj}). Write ${j === 1 ? 'a <b>0</b> in the ones column' : '<b>0</b> in the last ' + j + ' columns'} as a placeholder: every result moves ${j === 1 ? 'one place' : j + ' places'} to the left.`), -1));
+      }
+      let carry = 0;
+      for (let i = 0; i < A.length; i++) {
+        const pr = A[i] * bj + carry;
+        put(st, r, g.colOf(i + j), pr % 10, (m > 1 ? '' : 'd-' + posCls(i + j)) + ' res');
+        let note = `${bj} × ${A[i]} = ${A[i] * bj}${carry ? L(', più il riporto ' + carry + ' = ' + pr, ', plus the carried ' + carry + ' = ' + pr) : ''}.`;
+        if (i < A.length - 1) {
+          if (pr >= 10) { note += L(` Scrivo <b>${pr % 10}</b> e riporto <b>${Math.floor(pr / 10)}</b>.`, ` Write <b>${pr % 10}</b> and carry <b>${Math.floor(pr / 10)}</b>.`); put(st, 0, g.colOf(i + j + 1), Math.floor(pr / 10), 'carry'); }
+          else { note += L(` Scrivo <b>${pr}</b>.`, ` Write <b>${pr}</b>.`); st.cells = st.cells.filter(x => !(x.r === 0 && x.c === g.colOf(i + j + 1))); }
+          carry = Math.floor(pr / 10);
+          frames.push(snapshot(st, note, g.colOf(i + j)));
+        } else {
+          // ultima cifra: si scrive tutto il numero
+          if (pr >= 10) put(st, r, g.colOf(i + j + 1), Math.floor(pr / 10), (m > 1 ? '' : 'd-' + posCls(i + j + 1)) + ' res');
+          note += L(` È l'ultima cifra: scrivo <b>${pr}</b>.`, ` It's the last digit: write <b>${pr}</b>.`);
+          frames.push(snapshot(st, note, g.colOf(i + j)));
+        }
+      }
+      partials.push(a * bj);
+    }
+    if (m > 1) {
+      st.cells = st.cells.filter(x => x.r !== 0);
+      frames.push(snapshot(st, L('Ora sommo i risultati parziali in colonna (i trattini valgono 0).', 'Now add up the partial products, column by column.'), -1));
+      let carry = 0;
+      const P = partials.map((v, j) => rev(v * Math.pow(10, j)));
+      const n = String(prod).length;
+      for (let k = 0; k < n; k++) {
+        const ds = P.map(x => x[k] || 0);
+        const s = ds.reduce((x, y) => x + y, 0) + carry;
+        put(st, resRow, g.colOf(k), s % 10, 'd-' + posCls(k) + ' res');
+        let note = `<b>${cap(place(k))}</b>: ${ds.join(' + ')}${carry ? ' + ' + carry + L(' (riporto)', ' (carried)') : ''} = ${s}.`;
+        if (k === n - 1) note += L(` Scrivo <b>${s}</b>.`, ` Write <b>${s}</b>.`);
+        else if (s >= 10) { note += L(` Scrivo <b>${s % 10}</b> e riporto <b>${Math.floor(s / 10)}</b>.`, ` Write <b>${s % 10}</b> and carry <b>${Math.floor(s / 10)}</b>.`); put(st, 0, g.colOf(k + 1), Math.floor(s / 10), 'carry'); }
+        else note += L(` Scrivo <b>${s}</b>.`, ` Write <b>${s}</b>.`);
+        carry = Math.floor(s / 10);
+        frames.push(snapshot(st, note, g.colOf(k)));
+      }
+    }
+    const dec = decA + decB;
+    if (dec) frames.push(snapshot(st, L(`Ho moltiplicato senza virgole: ${fmt(a, 0)} × ${fmt(b, 0)} = ${fmt(prod, 0)}. I fattori hanno in tutto ${dec} cifr${dec === 1 ? 'a' : 'e'} decimal${dec === 1 ? 'e' : 'i'}, quindi nel risultato conto ${dec} cifr${dec === 1 ? 'a' : 'e'} da destra e metto la virgola: <b>${fmt(prod, dec)}</b>.`,
+      `Ignoring the decimal points: ${fmt(a, 0)} × ${fmt(b, 0)} = ${fmt(prod, 0)}. Together the factors have ${dec} decimal place${dec === 1 ? '' : 's'}, so count ${dec} digit${dec === 1 ? '' : 's'} from the right of the answer and put the decimal point there: <b>${fmt(prod, dec)}</b>.`), -1));
+    else frames.push(snapshot(st, `${L('Risultato', 'Answer')}: ${fmt(a, 0)} × ${fmt(b, 0)} = <b>${fmt(prod, 0)}</b>.`, -1));
+    return frames;
+  }
+
+  // nota iniziale quando dividendo e divisore sono stati moltiplicati per togliere la virgola
+  const shiftNote = (a, d, shift, decA) => !shift ? '' : L(`Il divisore ha la virgola: moltiplico dividendo e divisore per ${fmt(Math.pow(10, shift), 0)}, così ${fmt(a, decA + shift)} : ${fmt(d, shift)} diventa ${fmt(a, decA)} : ${fmt(d, 0)} (il risultato non cambia). `,
+    `The divisor has a decimal point: multiply both numbers by ${fmt(Math.pow(10, shift), 0)}, so ${fmt(a, decA + shift)} ÷ ${fmt(d, shift)} becomes ${fmt(a, decA)} ÷ ${fmt(d, 0)} (the answer doesn't change). `);
+
+  /* Il calcolo della divisione, uguale per i due metodi: le cifre del dividendo (con eventuali decimali),
+     il primo gruppo, le cifre del quoziente per posizione e il testo del quoziente con la virgola. */
+  function divCore(a, d, decA) {
+    const S = String(a).padStart(decA + 1, '0'), nd = S.length, intLen = nd - decA;
+    let end = 0, cur = +S[0];
+    while (cur < d && end < nd - 1) { end++; cur = cur * 10 + +S[end]; }
+    const qDig = {};
+    // testo del quoziente fino alla posizione «last»
+    const qText = last => {
+      const ip = end0 < intLen ? Array.from({ length: Math.min(last, intLen - 1) - end0 + 1 }, (_, k) => qDig[end0 + k] ?? '').join('') : '0';
+      let dp = '';
+      for (let p = intLen; p <= last; p++) dp += p < end0 ? '0' : (qDig[p] ?? '');
+      return ip + (last >= intLen ? sep() + dp : '');
+    };
+    const end0 = end;
+    return { S, nd, intLen, end, cur, qDig, qText };
+  }
+
+  /* ---------------- divisione (metodo italiano) ---------------- */
+  function division(a, d, maxDec = 0, shift = 0, decA = 0) {
+    if (en()) return longDivision(a, d, maxDec, shift, decA);
+    const C = divCore(a, d, decA), { S, nd, intLen, qDig, qText } = C;
+    let { end, cur } = C;
+    const extra = maxDec;
+    const rc = nd + extra + 2; // colonna di inizio del divisore e del quoziente
+    const st = { cols: rc + Math.max(String(d).length, intLen + decA + extra + 3) + 1, rows: 2, cells: [], lines: [], layout: 'it' };
+    for (let i = 0; i < nd; i++) put(st, 0, i, S[i], 'dv d-' + posCls(intLen - 1 - i) + (decA && i === intLen - 1 ? ' commaR' : ''));
+    String(d).split('').forEach((c, i) => put(st, 0, rc + i, c, 'dvs'));
+    // le linee della divisione: verticale prima del divisore, orizzontale sotto il divisore
+    const lines = () => { st.marks = []; for (let r = 0; r < st.rows; r++) st.marks.push({ r, c: rc, k: 'vbar' }); for (let c = rc; c < st.cols; c++) st.marks.push({ r: 0, c, k: 'hbar' }); };
+    lines();
+    const A = fmt(a, decA), Dv = fmt(d, 0);
+    const frames = [snapshot(st, shiftNote(a, d, shift, decA) + `Divido ${A} per ${Dv}. Il dividendo sta a sinistra, il divisore a destra; il quoziente si scrive sotto il divisore.`, -1)];
+    let qs = '';
+    const qPut = () => { st.cells = st.cells.filter(x => !(x.r === 1 && x.c >= rc)); qs.split('').forEach((c, i) => put(st, 1, rc + i, c, c === ',' ? 'comma' : 'q')); };
+    let first = end === 0 ? `Prendo la prima cifra: <b>${cur}</b>.` : `${S[0]} è più piccolo di ${Dv}: prendo ${end + 1} cifre, cioè <b>${cur}</b>.`;
+    if (end >= intLen) { qs = qText(end - 1); if (!qs.includes(',')) qs += ','; qPut(); first = `La parte prima della virgola (${S.slice(0, intLen)}) è più piccola di ${Dv}: il quoziente comincia con <b>${qs}</b>. Prendo ${end + 1} cifre, cioè <b>${cur}</b>.`; }
+    frames.push(snapshot(st, first, end));
+    let row = 1, ext = 0;
+    for (;;) {
+      const qd = Math.floor(cur / d), r = cur - qd * d;
+      qDig[end] = qd; qs = qText(end); qPut();
+      st.rows = Math.max(st.rows, row + 1); lines();
+      const rs = String(r);
+      for (let i = 0; i < rs.length; i++) put(st, row, end - rs.length + 1 + i, rs[i], 'rem');
+      frames.push(snapshot(st, `Quante volte il ${Dv} sta nel ${cur}? <b>${qd}</b> ${qd === 1 ? 'volta' : 'volte'} (${Dv} × ${qd} = ${fmt(d * qd, 0)}). Scrivo ${qd} nel quoziente. Resto: ${cur} − ${d * qd} = <b>${r}</b>, che scrivo sotto.`, end));
+      if (end < nd - 1) {
+        end++;
+        const nxt = +S[end];
+        put(st, row, end, nxt, 'down');
+        cur = r * 10 + nxt;
+        frames.push(snapshot(st, end === intLen ? `Abbasso il ${nxt}, la prima cifra dopo la virgola: metto la <b>virgola</b> anche nel quoziente. Ora ho <b>${cur}</b>.` : `Abbasso la cifra successiva, ${nxt}, accanto al resto: ora ho <b>${cur}</b>.`, end));
+        if (end === intLen) { qs = qText(end - 1) + ','; qPut(); }
+        row++;
+        continue;
+      }
+      const hasDec = decA > 0 || ext > 0;
+      if (r === 0 || ext >= maxDec) {
+        frames.push(snapshot(st, hasDec || (shift && !r) ? `Risultato: ${shift ? fmt(a, decA + shift) + ' : ' + fmt(d, shift) : A + ' : ' + Dv} = <b>${qs}</b>${r ? ' (mi fermo qui)' : ''}.` : `Risultato: quoziente <b>${fmt(+qs, 0)}</b>${r ? `, resto <b>${r}</b>` : ', resto 0'}. Prova: ${Dv} × ${fmt(+qs, 0)}${r ? ' + ' + r : ''} = ${A}.`, -1));
+        return frames;
+      }
+      // si continua con i decimali: uno zero in più accanto al resto
+      end++; ext++;
+      if (!hasDec) { const u = st.cells.find(x => x.r === 0 && x.c === nd - 1); if (u) u.k += ' commaR'; }
+      put(st, 0, end, '0', 'pad');
+      put(st, row, end, 0, 'down');
+      cur = r * 10;
+      if (!hasDec) { qs = qText(end - 1) + ','; qPut(); }
+      frames.push(snapshot(st, hasDec ? `Le cifre del dividendo sono finite ma c'è ancora un resto: aggiungo uno <b>zero</b> accanto al resto: ora ho <b>${cur}</b>.` : `Le cifre del dividendo sono finite ma c'è ancora un resto: metto la <b>virgola</b> nel quoziente e aggiungo uno <b>zero</b> accanto al resto: ora ho <b>${cur}</b>.`, end));
+      row++;
+    }
+  }
+
+  /* ---------------- long division (versione inglese) ----------------
+       quotient on top, divisor outside the bracket, products and remainders underneath */
+  function longDivision(a, d, maxDec = 0, shift = 0, decA = 0) {
+    const C = divCore(a, d, decA), { S, nd, intLen, qDig } = C;
+    let { end, cur } = C;
+    const end0 = end;
+    const ds = String(d), dl = ds.length;
+    const c0 = dl + 1; // first column of the dividend (column dl holds the minus signs of the first step)
+    const st = { cols: c0 + nd + maxDec + 1, rows: 2, cells: [], lines: [], marks: [], layout: 'long' };
+    for (let i = 0; i < dl; i++) put(st, 1, i, ds[i], 'dvs');
+    for (let i = 0; i < nd; i++) put(st, 1, c0 + i, S[i], 'dv d-' + posCls(intLen - 1 - i) + (decA && i === intLen - 1 ? ' dotR' : ''));
+    const bracket = () => { st.marks = [{ r: 1, c: c0, k: 'vbar' }]; for (let c = c0; c < c0 + nd + maxDec; c++) st.marks.push({ r: 0, c, k: 'hbar' }); };
+    bracket();
+    const A = fmt(a, decA), Dv = fmt(d, 0);
+    const frames = [snapshot(st, shiftNote(a, d, shift, decA) + `Divide ${A} by ${Dv}. The dividend goes inside the bracket and the divisor outside, on the left; the answer (the quotient) is written on top.`, -1)];
+    // zero and decimal point on top when the quotient starts after the decimal point
+    const lead = () => { put(st, 0, c0 + intLen - 1, 0, 'q dotR'); for (let p = intLen; p < end0; p++) put(st, 0, c0 + p, 0, 'q'); };
+    let first = end === 0 ? `Start with the first digit: <b>${cur}</b>.` : `${S[0]} is smaller than ${Dv}, so take the first ${end + 1} digits: <b>${cur}</b>.`;
+    if (end >= intLen) { lead(); first = `The whole-number part (${S.slice(0, intLen)}) is smaller than ${Dv}, so on top write <b>0</b> and a decimal point${end > intLen ? ', then a 0 above each decimal digit you skip' : ''}. Take the first ${end + 1} digits: <b>${cur}</b>.`; }
+    frames.push(snapshot(st, first, c0 + end));
+    let row = 2, ext = 0;
+    const right = (r, col, str, k) => { for (let i = 0; i < str.length; i++) put(st, r, col - str.length + 1 + i, str[i], k); };
+    const markDot = () => { const q = st.cells.find(x => x.r === 0 && x.c === c0 + intLen - 1); if (q && !/dotR/.test(q.k)) q.k += ' dotR'; };
+    for (;;) {
+      const qd = Math.floor(cur / d), p = qd * d, r = cur - p;
+      const col = c0 + end;
+      qDig[end] = qd;
+      put(st, 0, col, qd, 'q' + (end === intLen - 1 && (decA || ext) ? ' dotR' : ''));
+      st.rows = Math.max(st.rows, row + 2);
+      right(row, col, String(p), 'ul');
+      put(st, row, col - String(p).length, '−', 'op');
+      frames.push(snapshot(st, `How many times does ${Dv} go into ${cur}? <b>${qd}</b> time${qd === 1 ? '' : 's'}. Write ${qd} on top, then multiply: ${Dv} × ${qd} = <b>${fmt(p, 0)}</b>; write it underneath.`, col));
+      right(row + 1, col, String(r), 'rem');
+      frames.push(snapshot(st, `Subtract: ${cur} − ${p} = <b>${r}</b>.`, col));
+      if (end < nd - 1) {
+        end++;
+        const nxt = +S[end];
+        put(st, row + 1, c0 + end, nxt, 'down');
+        cur = r * 10 + nxt;
+        if (end === intLen) markDot();
+        frames.push(snapshot(st, end === intLen ? `Bring down the next digit, ${nxt}. It comes after the decimal point, so put a <b>decimal point</b> in the quotient too, right above the other one. Now you have <b>${cur}</b>.` : `Bring down the next digit, ${nxt}: now you have <b>${cur}</b>.`, c0 + end));
+        row += 2;
+        continue;
+      }
+      const hasDec = decA > 0 || ext > 0;
+      if (r === 0 || ext >= maxDec) {
+        const qn = C.qText(end);
+        frames.push(snapshot(st, hasDec || (shift && !r)
+          ? `Answer: ${shift ? fmt(a, decA + shift) + ' ÷ ' + fmt(d, shift) : A + ' ÷ ' + Dv} = <b>${qn}</b>${r ? ' (we stop here)' : ''}.`
+          : `Answer: quotient <b>${fmt(+qn, 0)}</b>, remainder <b>${r}</b>. Check: ${Dv} × ${fmt(+qn, 0)}${r ? ' + ' + r : ''} = ${A}.`, -1));
+        return frames;
+      }
+      // carry on after the decimal point: a zero in the dividend, brought down
+      end++; ext++;
+      if (!hasDec) { const u = st.cells.find(x => x.r === 1 && x.c === c0 + nd - 1); if (u) u.k += ' dotR'; markDot(); }
+      put(st, 1, c0 + end, '0', 'pad');
+      put(st, row + 1, c0 + end, 0, 'down');
+      cur = r * 10;
+      frames.push(snapshot(st, `There are no digits left, but there is still a remainder. ${!hasDec ? 'Put a <b>decimal point</b> in the dividend and in the quotient (one above the other), then write' : 'Write another'} <b>0</b> in the dividend and bring it down: now you have <b>${cur}</b>.`, c0 + end));
+      row += 2;
+    }
+  }
+
+  // costruisce i passaggi per una descrizione di calcolo {op, a, b, dec, decA, decB, maxDec, shift}
+  function build(c) {
+    if (!c) return null;
+    // più operazioni in fila: i passaggi di ciascuna, con il numero dell'operazione
+    if (Array.isArray(c)) {
+      if (c.length === 1) return build(c[0]);
+      const n = c.length;
+      return c.flatMap((x, i) => build(x).map((f, j) => ({ ...f, grp: i, note: `<span class="stag">${L('Operazione', 'Operation')} ${i + 1} ${L('di', 'of')} ${n}</span> ` + f.note })));
+    }
+    if (c.op === '+') return addition(c.a, c.b, c.dec || 0, c.more || []);
+    if (c.op === '−') return subtraction(c.a, c.b, c.dec || 0);
+    if (c.op === '×') return multiplication(c.a, c.b, c.decA || 0, c.decB || 0);
+    if (c.op === ':') return division(c.a, c.b, c.maxDec || 0, c.shift || 0, c.decA || 0);
+    return null;
+  }
+  const api = { build, addition, subtraction, multiplication, division, longDivision, fmt };
+  root.Steps = api;
+  if (typeof module !== 'undefined') module.exports = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Il gioco: profili dei bambini, mappa dei mondi (classi), moduli e livelli, minigiochi, stelle e monete. */
+(function () {
+  'use strict';
+  const M = window.Mate;
+  const $ = s => document.querySelector(s);
+  const EN = window.LANG === 'en';
+  const t = (it, en) => EN ? en : it;
+  const TH = EN ? ',' : '.', DP = EN ? '.' : ','; // separatore delle migliaia e dei decimali
+  const KEY = EN ? 'math-game-en-v1' : 'mate-gioco-v1';
+  const AVATARS = ['🐶', '🐱', '🐰', '🦊', '🐼', '🐨', '🐯', '🦁', '🐸', '🐵', '🦄', '🐙', '🐢', '🦖', '🐧', '🦉', '🐞', '🐬'];
+  const WORLD_EMOJI = { prato: '🌼', bosco: '🌲', mare: '🐳', montagna: '🏔️', spazio: '🪐' };
+  const BALLOON_COL = ['#e63946', '#3a86ff', '#ff9f1c', '#8338ec', '#2a9d8f', '#f72585'];
+  const QN = 8; // domande per livello
+
+  /* ---------------- salvataggio ---------------- */
+  let D = { players: [], cur: null, teacher: false, sound: true };
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && Array.isArray(s.players)) D = Object.assign(D, s); } catch (e) { /* senza salvataggio */ }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) { /* ignora */ } };
+  const me = () => D.players.find(p => p.id === D.cur) || null;
+  const lkey = (w, m, l) => `${w}/${m}/${l}`;
+
+  /* ---------------- suoni (sintetizzati, niente file) ---------------- */
+  let actx = null;
+  function beep(kind) {
+    if (!D.sound) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      const notes = { ok: [660, 880], no: [300, 220], tap: [520], win: [523, 659, 784, 1046] }[kind] || [440];
+      notes.forEach((f, i) => {
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type = kind === 'no' ? 'sawtooth' : 'triangle'; o.frequency.value = f;
+        const t = actx.currentTime + i * 0.11;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(kind === 'no' ? 0.06 : 0.12, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+        o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.2);
+      });
+    } catch (e) { /* audio non disponibile */ }
+  }
+
+  /* ---------------- utilità ---------------- */
+  const el = (tag, attrs = {}, ...kids) => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === 'class') e.className = v; else if (k === 'html') e.innerHTML = v;
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else if (v === true) e.setAttribute(k, ''); else if (v !== false && v != null) e.setAttribute(k, v);
+    }
+    for (const c of kids.flat()) if (c != null) e.append(c instanceof Node ? c : document.createTextNode(String(c)));
+    return e;
+  };
+  let toastT;
+  function toast(t) { const x = $('#toast'); x.textContent = t; x.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { x.hidden = true; }, 2600); }
+  const starsOf = (p, k) => (p && p.stars[k]) || 0;
+  function worldStars(p, w) { let s = 0, n = 0; for (const m of w.modules) for (const l of m.levels) { s += starsOf(p, lkey(w.n, m.id, l.id)); n += 3; } return [s, n]; }
+  function setTop(title, back) {
+    $('#tTitle').innerHTML = '';
+    $('#tTitle').append(el('span', {}, title));
+    $('#tBack').hidden = !back;
+    $('#tBack').onclick = back || null;
+    const p = me();
+    $('#tCoins').hidden = !p; $('#tPlayer').hidden = !p;
+    if (p) { $('#tCoins').textContent = '🪙 ' + p.coins; $('#tPlayer').textContent = p.avatar + ' ' + p.name; }
+    $('#tSound').textContent = D.sound ? '🔊' : '🔇';
+  }
+  /* ---------------- numeri colorati per posizione ----------------
+     unità rosso, decine blu, centinaia verde, migliaia viola, milioni arancio, decimali azzurro;
+     il punto delle migliaia è piccolo e grigio, la virgola dei decimali grande e marcata */
+  const POS = ['u', 'da', 'h', 'k', 'k', 'k', 'mi', 'mi', 'mi', 'g', 'g', 'g'];
+  const NUM_RE = EN ? /\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?/g : /\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:,\d+)?/g;
+  function numSpan(str) {
+    const [ip, dp] = str.split(DP);
+    const digits = ip.split(TH).join('');
+    const out = el('span', { class: 'nm' });
+    let pos = digits.length - 1;
+    for (const ch of ip) {
+      if (ch === TH) { out.append(el('span', { class: 'sep-k', title: t('separatore delle migliaia', 'thousands separator') }, TH)); continue; }
+      out.append(el('span', { class: 'd-' + (POS[pos] || 'g') }, ch)); pos--;
+    }
+    if (dp !== undefined) { out.append(el('span', { class: 'sep-dec', title: t('virgola dei decimali', 'decimal point') }, DP)); for (const ch of dp) out.append(el('span', { class: 'd-dec' }, ch)); }
+    return out;
+  }
+  const SKIP = 'svg, .fact, .note, .mg-title, .anslbl, .lvl, .btn, .giudizio, .rv-l, .keypad, .legend, .nm, .top, .bigstars';
+  function deco(root) {
+    if (!root) return root;
+    const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.parentElement && n.parentElement.closest(SKIP)) || !/\d/.test(n.nodeValue) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+    const nodes = []; while (tw.nextNode()) nodes.push(tw.currentNode);
+    let big = false;
+    for (const n of nodes) {
+      const t = n.nodeValue, frag = document.createDocumentFragment();
+      let last = 0;
+      // le cifre isolate (5 h, 7 da…) restano normali: si colorano i numeri con più cifre o con la virgola
+      t.replace(NUM_RE, (m, i) => { if (m.length < 2) return m; frag.append(t.slice(last, i)); frag.append(numSpan(m)); last = i + m.length; big = true; return m; });
+      frag.append(t.slice(last));
+      n.replaceWith(frag);
+    }
+    root._big = big;
+    return root;
+  }
+  // legenda dei colori (si mostra quando ci sono numeri con più cifre)
+  function legend(withDec, withK) {
+    const it = (c, t) => el('span', { class: 'lg' }, el('i', { class: 'd-' + c }, '■'), t);
+    return el('div', { class: 'legend' }, withK ? it('k', t('migliaia', 'thousands')) : null, it('h', t('centinaia', 'hundreds')), it('da', t('decine', 'tens')), it('u', t('unità', 'ones')), withDec ? el('span', { class: 'lg' }, el('b', { class: 'sep-dec' }, DP), ' ', el('i', { class: 'd-dec' }, '■'), t('decimali', 'decimals')) : null);
+  }
+  /* ---------------- passaggi del calcolo in colonna ---------------- */
+  // disegna un fotogramma dei passaggi (righe da r0 a r1) nella griglia
+  function fillGrid(gridEl, f, group, r0 = 0, r1 = f.rows - 1) {
+    gridEl.innerHTML = '';
+    gridEl.style.gridTemplateColumns = `repeat(${f.cols}, var(--cw))`;
+    const map = new Map(f.cells.map(c => [c.r + ',' + c.c, c]));
+    const marks = new Map(); for (const mk of f.marks || []) marks.set(mk.r + ',' + mk.c, (marks.get(mk.r + ',' + mk.c) || '') + ' ' + mk.k);
+    // le righe vuote che portano solo la linea del risultato restano basse
+    const thin = r => f.lines.includes(r) && !group.some(fr => fr.cells.some(x => x.r === r));
+    const rows = []; for (let r = r0; r <= r1; r++) rows.push(r);
+    gridEl.style.gridTemplateRows = rows.map(r => thin(r) ? '14px' : 'var(--rh)').join(' ');
+    for (const r of rows) for (let c = 0; c < f.cols; c++) {
+      const cell = map.get(r + ',' + c);
+      let cls = 'sc' + (r === 0 && !f.layout ? ' ctop' : '') + (f.lines.includes(r) ? ' line' : '') + (c === f.hl ? ' hl' : '') + (marks.get(r + ',' + c) || '');
+      if (cell) cls += ' ' + cell.k;
+      gridEl.append(el('div', { class: cls }, cell ? cell.t : ''));
+    }
+    return gridEl;
+  }
+  // l'operazione della domanda, già incolonnata (senza il risultato)
+  function columnView(calc) {
+    if (!calc || Array.isArray(calc) || !window.Steps) return null;
+    const frames = window.Steps.build(calc);
+    if (!frames || !frames.length) return null;
+    const f = frames[0];
+    // addizione, sottrazione e moltiplicazione: i numeri e la linea; divisione: tutto lo schema
+    const r0 = f.layout ? 0 : 1, r1 = f.layout ? f.rows - 1 : f.lines[0];
+    const g = fillGrid(el('div', { class: 'sgrid' }), { ...f, hl: -1 }, frames, r0, r1);
+    return el('div', { class: 'qcol', 'aria-label': t('operazione in colonna', 'column calculation') }, el('div', { class: 'swrap' }, g));
+  }
+  const calcOf = q => q.calc || q.calcs || null;
+  // i calcoli si fanno a mano, sul quaderno: nel gioco si scrive solo il risultato
+  const handNote = single => el('div', { class: 'handnote' }, single
+    ? t('✏️ Copia l\'operazione sul quaderno, fai il calcolo in colonna a mano e poi scrivi qui solo il risultato.', '✏️ Copy the calculation into your exercise book, work it out in columns by hand, then type just the answer here.')
+    : t('✏️ Fai i calcoli in colonna a mano sul quaderno, uno alla volta, e poi scrivi qui solo il risultato finale.', '✏️ Work out the calculations in columns by hand in your exercise book, one at a time, then type just the final answer here.'));
+  function stepsViewer(calc) {
+    const frames = window.Steps && window.Steps.build(calc);
+    if (!frames || !frames.length) return null;
+    let i = 0;
+    const box = el('div', { class: 'steps' });
+    const gridEl = el('div', { class: 'sgrid' });
+    const note = el('div', { class: 'snote' });
+    const cnt = el('span', { class: 'scnt' });
+    const prev = el('button', { class: 'btn alt sbtn', type: 'button', onclick: () => go(i - 1) }, t('◀ Indietro', '◀ Back'));
+    const next = el('button', { class: 'btn sbtn', type: 'button', onclick: () => go(i + 1) }, t('Avanti ▶', 'Next ▶'));
+    const all = el('button', { class: 'btn alt sbtn', type: 'button', onclick: () => go(frames.length - 1) }, t('Fino alla fine ⏭', 'Skip to the end ⏭'));
+    function render() {
+      const f = frames[i];
+      fillGrid(gridEl, f, frames.filter(fr => fr.grp === f.grp));
+      note.innerHTML = f.note;
+      deco(note);
+      cnt.textContent = t(`Passo ${i + 1} di ${frames.length}`, `Step ${i + 1} of ${frames.length}`);
+      prev.disabled = i === 0; next.disabled = i === frames.length - 1; all.disabled = i === frames.length - 1;
+    }
+    function go(k) { i = Math.max(0, Math.min(frames.length - 1, k)); render(); beep('tap'); }
+    box.append(el('div', { class: 'stitle' }, t('👣 Il calcolo passo per passo', '👣 The calculation, step by step')), el('div', { class: 'swrap' }, gridEl), note, el('div', { class: 'sctl' }, prev, cnt, next, all));
+    box._key = e => { if (e.key === 'ArrowRight') { go(i + 1); return true; } if (e.key === 'ArrowLeft') { go(i - 1); return true; } return false; };
+    render();
+    return box;
+  }
+  // pulsante che apre i passaggi sotto di sé
+  function stepsButton(calc, label = t('👣 Guarda i passaggi', '👣 Show the steps')) {
+    if (!calc || !window.Steps) return null;
+    const wrap = el('div', { class: 'steps-holder' });
+    const b = el('button', { class: 'btn alt', type: 'button', onclick: () => { const v = stepsViewer(calc); if (!v) return; b.remove(); wrap.append(v); stepsOpen = v; v.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } }, label);
+    wrap.append(b);
+    return wrap;
+  }
+  let stepsOpen = null;
+  const screen = () => { const s = $('#screen'); s.innerHTML = ''; window.scrollTo(0, 0); return s; };
+
+  /* ---------------- profili ---------------- */
+  function showPlayers() {
+    D.cur = null; save();
+    setTop(t('Matematica in gioco', 'Maths at Play'));
+    const s = screen();
+    s.append(el('h1', {}, t('Chi gioca oggi?', 'Who\'s playing today?')), el('p', { class: 'sub' }, t('Scegli il tuo nome oppure crea un nuovo giocatore.', 'Choose your name or create a new player.')));
+    const g = el('div', { class: 'players' });
+    for (const p of D.players) {
+      let tot = 0; for (const v of Object.values(p.stars)) tot += v;
+      g.append(el('div', { class: 'player', role: 'button', tabindex: 0, onclick: () => { D.cur = p.id; save(); showWorlds(); }, onkeydown: e => { if (e.key === 'Enter') { D.cur = p.id; save(); showWorlds(); } } },
+        el('div', { class: 'av' }, p.avatar), el('div', { class: 'nm' }, p.name), el('div', { class: 'st' }, `⭐ ${tot}  ·  🪙 ${p.coins}`),
+        el('button', { class: 'del', type: 'button', title: t('Elimina giocatore', 'Delete player'), 'aria-label': t('Elimina ', 'Delete ') + p.name, onclick: e => { e.stopPropagation(); confirmDel(p); } }, '✕')));
+    }
+    g.append(el('button', { class: 'player new', type: 'button', onclick: newPlayer }, el('div', { class: 'av' }, '➕'), el('div', { class: 'nm' }, t('Nuovo giocatore', 'New player'))));
+    s.append(g);
+    s.append(el('p', { class: 'note', style: 'margin-top:22px' }, t('I progressi restano salvati su questo tablet o computer, in Chrome.', 'Progress is saved on this tablet or computer, in Chrome.')));
+  }
+  function modal(content) {
+    const m = el('div', { class: 'modal', onclick: e => { if (e.target === m) m.remove(); } }, el('div', { class: 'box' }, content));
+    document.body.append(m); return m;
+  }
+  function newPlayer() {
+    let av = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+    const name = el('input', { class: 'field', maxlength: 16, placeholder: t('Il tuo nome', 'Your name'), 'aria-label': t('Nome', 'Name') });
+    const grid = el('div', { class: 'avatars' });
+    const paint = () => grid.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.textContent === av)));
+    for (const a of AVATARS) grid.append(el('button', { type: 'button', onclick: () => { av = a; paint(); beep('tap'); } }, a));
+    paint();
+    const go = () => {
+      const n = name.value.trim();
+      if (!n) { name.focus(); toast(t('Scrivi il tuo nome', 'Type your name')); return; }
+      const p = { id: 'p' + Date.now().toString(36), name: n, avatar: av, coins: 0, stars: {} };
+      D.players.push(p); D.cur = p.id; save(); m.remove(); showWorlds();
+    };
+    name.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    const m = modal([el('h2', { style: 'margin-top:0' }, t('Nuovo giocatore', 'New player')), name, el('div', { style: 'font-weight:800;margin-top:14px' }, t('Scegli il tuo personaggio', 'Choose your character')), grid,
+      el('div', { class: 'row' }, el('button', { class: 'btn alt', type: 'button', onclick: () => m.remove() }, t('Annulla', 'Cancel')), el('button', { class: 'btn', type: 'button', onclick: go }, t('Iniziamo!', 'Let\'s go!')))]);
+    setTimeout(() => name.focus(), 50);
+  }
+  function confirmDel(p) {
+    const m = modal([el('h2', { style: 'margin-top:0' }, t(`Eliminare ${p.name}?`, `Delete ${p.name}?`)), el('p', {}, t('Si perdono le stelle e le monete di questo giocatore.', 'This player\'s stars and coins will be lost.')),
+      el('div', { class: 'row' }, el('button', { class: 'btn alt', type: 'button', onclick: () => m.remove() }, t('No', 'No')), el('button', { class: 'btn', style: 'background:#e63946;box-shadow:0 4px 0 #a4161a', type: 'button', onclick: () => { D.players = D.players.filter(x => x !== p); save(); m.remove(); showPlayers(); } }, t('Sì, elimina', 'Yes, delete')))]);
+  }
+
+  /* ---------------- mondi (classi) ---------------- */
+  function showWorlds() {
+    const p = me(); if (!p) return showPlayers();
+    setTop(t('I mondi della matematica', 'The worlds of maths'), showPlayers);
+    const s = screen();
+    s.append(el('h1', {}, t(`Ciao ${p.name}! ${p.avatar}`, `Hi ${p.name}! ${p.avatar}`)), el('p', { class: 'sub' }, t('Ogni mondo è una classe. Scegli dove andare!', 'Each world is a school year. Choose where to go!')));
+    const g = el('div', { class: 'worlds' });
+    for (const w of M.worlds) {
+      const [st, tot] = worldStars(p, w);
+      g.append(el('button', { class: 'world t-' + w.theme, type: 'button', onclick: () => showWorld(w) },
+        el('div', { class: 'num' }, t(`Classe ${w.n}ª`, `Grade ${w.n}`)), el('div', { class: 'wn' }, w.name), el('div', { class: 'em' }, WORLD_EMOJI[w.theme]), el('div', { class: 'prog' }, `⭐ ${st} / ${tot}`)));
+    }
+    s.append(g);
+  }
+
+  /* ---------------- moduli e livelli di un mondo ---------------- */
+  function unlocked(p, w, m, i) {
+    if (D.teacher || i === 0) return true;
+    return starsOf(p, lkey(w.n, m.id, m.levels[i - 1].id)) > 0;
+  }
+  function showWorld(w) {
+    const p = me(); if (!p) return showPlayers();
+    setTop(t(`Classe ${w.n}ª · ${w.name}`, `Grade ${w.n} · ${w.name}`), showWorlds);
+    const s = screen();
+    s.append(el('p', { class: 'sub', style: 'margin-top:4px' }, t('Gli argomenti sono divisi in moduli. Completa un livello per sbloccare il successivo.', 'Topics are grouped into modules. Complete a level to unlock the next one.')));
+    for (const m of w.modules) {
+      const box = el('section', { class: 'module' });
+      let ms = 0; for (const l of m.levels) ms += starsOf(p, lkey(w.n, m.id, l.id));
+      box.append(el('h2', {}, el('span', {}, m.icon), el('span', {}, m.title), el('span', { class: 'ms' }, `⭐ ${ms}/${m.levels.length * 3}`)));
+      const path = el('div', { class: 'path' });
+      m.levels.forEach((l, i) => {
+        const st = starsOf(p, lkey(w.n, m.id, l.id)), open = unlocked(p, w, m, i);
+        path.append(el('button', { class: 'lvl' + (st ? ' done' : '') + (open ? '' : ' locked'), type: 'button', 'aria-label': `${l.title}${open ? '' : t(' (bloccato)', ' (locked)')}`, onclick: () => { if (!open) { toast(t('Prima completa il livello precedente!', 'Complete the previous level first!')); return; } beep('tap'); showIntro(w, m, l); } },
+          el('div', { class: 'dot' }, open ? String(i + 1) : '🔒'), el('div', { class: 'lt' }, l.title), el('div', { class: 'stars', html: [0, 1, 2].map(k => k < st ? '<b>★</b>' : '★').join('') })));
+      });
+      // verifica finale del modulo: si apre quando tutti i livelli del modulo sono superati
+      const allDone = m.levels.every(l => starsOf(p, lkey(w.n, m.id, l.id)) > 0);
+      const vOpen = allDone || D.teacher;
+      const best = (p.verif || {})[lkey(w.n, m.id, 'verifica')];
+      path.append(el('button', { class: 'lvl verif' + (best !== undefined ? ' done' : '') + (vOpen ? '' : ' locked'), type: 'button', 'aria-label': t('Verifica finale', 'Final test') + (vOpen ? '' : t(' (bloccata)', ' (locked)')), onclick: () => { if (!vOpen) { toast(t('La verifica si apre quando hai superato tutti i livelli del modulo!', 'The test opens when you have passed every level in the module!')); return; } beep('tap'); showVerifIntro(w, m); } },
+        el('div', { class: 'dot' }, vOpen ? '🏆' : '🔒'), el('div', { class: 'lt' }, t('Verifica finale', 'Final test')), el('div', { class: 'vg' }, best !== undefined ? GIUDIZI(best).short : '')));
+      box.append(path);
+      s.append(box);
+    }
+  }
+  // giudizi della scuola primaria (O.M. 172/2020)
+  function GIUDIZI(pct) {
+    if (pct >= 90) return { short: t('Avanzato', 'Advanced'), text: t('Avanzato', 'Advanced'), col: '#2a9d5c' };
+    if (pct >= 75) return { short: t('Intermedio', 'Intermediate'), text: t('Intermedio', 'Intermediate'), col: '#4361ee' };
+    if (pct >= 60) return { short: t('Base', 'Basic'), text: t('Base', 'Basic'), col: '#ff9f1c' };
+    return { short: t('Da rinforzare', 'Keep practising'), text: t('In via di prima acquisizione', 'Still learning (emerging)'), col: '#e63946' };
+  }
+  const VN = 10; // domande della verifica
+  function showVerifIntro(w, m) {
+    setTop(`${m.icon} ${t('Verifica', 'Test')}: ${m.title}`, () => showWorld(w));
+    const s = screen();
+    s.append(el('div', { class: 'intro' },
+      el('h1', { style: 'margin-top:0' }, t('🏆 Verifica finale', '🏆 Final test')),
+      el('p', { style: 'font-size:20px;text-align:center' }, t(`Modulo «${m.title}»: ${VN} domande su tutti i livelli del modulo.`, `Module “${m.title}”: ${VN} questions covering every level in the module.`)),
+      el('div', { class: 'how', html: t('📝 Durante la verifica non ci sono aiuti: rispondi con calma. <br>✏️ Tieni pronto il quaderno: i calcoli falli a mano, in colonna, e scrivi qui solo il risultato. <br>Alla fine vedrai il risultato e la spiegazione di ogni errore.', '📝 There are no hints during the test: take your time. <br>✏️ Keep your exercise book ready: do the calculations by hand, in columns, and type just the answer here. <br>At the end you will see your result and an explanation of every mistake.') }),
+      el('div', { class: 'row' }, el('button', { class: 'btn ok', type: 'button', onclick: () => playVerif(w, m) }, t('Inizia la verifica ▶', 'Start the test ▶')))));
+  }
+  function playVerif(w, m) {
+    const qs = [], seen = new Set();
+    const order = [];
+    // ogni livello almeno una volta (se ce ne sono abbastanza), il resto a caso
+    const lv = m.levels.slice().sort(() => Math.random() - 0.5);
+    for (let i = 0; i < VN; i++) order.push(lv[i % lv.length]);
+    for (const l of order) {
+      let q, g = 0;
+      do { q = l.gen(); g++; } while (seen.has(q.t + (q.v || '').length) && g < 30);
+      seen.add(q.t + (q.v || '').length);
+      q._lid = l.id; q._theory = l.theory; q._ltitle = l.title;
+      qs.push(q);
+    }
+    cur = { w, m, l: { id: 'verifica', title: t('Verifica: ', 'Test: ') + m.title, theory: '' }, qs, i: 0, res: [], coins: 0, verif: true, wrong: [] };
+    nextQ();
+  }
+
+  /* ---------------- livello: spiegazione e gioco ---------------- */
+  function showIntro(w, m, l) {
+    setTop(`${m.icon} ${l.title}`, () => showWorld(w));
+    const s = screen();
+    const ex = l.gen();
+    const card = el('div', { class: 'intro' },
+      el('h1', { style: 'margin-top:0' }, l.title),
+      el('div', { class: 'how', html: t('💡 <b>Come si fa</b><br>', '💡 <b>How to do it</b><br>') + l.theory }),
+      el('div', { class: 'note' }, t('Un esempio:', 'An example:')),
+      el('div', { class: 'qtext', style: 'text-align:center;font-size:22px', html: ex.t }),
+      ex.v ? el('div', { class: 'qvis', html: ex.v }) : null,
+      ex.calcHide ? null : columnView(ex.calc),
+      calcOf(ex) && !ex.calcHide ? handNote(!!columnView(ex.calc)) : null,
+      calcOf(ex) ? stepsButton(calcOf(ex), t('👣 Guarda come si fa, passo per passo', '👣 See how it\'s done, step by step')) : null,
+      el('p', { class: 'note' }, t(`Rispondi a ${QN} domande. Tieni vicino il quaderno: i calcoli si fanno a mano e nel gioco si scrive solo il risultato. Se sbagli ti spiego come si fa.`, `Answer ${QN} questions. Keep your exercise book handy: you do the calculations by hand and only type the answer in the game. If you make a mistake, I'll show you how to do it.`)),
+      el('div', { class: 'row' }, el('button', { class: 'btn ok', type: 'button', onclick: () => play(w, m, l) }, t('Gioca! ▶', 'Play! ▶'))));
+    deco(card);
+    s.append(card);
+  }
+
+  let cur = null; // partita in corso
+  // chiave di una domanda (per non ripetere le stesse quando si rigioca)
+  const qkey = q => q.t + '|' + (q.v || '').length + '|' + (q.o || []).join(',');
+  function play(w, m, l) {
+    const p = me();
+    p.recent = p.recent || {};
+    const rk = lkey(w.n, m.id, l.id);
+    const recent = new Set(p.recent[rk] || []);
+    const qs = [], seen = new Set();
+    // domande sempre nuove: si scartano quelle delle partite precedenti (finché è possibile)
+    for (let g = 0; qs.length < QN && g < 400; g++) {
+      const q = l.gen(), k = qkey(q);
+      if (seen.has(k) && g < 300) continue;
+      if (recent.has(k) && g < 250) continue;
+      seen.add(k); qs.push(q);
+    }
+    p.recent[rk] = [...(p.recent[rk] || []), ...qs.map(qkey)].slice(-60);
+    save();
+    // i minigiochi cambiano a ogni partita: si parte da un punto diverso della rotazione
+    p.spin = ((p.spin || 0) + 1) % 997;
+    qs.forEach((q, i) => { q._style = (p.spin + i) % 3; if (q.k === 'num' && Number.isInteger(q.a) && (p.spin + i) % 3 === 2) toChoice(q); });
+    cur = { w, m, l, qs, i: 0, res: [], coins: 0 };
+    nextQ();
+  }
+  // una domanda numerica diventa a scelta (minigioco diverso), con risposte vicine come distrattori
+  function toChoice(q) {
+    const a = q.a, opts = new Set([a]);
+    const spread = Math.max(2, Math.round(Math.abs(a) * 0.15));
+    let g = 0;
+    while (opts.size < 4 && g++ < 60) { const d = Math.floor(Math.random() * (2 * spread + 1)) - spread; const v = a + (d || 1); if (v >= 0 || a < 0) opts.add(v); }
+    if (a % 10 === 0 && a >= 10) opts.add(a + 1);
+    const arr = [...opts].slice(0, 4).sort(() => Math.random() - 0.5);
+    q.k = 'choice'; q.o = arr.map(v => M.unitFmt(M.F(v), q.unit && q.unit.length <= 3 ? q.unit : '')); q.a = arr.indexOf(a); q._fromNum = true;
+  }
+  function progressBar() {
+    const b = el('div', { class: 'progress' });
+    for (let i = 0; i < cur.qs.length; i++) b.append(el('i', { class: i < cur.res.length ? (cur.res[i] ? 'ok' : 'no') : i === cur.i ? 'cur' : '' }));
+    return b;
+  }
+  function nextQ() {
+    if (cur.i >= cur.qs.length) return finish();
+    const { w, m, l } = cur, q = cur.qs[cur.i];
+    setTop(`${m.icon} ${l.title}`, () => showWorld(w));
+    const s = screen();
+    const game = el('div', { class: 'game' });
+    game.append(progressBar());
+    const card = el('div', { class: 'qcard' });
+    const st = q._style || 0;
+    const kind = q.k === 'choice' ? ['palloncini', 'pesci', 'carte'][st] : q.k === 'cmp' ? 'coccodrillo' : 'forziere';
+    card.append(el('div', { class: 'mg-title' }, (EN ? { palloncini: '🎈 Pop the right balloon', pesci: '🎣 Catch the right fish', carte: '🃏 Turn over the right card', coccodrillo: '🐊 Help the crocodile', forziere: '🧰 Open the treasure chest with the right answer' } : { palloncini: '🎈 Scoppia il palloncino giusto', pesci: '🎣 Pesca il pesce giusto', carte: '🃏 Gira la carta giusta', coccodrillo: '🐊 Aiuta il coccodrillo', forziere: '🧰 Apri il forziere con la risposta giusta' })[kind]));
+    card.append(el('div', { class: 'qtext', html: q.t }));
+    if (q.v) card.append(el('div', { class: 'qvis', html: q.v }));
+    if (!q.calcHide) { const cv = columnView(q.calc); if (cv) card.append(cv); if (calcOf(q)) card.append(handNote(!!cv)); }
+    const area = el('div', {});
+    card.append(area);
+    game.append(card);
+    s.append(game);
+    if (q.k === 'choice') balloons(area, q, kind);
+    else if (q.k === 'cmp') crocs(area, q);
+    else chest(area, q);
+    deco(card);
+    // legenda dei colori delle cifre
+    const txt = card.querySelector('.qtext').textContent + ' ' + (q.o || []).join(' ');
+    const decRe = EN ? /\d\.\d/ : /\d,\d/, thRe = EN ? /\d,\d{3}|\d{4}/ : /\d\.\d{3}|\d{4}/;
+    if (card._big || decRe.test(txt)) card.insertBefore(legend(decRe.test(txt) || (q.k === 'num' && !Number.isInteger(q.a)), thRe.test(txt) || (q.k === 'num' && Math.abs(q.a) >= 1000)), card.querySelector('.qtext').nextSibling);
+  }
+
+  // palloncini: si tocca quello con la risposta giusta
+  // tre minigiochi a scelta: palloncini, pesci che nuotano, carte da girare
+  function balloons(area, q, kind = 'palloncini') {
+    const wrap = el('div', { class: 'balloons mg-' + kind });
+    q.o.forEach((o, i) => {
+      const b = el('button', { class: 'balloon', type: 'button', 'aria-label': o, onclick: () => { if (cur.locked) return; b.classList.add(kind === 'carte' ? 'flip' : 'pop'); answer(q, i, () => wrap.querySelectorAll('.balloon').forEach((x, j) => { if (j === q.a) x.classList.add('good'); })); } },
+        el('div', { class: 'b', style: `background:${BALLOON_COL[i % BALLOON_COL.length]}` }, /\d/.test(o) ? el('span', { class: 'lab' }, o) : o), kind === 'palloncini' ? el('div', { class: 's' }) : null);
+      wrap.append(b);
+    });
+    area.append(wrap);
+    cur.keyHandler = e => { const n = parseInt(e.key, 10); if (n >= 1 && n <= q.o.length) wrap.children[n - 1].click(); };
+  }
+  // coccodrillo: <, >, =
+  function crocs(area, q) {
+    const wrap = el('div', { class: 'crocs' });
+    for (const [sym, lab] of [['<', t('minore', 'less than')], ['=', t('uguale', 'equal to')], ['>', t('maggiore', 'greater than')]]) wrap.append(el('button', { class: 'croc', type: 'button', 'aria-label': lab, onclick: () => { if (!cur.locked) answer(q, sym); } }, el('div', {}, sym, el('small', {}, lab))));
+    area.append(wrap);
+    cur.keyHandler = e => { if (['<', '>', '='].includes(e.key)) answer(q, e.key); };
+  }
+  // forziere: uno o più campi numerici con il tastierino
+  function chest(area, q) {
+    const fields = q.k === 'multi' ? q.f.map(f => f.l) : [null];
+    const vals = fields.map(() => '');
+    let focus = 0;
+    const boxes = [];
+    const row = el('div', { class: 'answer-row' });
+    const mkBox = i => { const b = el('div', { class: 'ansbox', role: 'textbox', 'aria-label': fields[i] || t('risposta', 'answer'), onclick: () => { focus = i; paint(); } }); boxes[i] = b; return b; };
+    if (q.fr) {
+      row.append(el('div', { class: 'frac' }, el('div', { class: 'anslbl' }, fields[0]), mkBox(0), el('div', { class: 'bar' }), mkBox(1), el('div', { class: 'anslbl' }, fields[1])));
+    } else {
+      fields.forEach((f, i) => row.append(el('div', {}, f ? el('div', { class: 'anslbl' }, f) : null, mkBox(i))));
+      if (q.unit) { const u = el('div', { class: 'unit' }, q.unit); if (M.unitBefore(q.unit)) row.prepend(u); else row.append(u); }
+    }
+    const paint = () => boxes.forEach((b, i) => { b.textContent = ''; const v = vals[i]; if (/\d\d/.test(v) || v.includes(DP)) { const neg = v.startsWith('-'); if (neg) b.append('−'); b.append(numSpan(v.replace('-', ''))); } else b.textContent = v || ' '; b.classList.toggle('focus', i === focus && !cur.locked); });
+    const press = k => {
+      if (cur.locked) return;
+      if (k === 'ok') { if (vals.some(v => !v)) { toast(vals.length > 1 ? t('Completa tutte le caselle', 'Fill in all the boxes') : t('Scrivi la risposta', 'Type your answer')); return; } submit(); return; }
+      if (k === 'del') vals[focus] = vals[focus].slice(0, -1);
+      else if (k === '±') vals[focus] = vals[focus].startsWith('-') ? vals[focus].slice(1) : '-' + vals[focus];
+      else if (k === 'dp') { if (!vals[focus].includes(DP)) vals[focus] = (vals[focus] || '0') + DP; }
+      else if (vals[focus].replace(/[-,.]/g, '').length < 9) { vals[focus] += k; if (q.fr === undefined && fields.length > 1 && false) focus++; }
+      beep('tap'); paint();
+    };
+    const submit = () => {
+      const given = q.k === 'multi' ? vals.slice() : vals[0];
+      answer(q, given, ok => { boxes.forEach((b, i) => b.classList.add(ok ? 'ok' : 'no')); });
+    };
+    const lid = q._lid || cur.l.id;
+    const needNeg = q.k === 'num' && q.a < 0 || /relativi|negative/.test(lid);
+    const needDec = q.k === 'num' && !Number.isInteger(q.a) || /dec|cerchio|x10|equiv|lung|massa|capac|perc|frdec|lordo|superf/.test(lid);
+    const pad = el('div', { class: 'keypad' });
+    for (const k of ['7', '8', '9', '4', '5', '6', '1', '2', '3']) pad.append(el('button', { type: 'button', onclick: () => press(k) }, k));
+    pad.append(el('button', { type: 'button', class: 'k-del', 'aria-label': t('Cancella', 'Delete'), onclick: () => press('del') }, '⌫'));
+    pad.append(el('button', { type: 'button', onclick: () => press('0') }, '0'));
+    pad.append(needDec ? el('button', { type: 'button', 'aria-label': t('virgola', 'decimal point'), onclick: () => press('dp') }, DP) : needNeg ? el('button', { type: 'button', 'aria-label': t('più o meno', 'plus or minus'), onclick: () => press('±') }, '±') : el('button', { type: 'button', class: 'k-ok', 'aria-label': t('Conferma', 'Confirm'), onclick: () => press('ok') }, '✔'));
+    if (needDec && needNeg) pad.append(el('button', { type: 'button', onclick: () => press('±') }, '±'));
+    if (needDec || needNeg) pad.append(el('button', { type: 'button', class: 'k-ok', style: 'grid-column: span ' + (needDec && needNeg ? 2 : 3), onclick: () => press('ok') }, t('✔ Apri il forziere', '✔ Open the chest')));
+    area.append(el('div', { class: 'chest' }, row, pad));
+    paint();
+    cur.keyHandler = e => {
+      if (/^[0-9]$/.test(e.key)) press(e.key);
+      else if (e.key === DP || (!EN && e.key === '.')) press('dp');
+      else if (e.key === '-') press('±');
+      else if (e.key === 'Backspace') { e.preventDefault(); press('del'); }
+      else if (e.key === 'Enter') press('ok');
+      else if (e.key === 'Tab' && fields.length > 1) { e.preventDefault(); focus = (focus + (e.shiftKey ? fields.length - 1 : 1)) % fields.length; paint(); }
+      else if ((e.key === 'ArrowDown' || e.key === 'ArrowRight') && fields.length > 1) { focus = Math.min(fields.length - 1, focus + 1); paint(); }
+      else if ((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && fields.length > 1) { focus = Math.max(0, focus - 1); paint(); }
+    };
+  }
+
+  // risposta: giusta → festa e avanti; sbagliata → spiegazione
+  function answer(q, given, mark) {
+    if (cur.locked) return;
+    cur.locked = true; cur.keyHandler = null;
+    const ok = M.check(q, given);
+    if (mark) mark(ok);
+    cur.res.push(ok);
+    if (ok) cur.coins++;
+    beep(ok ? 'ok' : 'no');
+    const card = document.querySelector('.qcard');
+    const fb = el('div', { class: 'feedback ' + (ok ? 'ok' : 'no') });
+    const next = () => { cur.i++; cur.locked = false; nextQ(); };
+    if (cur.verif) {
+      // in verifica niente aiuti: le spiegazioni arrivano alla fine
+      if (!ok) cur.wrong.push({ q, given });
+      fb.append(el('div', { class: 'fh' }, ok ? t('Risposta giusta ✔', 'Correct ✔') : t('Risposta sbagliata ✘', 'Wrong ✘')), el('div', { class: 'note', style: 'text-align:left' }, t('La spiegazione la vedrai alla fine della verifica.', 'You will see the explanation at the end of the test.')));
+      fb.append(el('div', { class: 'row' }, el('button', { class: 'btn', type: 'button', onclick: next }, cur.i + 1 < cur.qs.length ? t('Prossima domanda ▶', 'Next question ▶') : t('Vedi il risultato ▶', 'See your result ▶'))));
+    } else if (ok) {
+      fb.append(el('div', { class: 'fh' }, (EN ? ['Brilliant! 🎉', 'Exactly! ⭐', 'Correct! 👏', 'Perfect! 🚀'] : ['Bravissimo! 🎉', 'Esatto! ⭐', 'Giusto! 👏', 'Perfetto! 🚀'])[Math.floor(Math.random() * 4)]), el('div', { html: q.x || '' }));
+      if (calcOf(q)) fb.append(stepsButton(calcOf(q), t('👣 Rivedi i passaggi', '👣 Go over the steps')));
+      fb.append(el('div', { class: 'row' }, el('button', { class: 'btn ok', type: 'button', onclick: next }, t('Avanti ▶', 'Next ▶'))));
+    } else {
+      fb.append(el('div', { class: 'fh' }, t('Quasi! Vediamo insieme 🤔', 'Nearly! Let\'s look at it together 🤔')));
+      fb.append(el('div', {}, t('La risposta giusta è ', 'The right answer is '), el('span', { class: 'ans' }, M.answerText(q)), '.'));
+      fb.append(el('div', { style: 'margin-top:6px', html: t('<b>Perché:</b> ', '<b>Why:</b> ') + (q.x || '') }));
+      fb.append(el('div', { class: 'how', html: '💡 ' + cur.l.theory }));
+      if (calcOf(q)) { const v = stepsViewer(calcOf(q)); if (v) { fb.append(v); stepsOpen = v; } }
+      fb.append(el('div', { class: 'row' }, el('button', { class: 'btn', type: 'button', onclick: next }, t('Ho capito, avanti ▶', 'Got it, next ▶'))));
+    }
+    deco(fb);
+    card.append(fb);
+    fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    cur.keyHandler = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); } };
+    setTimeout(() => { const b = fb.querySelector('button'); if (b) b.focus({ preventScroll: true }); }, 30);
+  }
+
+  function finish() {
+    if (cur.verif) return finishVerif();
+    const { w, m, l } = cur;
+    const right = cur.res.filter(Boolean).length, n = cur.res.length;
+    const stars = right === n ? 3 : right >= Math.ceil(n * 0.75) ? 2 : right >= Math.ceil(n / 2) ? 1 : 0;
+    const p = me();
+    const k = lkey(w.n, m.id, l.id);
+    const prev = starsOf(p, k);
+    if (stars > prev) p.stars[k] = stars;
+    p.coins += cur.coins;
+    save();
+    setTop(`${m.icon} ${l.title}`, () => showWorld(w));
+    const s = screen();
+    const idx = m.levels.indexOf(l), nxt = m.levels[idx + 1];
+    const box = el('div', { class: 'result' },
+      el('div', { class: 'bigstars', html: [0, 1, 2].map(i => i < stars ? '<b>★</b>' : '★').join('') }),
+      el('h1', {}, stars === 3 ? t('Fantastico!', 'Fantastic!') : stars === 2 ? t('Molto bene!', 'Very good!') : stars === 1 ? t('Bene, livello superato!', 'Well done, level passed!') : t('Ci riproviamo?', 'Shall we try again?')),
+      el('p', { style: 'font-size:20px' }, t(`Hai risposto giusto a ${right} domande su ${n}.`, `You got ${right} out of ${n} questions right.`)),
+      el('p', { style: 'font-size:20px' }, t(`Hai guadagnato 🪙 ${cur.coins} monete.`, `You earned 🪙 ${cur.coins} coin${cur.coins === 1 ? '' : 's'}.`)),
+      stars === 0 ? el('p', { class: 'note' }, t('Per sbloccare il livello successivo servono almeno metà risposte giuste. Rileggi «Come si fa» e riprova!', 'To unlock the next level you need at least half of the answers right. Read “How to do it” again and have another go!')) : null,
+      factCard(m.id),
+      el('div', { class: 'row' },
+        el('button', { class: 'btn alt', type: 'button', onclick: () => showWorld(w) }, t('🗺️ Mappa', '🗺️ Map')),
+        el('button', { class: 'btn alt', type: 'button', onclick: () => play(w, m, l) }, t('🔁 Rigioca', '🔁 Play again')),
+        nxt && (stars > 0 || D.teacher) ? el('button', { class: 'btn ok', type: 'button', onclick: () => showIntro(w, m, nxt) }, t('Livello successivo ▶', 'Next level ▶')) : null));
+    s.append(box);
+    if (stars > 0) { beep('win'); confetti(); }
+  }
+  function finishVerif() {
+    const { w, m } = cur;
+    const right = cur.res.filter(Boolean).length, n = cur.res.length, pct = Math.round(right * 100 / n);
+    const g = GIUDIZI(pct);
+    const p = me();
+    p.verif = p.verif || {};
+    const k = lkey(w.n, m.id, 'verifica');
+    if (p.verif[k] === undefined || pct > p.verif[k]) p.verif[k] = pct;
+    p.coins += cur.coins + (pct >= 90 ? 5 : 0);
+    save();
+    setTop(`${m.icon} ${t('Verifica', 'Test')}: ${m.title}`, () => showWorld(w));
+    const s = screen();
+    const box = el('div', { class: 'result' },
+      el('div', { style: 'font-size:64px' }, pct >= 90 ? '🏆' : pct >= 60 ? '🎖️' : '💪'),
+      el('h1', {}, t(`Verifica: ${right} su ${n}`, `Test: ${right} out of ${n}`)),
+      el('div', { class: 'giudizio', style: `background:${g.col}` }, g.text),
+      el('p', { style: 'font-size:18px' }, t(`Hai guadagnato 🪙 ${cur.coins + (pct >= 90 ? 5 : 0)} monete${pct >= 90 ? ' (5 di premio!)' : ''}.`, `You earned 🪙 ${cur.coins + (pct >= 90 ? 5 : 0)} coin${cur.coins + (pct >= 90 ? 5 : 0) === 1 ? '' : 's'}${pct >= 90 ? ' (including a 5-coin bonus!)' : ''}.`)));
+    if (cur.wrong.length) {
+      const list = el('div', { class: 'review' }, el('h2', { style: 'margin:6px 0 8px' }, t('Rivediamo gli errori', 'Let\'s go over the mistakes')));
+      for (const { q, given } of cur.wrong) {
+        const g2 = Array.isArray(given) ? given.join(' / ') : q.k === 'choice' ? q.o[given] : String(given);
+        list.append(el('div', { class: 'rv' },
+          el('div', { class: 'rv-l' }, q._ltitle || ''),
+          el('div', { class: 'rv-q', html: q.t }),
+          q.v ? el('div', { class: 'qvis', html: q.v }) : null,
+          q.calcHide ? null : columnView(q.calc),
+          el('div', {}, t('Hai risposto ', 'You answered '), el('span', { class: 'ans no' }, g2 || '—'), t(' · giusta: ', ' · right answer: '), el('span', { class: 'ans' }, M.answerText(q))),
+          el('div', { style: 'margin-top:4px', html: t('<b>Perché:</b> ', '<b>Why:</b> ') + (q.x || '') }),
+          el('div', { class: 'how', html: '💡 ' + (q._theory || '') }),
+          calcOf(q) ? stepsButton(calcOf(q)) : null));
+      }
+      box.append(list);
+    } else box.append(el('p', { style: 'font-size:20px' }, t('Nessun errore: complimenti! 🎉', 'No mistakes: well done! 🎉')));
+    box.append(factCard(m.id));
+    box.append(el('div', { class: 'row' },
+      el('button', { class: 'btn alt', type: 'button', onclick: () => showWorld(w) }, t('🗺️ Mappa', '🗺️ Map')),
+      el('button', { class: 'btn', type: 'button', onclick: () => playVerif(w, m) }, t('🔁 Rifai la verifica', '🔁 Take the test again'))));
+    deco(box);
+    s.append(box);
+    if (pct >= 60) { beep('win'); confetti(); }
+  }
+  // «Lo sai che…?» tra un livello e l'altro (senza ripetere quelle già viste dal giocatore)
+  function factCard(modId) {
+    if (!window.Facts) return null;
+    const p = me();
+    p.seenFacts = p.seenFacts || [];
+    const f = window.Facts.pickFact(modId, p.seenFacts);
+    p.seenFacts.push(f.i);
+    if (p.seenFacts.length >= window.Facts.FACTS.length) p.seenFacts = [f.i];
+    save();
+    return el('div', { class: 'fact' }, el('div', { class: 'fi' }, f.icon), el('div', {}, el('div', { class: 'ft' }, t('Lo sai che…?', 'Did you know…?')), el('div', { class: 'fx' }, f.text)));
+  }
+  function confetti() {
+    const c = el('div', { class: 'confetti' });
+    for (let i = 0; i < 70; i++) c.append(el('i', { style: `left:${Math.random() * 100}%;background:${BALLOON_COL[i % 6]};animation-delay:${Math.random() * 0.8}s;animation-duration:${1.6 + Math.random() * 1.4}s` }));
+    document.body.append(c); setTimeout(() => c.remove(), 3500);
+  }
+
+  /* ---------------- impostazioni (per l'insegnante) ---------------- */
+  function settings() {
+    const chk = el('input', { type: 'checkbox' }); chk.checked = D.teacher;
+    const m = modal([el('h2', { style: 'margin-top:0' }, t('Impostazioni', 'Settings')),
+      el('label', { style: 'display:flex;gap:10px;align-items:center;font-size:18px;font-weight:700' }, chk, t('Modalità insegnante: tutti i livelli sbloccati', 'Teacher mode: all levels unlocked')),
+      el('p', { class: 'note', style: 'text-align:left' }, t('Utile per scegliere subito l\'argomento della lezione alla LIM o per ripassare.', 'Useful for going straight to the topic of the lesson on the interactive whiteboard, or for revision.')),
+      el('div', { class: 'row' }, el('button', { class: 'btn', type: 'button', onclick: () => { D.teacher = chk.checked; save(); m.remove(); if (me()) showWorlds(); } }, t('Fatto', 'Done')))]);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('input, textarea')) return;
+    if (stepsOpen && document.body.contains(stepsOpen) && stepsOpen._key(e)) { e.preventDefault(); return; }
+    if (cur && cur.keyHandler && document.querySelector('.qcard')) cur.keyHandler(e);
+  });
+  if (EN) { document.documentElement.lang = 'en'; $('#tBack').setAttribute('aria-label', 'Back'); $('#tPlayer').title = 'Change player'; $('#tSound').setAttribute('aria-label', 'Sound'); $('#tSet').setAttribute('aria-label', 'Settings'); }
+  $('#tSound').addEventListener('click', () => { D.sound = !D.sound; save(); $('#tSound').textContent = D.sound ? '🔊' : '🔇'; });
+  $('#tSet').addEventListener('click', settings);
+  $('#tPlayer').addEventListener('click', showPlayers);
+  window.__mate = { D, showWorlds, play: (w, m, l) => play(M.worlds[w - 1], M.worlds[w - 1].modules.find(x => x.id === m), M.worlds[w - 1].modules.find(x => x.id === m).levels.find(x => x.id === l)), cur: () => cur, verif: (w, m) => playVerif(M.worlds[w - 1], M.worlds[w - 1].modules.find(x => x.id === m)) };
+  if (me()) showWorlds(); else showPlayers();
+})();
+</script>
+</body></html>
