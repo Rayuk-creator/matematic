@@ -17,6 +17,8 @@ Ogni classe è un mondo da esplorare: il Prato dei Numeri, il Bosco delle Decine
 
 ### Come funziona
 
+- **«Cosa imparerai».** All'inizio di ogni classe una guida spiega che cosa si imparerà e le parole (definizioni) che si incontreranno nei giochi.
+- **Orologio, calendario e soldi.** Dalla 1ª alla 5ª: contare, i giorni e i mesi, l'orologio fino al minuto e alle 24 ore, le durate, gli euro, il resto e i prezzi.
 - **Minigiochi sempre diversi.** Si risponde scoppiando palloncini, pescando pesci, girando carte, aiutando il coccodrillo con i segni < > = oppure aprendo il forziere con il tastierino. Ogni volta che si rigioca, le domande e i giochi cambiano.
 - **Se sbagli, ti spiega.** Dopo un errore il gioco mostra la risposta giusta, il perché e la regola da ricordare.
 - **Operazioni in colonna, passo per passo.** Addizioni, sottrazioni, moltiplicazioni e divisioni sono già incolonnate. Si fanno a mano sul quaderno e nel gioco si scrive solo il risultato. Poi si possono rivedere tutti i passaggi: riporti, prestiti, prodotti parziali e la divisione con il metodo italiano, anche con i numeri decimali.
@@ -45,6 +47,8 @@ Each school year is a world to explore: the Meadow of Numbers, the Forest of Ten
 
 ### How it works
 
+- **“What you'll learn”.** At the start of each grade a guide explains what children will learn and the words (definitions) they will meet in the games.
+- **Clocks, calendar and money.** From Grade 1 to Grade 5: counting, days and months, telling the time to the minute, am/pm and the 24-hour clock, durations, and money problems in pounds.
 - **Mini-games that keep changing.** Children answer by popping balloons, catching fish, turning over cards, helping the crocodile with the < > = signs, or opening the treasure chest with the keypad. Every time they play again, the questions and the games change.
 - **If you make a mistake, it explains.** After a wrong answer the game shows the right answer, why it is right and the rule to remember.
 - **Column calculations, step by step.** Additions, subtractions, multiplications and divisions are already set out in columns. Children work them out by hand in their exercise book and type only the answer into the game. Then they can go through every step: carrying, borrowing, partial products and long division, decimals included.
