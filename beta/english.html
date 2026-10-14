@@ -599,8 +599,8 @@ window.PWA = true;
   // a decimal from an integer and a number of decimal places (no floating-point errors)
   const D = (k, dec) => { if (!dec) return F(k); const neg = k < 0; const s = String(Math.abs(k)).padStart(dec + 1, '0'); const ip = s.slice(0, -dec), fp = s.slice(-dec).replace(/0+$/, ''); return (neg ? '−' : '') + F(+ip) + (fp ? '.' + fp : ''); };
   const val = (k, dec) => k / Math.pow(10, dec);
-  // money: £12 or £2.50
-  const EUR = v => '£' + (Number.isInteger(v) ? F(v) : F(Math.floor(v)) + '.' + String(Math.round(v * 100) % 100).padStart(2, '0'));
+  // money: $12 or $2.50
+  const EUR = v => '$' + (Number.isInteger(v) ? F(v) : F(Math.floor(v)) + '.' + String(Math.round(v * 100) % 100).padStart(2, '0'));
   // multiple-choice question: the right answer among distractors (no duplicates)
   function choice(t, correct, wrong, extra = {}) {
     const opts = [String(correct)];
@@ -778,7 +778,7 @@ window.PWA = true;
     ]),
     mod('c4mis', 'Measures and money', '⚖️', [
       lv('equiv4', 'Converting units', 'km hm dam m dm cm mm: each step is worth 10. Towards smaller units you multiply, towards bigger units you divide.', () => pick([() => equiv(['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm'], ['kilometres', 'hectometres', 'decametres', 'metres', 'decimetres', 'centimetres', 'millimetres']), () => equiv(['kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg'], ['kilograms', 'hectograms', 'decagrams', 'grams', 'decigrams', 'centigrams', 'milligrams']), () => equiv(['hl', 'dal', 'l', 'dl', 'cl', 'ml'], ['hectolitres', 'decalitres', 'litres', 'decilitres', 'centilitres', 'millilitres'])])()),
-      lv('spesa', 'Cost, sales and profit', 'Profit = sales − cost. Cost = sales − profit. Sales = cost + profit.', () => { const s = R(20, 300), g = R(5, 150), r = s + g; const t = pick(['g', 's', 'r']); if (t === 'g') return num(`A shopkeeper spends ${EUR(s)} on goods and sells them all for ${EUR(r)}. How much profit does she make?`, g, { unit: '£', x: `${EUR(r)} − ${EUR(s)} = ${EUR(g)}` }); if (t === 's') return num(`A shopkeeper sells his goods for ${EUR(r)} and makes a profit of ${EUR(g)}. How much did the goods cost him?`, s, { unit: '£', x: `${EUR(r)} − ${EUR(g)} = ${EUR(s)}` }); return num(`A shopkeeper spends ${EUR(s)} on goods and makes a profit of ${EUR(g)}. How much does she sell them for?`, r, { unit: '£', x: `${EUR(s)} + ${EUR(g)} = ${EUR(r)}` }); }),
+      lv('spesa', 'Cost, sales and profit', 'Profit = sales − cost. Cost = sales − profit. Sales = cost + profit.', () => { const s = R(20, 300), g = R(5, 150), r = s + g; const t = pick(['g', 's', 'r']); if (t === 'g') return num(`A shopkeeper spends ${EUR(s)} on goods and sells them all for ${EUR(r)}. How much profit does she make?`, g, { unit: '$', x: `${EUR(r)} − ${EUR(s)} = ${EUR(g)}` }); if (t === 's') return num(`A shopkeeper sells his goods for ${EUR(r)} and makes a profit of ${EUR(g)}. How much did the goods cost him?`, s, { unit: '$', x: `${EUR(r)} − ${EUR(g)} = ${EUR(s)}` }); return num(`A shopkeeper spends ${EUR(s)} on goods and makes a profit of ${EUR(g)}. How much does she sell them for?`, r, { unit: '$', x: `${EUR(s)} + ${EUR(g)} = ${EUR(r)}` }); }),
     ]),
     mod('c4geo', 'Geometry', '📐', [
       lv('gradi', 'Measuring angles', 'A right angle measures 90°, a straight angle 180° and a full turn 360°. Acute: less than 90°; obtuse: between 90° and 180°.', () => { const deg = pick([R(10, 85), 90, R(95, 175), 180]); const t = deg < 90 ? 'acute' : deg === 90 ? 'right' : deg < 180 ? 'obtuse' : 'straight'; if (Math.random() < 0.6) return choice(`An angle of <b>${deg}°</b> is…`, t, ['acute', 'right', 'obtuse', 'straight'], { keep: true, x: `${deg}°: ${t}.` }); const a = R(10, 80); return num(`How many degrees must you add to ${a}° to make a right angle?`, 90 - a, { unit: '°', x: `90° − ${a}° = ${90 - a}° (complementary angles)` }); }, 'palloncini'),
@@ -805,7 +805,7 @@ window.PWA = true;
     mod('c5op', 'Expressions and percentages', '🧮', [
       lv('espr', 'Order of operations', 'Brackets first, then multiplication and division (from left to right), and finally addition and subtraction.', () => { const r = Math.random(); if (r < 0.35) { const a = R(2, 20), b = R(2, 9), c = R(2, 9); return num(`${a} + ${b} × ${c} = ?`, a + b * c, { x: `Multiplication first: ${b} × ${c} = ${b * c}; then ${a} + ${b * c} = ${a + b * c}` }); } if (r < 0.7) { const a = R(2, 20), b = R(2, 20), c = R(2, 9); return num(`(${a} + ${b}) × ${c} = ?`, (a + b) * c, { x: `Brackets first: ${a + b}; then × ${c} = ${(a + b) * c}` }); } const c = R(2, 9), q = R(2, 9), a = c * q, b = R(1, 30), d = R(1, b); return num(`${a} ÷ ${c} + ${b} − ${d} = ?`, q + b - d, { x: `${a} ÷ ${c} = ${q}; ${q} + ${b} = ${q + b}; − ${d} = ${q + b - d}` }); }),
       lv('perc', 'Percentages', '25% of 80 = 80 ÷ 100 × 25 = 20. 50% is a half, 25% is a quarter, 10% is a tenth.', () => { const p = pick([10, 20, 25, 50, 75, 5, 30, 40]); const t = R(1, 40) * (100 / gcd(p, 100)); return num(`What is ${p}% of ${F(t)}?`, t * p / 100, { x: `${F(t)} ÷ 100 × ${p} = ${F(t * p / 100)}` }); }),
-      lv('sconto', 'Discounts', 'Sale price = original price − discount. A 20% discount on £50 is £10, so you pay £40.', () => { const p = pick([10, 20, 25, 30, 50]); const pr = R(2, 30) * (100 / gcd(p, 100)); const sc = pr * p / 100; return Math.random() < 0.5 ? num(`A game costs ${EUR(pr)}. It has a ${p}% discount. How much do you pay?`, pr - sc, { unit: '£', x: `Discount: ${EUR(pr)} ÷ 100 × ${p} = ${EUR(sc)}; price: ${EUR(pr)} − ${EUR(sc)} = ${EUR(pr - sc)}` }) : num(`A game costs ${EUR(pr)} and has a ${p}% discount. How many pounds is the discount?`, sc, { unit: '£', x: `${EUR(pr)} ÷ 100 × ${p} = ${EUR(sc)}` }); }),
+      lv('sconto', 'Discounts', 'Sale price = original price − discount. A 20% discount on $50 is $10, so you pay $40.', () => { const p = pick([10, 20, 25, 30, 50]); const pr = R(2, 30) * (100 / gcd(p, 100)); const sc = pr * p / 100; return Math.random() < 0.5 ? num(`A game costs ${EUR(pr)}. It has a ${p}% discount. How much do you pay?`, pr - sc, { unit: '$', x: `Discount: ${EUR(pr)} ÷ 100 × ${p} = ${EUR(sc)}; price: ${EUR(pr)} − ${EUR(sc)} = ${EUR(pr - sc)}` }) : num(`A game costs ${EUR(pr)} and has a ${p}% discount. How many dollars is the discount?`, sc, { unit: '$', x: `${EUR(pr)} ÷ 100 × ${p} = ${EUR(sc)}` }); }),
       lv('divdec', 'Dividing by a decimal', 'If the divisor is a decimal, multiply both numbers by 10 (or 100) to get rid of the decimal point: 7.5 ÷ 2.5 = 75 ÷ 25 = 3.', () => { const q = R(2, 12), dk = R(11, 99); const a = q * dk; return num(`${D(a, 1)} ÷ ${D(dk, 1)} = ?`, q, { calc: { op: ':', a, b: dk, shift: 1 }, x: `Multiply both numbers by 10: ${F(a)} ÷ ${dk} = ${q}` }); }),
     ]),
     mod('c5fr', 'Fractions', '🍫', [
@@ -912,7 +912,7 @@ window.PWA = true;
   );
   /* ============ CLOCK AND MONEY PRACTICE IN GRADES 4 AND 5 (to keep the skills active) ============ */
   const HRS_MIN = min => { const h = Math.floor(min / 60), m = min % 60; return (h ? `${h} ${h === 1 ? 'hour' : 'hours'}` : '') + (h && m ? ' and ' : '') + (m ? `${m} minutes` : ''); };
-  const GBP = c => '£' + Math.floor(c / 100) + '.' + String(c % 100).padStart(2, '0');
+  const USD = c => '$' + Math.floor(c / 100) + '.' + String(c % 100).padStart(2, '0');
   function explainDuration(H, M, d) {
     const end = H * 60 + M + d, H2 = Math.floor(end / 60), M2 = end % 60; const p = [];
     if (M) p.push(`from ${hhmm(H, M)} to ${hhmm(H + 1, 0)} is ${60 - M} minutes`);
@@ -921,15 +921,15 @@ window.PWA = true;
     return p.join('; ') + `: ${HRS_MIN(d)} altogether.`;
   }
   M_(3, 'c3mis').levels.push(
-    lv('resto', 'Paying and getting change', 'Your <b>change</b> is the money you get back when you pay more than the price: change = money given − price. If a book costs £3.40 and you pay with £5, your change is £1.60.', () => { const price = R(11, 189) * 10; const pay = [500, 1000, 2000].find(v => v > price); return num(`You buy an exercise book for ${GBP(price)} and pay with a £${pay / 100} note. How much change do you get?`, (pay - price) / 100, { unit: '£', x: `£${pay / 100} − ${GBP(price)} = ${GBP(pay - price)}` }); }),
+    lv('resto', 'Paying and getting change', 'Your <b>change</b> is the money you get back when you pay more than the price: change = money given − price. If a book costs $3.40 and you pay with $5, your change is $1.60.', () => { const price = R(11, 189) * 10; const pay = [500, 1000, 2000].find(v => v > price); return num(`You buy an exercise book for ${USD(price)} and pay with a $${pay / 100} bill. How much change do you get?`, (pay - price) / 100, { unit: '$', x: `$${pay / 100} − ${USD(price)} = ${USD(pay - price)}` }); }),
   );
   M_(4, 'c4mis').levels.push(
     lv('orologio4', 'Time to the minute and timetables', 'On the long hand each number is worth 5 minutes and each small mark is worth 1 minute. To work out how long a journey takes, get to the next o\'clock first, then count the whole hours and finally the minutes left over.', () => { if (Math.random() < 0.5) { const h = R(1, 12); let m; do { m = R(1, 59); } while (m % 5 === 0); return { t: 'What time is it? (hours and minutes)', k: 'multi', v: V.clock(h, m, true), f: [{ l: 'hours', a: h }, { l: 'minutes', a: m }], x: `The short hand has passed the ${h}; the long hand is ${m % 5} small ${m % 5 === 1 ? 'mark' : 'marks'} past ${m >= 5 ? Math.floor(m / 5) * 5 + ' minutes' : 'the 12'}: ${m} minutes. It's ${hhmm(h, m)}.` }; } const H = R(7, 18), M = R(0, 11) * 5, d = R(13, 40) * 5, end = H * 60 + M + d; return { t: `The train leaves at ${hhmm(H, M)} and arrives at ${hhmm(Math.floor(end / 60), end % 60)}. How long is the journey?`, k: 'multi', f: [{ l: 'hours', a: Math.floor(d / 60) }, { l: 'minutes', a: d % 60 }], x: explainDuration(H, M, d).replace(/^f/, 'F') }; }),
-    lv('soldi4', 'Shopping and change', 'To find out how much you spend, add up the prices in columns, decimal point under decimal point. Your change is: money given − amount spent.', () => { const THINGS = ['a pencil case', 'a rubber', 'a notebook', 'a ruler', 'a glue stick', 'a felt-tip pen', 'a book']; const n = R(2, 3), items = shuffle(THINGS).slice(0, n), prices = items.map(() => R(3, 120) * 5); const tot = prices.reduce((s, v) => s + v, 0); const el = items.map((c, i) => `${c} for ${GBP(prices[i])}`), list = el.slice(0, -1).join(', ') + ' and ' + el[el.length - 1]; const sum = `${prices.map(GBP).join(' + ')} = ${GBP(tot)}`; if (Math.random() < 0.5) return num(`You buy ${list}. How much do you spend altogether?`, tot / 100, { unit: '£', x: sum }); const pay = [500, 1000, 2000, 5000].find(v => v > tot); return num(`You buy ${list}. You pay with a £${pay / 100} note. How much change do you get?`, (pay - tot) / 100, { unit: '£', x: `${sum}; £${pay / 100} − ${GBP(tot)} = ${GBP(pay - tot)}` }); }),
+    lv('soldi4', 'Shopping and change', 'To find out how much you spend, add up the prices in columns, decimal point under decimal point. Your change is: money given − amount spent.', () => { const THINGS = ['a pencil case', 'an eraser', 'a notebook', 'a ruler', 'a glue stick', 'a felt-tip pen', 'a book']; const n = R(2, 3), items = shuffle(THINGS).slice(0, n), prices = items.map(() => R(3, 120) * 5); const tot = prices.reduce((s, v) => s + v, 0); const el = items.map((c, i) => `${c} for ${USD(prices[i])}`), list = el.slice(0, -1).join(', ') + ' and ' + el[el.length - 1]; const sum = `${prices.map(USD).join(' + ')} = ${USD(tot)}`; if (Math.random() < 0.5) return num(`You buy ${list}. How much do you spend altogether?`, tot / 100, { unit: '$', x: sum }); const pay = [500, 1000, 2000, 5000].find(v => v > tot); return num(`You buy ${list}. You pay with a $${pay / 100} bill. How much change do you get?`, (pay - tot) / 100, { unit: '$', x: `${sum}; $${pay / 100} − ${USD(tot)} = ${USD(pay - tot)}` }); }),
   );
   M_(5, 'c5mis').levels.push(
     lv('orologio5', 'Timetables and durations', 'To find the finishing time, add the duration to the starting time: first the hours, then the minutes. If the minutes go past 60, they make another hour: 60 minutes = 1 hour.', () => { if (Math.random() < 0.55) { const H = R(6, 15), M = R(0, 11) * 5, dh = R(1, 4), dm = R(1, 11) * 5; const end = H * 60 + M + dh * 60 + dm, H2 = Math.floor(end / 60), M2 = end % 60; return { t: `A school trip starts at ${hhmm(H, M)} and lasts ${HRS_MIN(dh * 60 + dm)}. What time does it finish? (24-hour clock)`, k: 'multi', f: [{ l: 'hours', a: H2 }, { l: 'minutes', a: M2 }], x: `${hhmm(H, M)} + ${dh} ${dh === 1 ? 'hour' : 'hours'} = ${hhmm(H + dh, M)}; + ${dm} minutes: ${M + dm >= 60 ? `${M} + ${dm} = ${M + dm} minutes = 1 hour and ${M + dm - 60} minutes, so ` : ''}${hhmm(H2, M2)}.` }; } const tot = R(13, 59) * 5; return { t: `${tot} minutes = ? hours and ? minutes`, k: 'multi', f: [{ l: 'hours', a: Math.floor(tot / 60) }, { l: 'minutes', a: tot % 60 }], x: `${tot} ÷ 60 = ${Math.floor(tot / 60)} remainder ${tot % 60}: ${HRS_MIN(tot)}.` }; }),
-    lv('soldi5', 'Unit price and total price', 'Total price = price of one item × number of items. Price of one item (unit price) = total price ÷ number of items.', () => { const THINGS = [['notebooks', 'notebook'], ['tickets', 'ticket'], ['ice creams', 'ice cream'], ['pens', 'pen'], ['sandwiches', 'sandwich']]; const [pl, sg] = pick(THINGS), q = R(2, 9), u = R(9, 150) * 5; if (Math.random() < 0.5) return num(`${q} ${pl} cost ${GBP(u)} each. How much do you spend altogether?`, q * u / 100, { unit: '£', x: `${GBP(u)} × ${q} = ${GBP(q * u)}` }); return num(`${q} ${pl} cost ${GBP(q * u)} altogether. How much does one ${sg} cost?`, u / 100, { unit: '£', x: `${GBP(q * u)} ÷ ${q} = ${GBP(u)}` }); }),
+    lv('soldi5', 'Unit price and total price', 'Total price = price of one item × number of items. Price of one item (unit price) = total price ÷ number of items.', () => { const THINGS = [['notebooks', 'notebook'], ['tickets', 'ticket'], ['ice creams', 'ice cream'], ['pens', 'pen'], ['sandwiches', 'sandwich']]; const [pl, sg] = pick(THINGS), q = R(2, 9), u = R(9, 150) * 5; if (Math.random() < 0.5) return num(`${q} ${pl} cost ${USD(u)} each. How much do you spend altogether?`, q * u / 100, { unit: '$', x: `${USD(u)} × ${q} = ${USD(q * u)}` }); return num(`${q} ${pl} cost ${USD(q * u)} altogether. How much does one ${sg} cost?`, u / 100, { unit: '$', x: `${USD(q * u)} ÷ ${q} = ${USD(u)}` }); }),
   );
   for (const w of W) for (const m of w.modules) m.levels = m.levels.filter(l => !['euro', 'euro1', 'cent'].includes(l.id));
   // operations modules first in every grade
@@ -938,7 +938,7 @@ window.PWA = true;
 
   // checking answers (English format: decimal point, comma for thousands)
   function parseNum(s) {
-    s = String(s).trim().replace(/\s/g, '').replace(/−/g, '-').replace(/[€£°%]|cm²|cm|m²|g$/g, '');
+    s = String(s).trim().replace(/\s/g, '').replace(/−/g, '-').replace(/[€$°%]|cm²|cm|m²|g$/g, '');
     if (!s) return NaN;
     if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
     if (!/^-?\d*\.?\d+$/.test(s)) return NaN;
@@ -952,14 +952,14 @@ window.PWA = true;
     if (q.k === 'multi') return q.f.every((f, i) => same(parseNum(given[i]), f.a));
     return false;
   }
-  // a number with its unit: £12.50, 25°, 30%, 12 cm
+  // a number with its unit: $12.50, 25°, 30%, 12 cm
   function unitFmt(s, unit) {
     if (!unit) return s;
-    if (unit === '€' || unit === '£') { const neg = s.startsWith('−'); const b = neg ? s.slice(1) : s; return (neg ? '−' : '') + unit + (/\.\d$/.test(b) ? b + '0' : b); }
+    if (unit === '€' || unit === '$') { const neg = s.startsWith('−'); const b = neg ? s.slice(1) : s; return (neg ? '−' : '') + unit + (/\.\d$/.test(b) ? b + '0' : b); }
     if (unit === '°' || unit === '%') return s + unit;
     return s + ' ' + unit;
   }
-  const unitBefore = unit => unit === '€' || unit === '£';
+  const unitBefore = unit => unit === '€' || unit === '$';
   const fmtNum = a => { if (Number.isInteger(a)) return F(a); const s = (Math.round(a * 1e6) / 1e6).toString().split('.'); return (a < 0 ? '−' : '') + F(Math.abs(+s[0])) + '.' + s[1]; };
   function answerText(q) {
     if (q.k === 'num') return unitFmt(fmtNum(q.a), q.unit);
@@ -985,13 +985,13 @@ window.PWA = true;
   const NUM = EN ? '\\d{1,3}(?:,\\d{3})+(?:\\.\\d+)?|\\d+(?:\\.\\d+)?' : '\\d{1,3}(?:\\.\\d{3})+(?:,\\d+)?|\\d+(?:,\\d+)?';
   const OP = EN ? '[+−×÷]' : '[+−×:]';
   const UNIT = '(?: ?(?:cm²|dm²|mm²|m²|km|cm|dm|mm|kg|g|m|°|€))?';
-  const TERM = `[\\[(]*[€£]?(?:${NUM})${UNIT}[)\\]]*`;
+  const TERM = `[\\[(]*[€£$]?(?:${NUM})${UNIT}[)\\]]*`;
   const EXPR = `${TERM}(?: ${OP} ${TERM})+`;
   // un'uguaglianza: espressione = numero (o «?» nel testo della domanda)
-  const EQ = new RegExp(`(?<![\\d.,] [−\\-+×:÷] )(?<![\\d.,/−\\-+])(${EXPR}) = (?=(\\?|[€£]?(?:${NUM}))(?![\\d]|[.,]\\d)(?! ?[×:÷+−/]))`, 'g');
+  const EQ = new RegExp(`(?<![\\d.,] [−\\-+×:÷] )(?<![\\d.,/−\\-+])(${EXPR}) = (?=(\\?|[€£$]?(?:${NUM}))(?![\\d]|[.,]\\d)(?! ?[×:÷+−/]))`, 'g');
 
   // numero esatto: intero scalato e cifre decimali (3,75 → {k: 375, dec: 2})
-  function parseNum(s) { s = s.replace(/[€£]/, '').split(TH).join(''); const [ip, fp = ''] = s.split(DP); return { k: +(ip + fp), dec: fp.length }; }
+  function parseNum(s) { s = s.replace(/[€£$]/, '').split(TH).join(''); const [ip, fp = ''] = s.split(DP); return { k: +(ip + fp), dec: fp.length }; }
   function fromValue(v) {
     if (!isFinite(v) || v < 0) return null;
     const s = String(Math.round(v * 1e6) / 1e6);
@@ -1040,7 +1040,7 @@ window.PWA = true;
   // espressione → calcoli nell'ordine giusto (prima le parentesi, poi × e :, poi + e −, da sinistra)
   function tokenize(e) {
     const out = [];
-    const re = new RegExp(`\\s*(?:([\\[(])|([\\])])|(${OP})|[€£]?(${NUM})${UNIT})`, 'y');
+    const re = new RegExp(`\\s*(?:([\\[(])|([\\])])|(${OP})|[€£$]?(${NUM})${UNIT})`, 'y');
     let m;
     while (re.lastIndex < e.length && (m = re.exec(e))) {
       if (m[1]) out.push({ t: '(' }); else if (m[2]) out.push({ t: ')' }); else if (m[3]) out.push({ t: 'op', v: m[3] }); else out.push({ t: 'n', v: parseNum(m[4]) });
