@@ -292,6 +292,9 @@ h1 { color: #2b2f6b; letter-spacing: -.01em; }
 .modal .box { border-radius: 26px; }
 .lvl .dot { box-shadow: 0 5px 0 rgba(0, 0, 0, .16), inset 0 -4px 0 rgba(0, 0, 0, .08), inset 0 3px 0 rgba(255, 255, 255, .25); }
 @media (prefers-reduced-motion: reduce) { .player, .world, .module { transition: none; } .player:hover, .world:hover { transform: none; } }
+.inst-steps { text-align: left; font-size: 18px; line-height: 1.5; padding-left: 26px; margin: 8px 0 12px; }
+.inst-steps li { margin-bottom: 8px; }
+@media (max-width: 560px) { .inst-btn .lbl { display: none; } }
 </style>
 <div class="app" id="app">
   <header class="top">
@@ -2452,9 +2455,31 @@ window.PWA = true;
     navigator.serviceWorker.register('sw.js').catch(() => { /* senza modalità offline */ });
     let deferred = null;
     const ib = $('#tInstall');
-    ib.textContent = t('📲 Installa', '📲 Install'); ib.title = t('Installa il gioco come app', 'Install the game as an app');
+    ib.innerHTML = '📲<span class="lbl"> ' + t('Installa', 'Install') + '</span>'; ib.title = t('Installa il gioco come app', 'Install the game as an app');
+    // il pulsante è sempre visibile (tranne quando il gioco è già aperto come app): se Chrome permette
+    // l'installazione diretta la avvia, altrimenti spiega come fare su quel dispositivo
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    ib.hidden = standalone;
     window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; ib.hidden = false; });
-    ib.addEventListener('click', async () => { if (!deferred) return; deferred.prompt(); try { await deferred.userChoice; } catch (err) { /* annullato */ } deferred = null; ib.hidden = true; });
+    function howTo() {
+      const ua = navigator.userAgent;
+      const ios = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+      const android = /Android/.test(ua), samsung = /SamsungBrowser/.test(ua), firefox = /Firefox|FxiOS/.test(ua);
+      let steps;
+      if (ios) steps = [t('Apri questa pagina con <b>Safari</b> (o Chrome).', 'Open this page in <b>Safari</b> (or Chrome).'),
+        t('Tocca il pulsante <b>Condividi</b> <span style="font-size:22px">⬆️</span> (in alto o in basso, a seconda del modello).', 'Tap the <b>Share</b> button <span style="font-size:22px">⬆️</span> (at the top or the bottom, depending on the device).'),
+        t('Scorri e scegli <b>«Aggiungi a Home»</b>, poi <b>Aggiungi</b>.', 'Scroll down and choose <b>“Add to Home Screen”</b>, then <b>Add</b>.')];
+      else if (samsung) steps = [t('Tocca il menu <b>☰</b> in basso.', 'Tap the <b>☰</b> menu at the bottom.'), t('Scegli <b>«Aggiungi pagina a» → «Schermata Home»</b>.', 'Choose <b>“Add page to” → “Home screen”</b>.')];
+      else if (android) steps = [t('Apri questa pagina con <b>Chrome</b>.', 'Open this page in <b>Chrome</b>.'), t('Tocca il menu <b>⋮</b> in alto a destra.', 'Tap the <b>⋮</b> menu at the top right.'),
+        t('Scegli <b>«Installa app»</b> oppure <b>«Aggiungi a schermata Home» → Installa</b>.', 'Choose <b>“Install app”</b> or <b>“Add to Home screen” → Install</b>.')];
+      else if (firefox) steps = [t('Firefox per computer non installa le app web: apri questa pagina con <b>Chrome</b> o <b>Edge</b>.', 'Firefox on computers cannot install web apps: open this page in <b>Chrome</b> or <b>Edge</b>.')];
+      else steps = [t('Usa <b>Chrome</b> o <b>Edge</b>.', 'Use <b>Chrome</b> or <b>Edge</b>.'), t('Clicca l\'icona di installazione <b>⊕</b> a destra nella barra degli indirizzi, oppure menu <b>⋮</b> → <b>«Trasmetti, salva e condividi» → «Installa pagina come app»</b>.', 'Click the install icon <b>⊕</b> on the right of the address bar, or menu <b>⋮</b> → <b>“Cast, save and share” → “Install page as app”</b>.')];
+      const m = modal([el('h2', { style: 'margin-top:0' }, t('📲 Installa il gioco come app', '📲 Install the game as an app')),
+        el('ol', { class: 'inst-steps' }, steps.map(h => el('li', { html: h }))),
+        el('p', { class: 'note', style: 'text-align:left' }, t('Poi trovi l\'icona del gioco insieme alle altre app. Funziona anche senza internet e si aggiorna da solo.', 'You will then find the game\'s icon with your other apps. It works offline too and updates itself.')),
+        el('div', { class: 'row' }, el('button', { class: 'btn', onclick: () => m.remove() }, t('Ho capito', 'Got it')))]);
+    }
+    ib.addEventListener('click', async () => { if (!deferred) return howTo(); const d = deferred; deferred = null; d.prompt(); try { const c = await d.userChoice; if (c && c.outcome === 'accepted') ib.hidden = true; } catch (err) { /* annullato */ } });
     window.addEventListener('appinstalled', () => { ib.hidden = true; toast(t('Il gioco è installato: lo trovi tra le tue app!', 'The game is installed: you\'ll find it with your apps!')); });
   }
   $('#tSound').addEventListener('click', () => { D.sound = !D.sound; save(); $('#tSound').textContent = D.sound ? '🔊' : '🔇'; });
