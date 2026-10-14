@@ -1,5 +1,5 @@
 {
-  "start_url": "./english.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -30,9 +30,9 @@
       "purpose": "maskable"
     }
   ],
-  "id": "./english.html",
-  "name": "Maths at Play (beta)",
-  "short_name": "Maths β",
-  "lang": "en",
-  "description": "Primary-school maths game (Grades 1–5): mini-games, explanations, step-by-step column calculations and tests."
+  "id": "./index.html",
+  "name": "Matematica in gioco",
+  "short_name": "Matematica",
+  "lang": "it",
+  "description": "Gioco di matematica per la scuola primaria (classi 1ª–5ª): minigiochi, spiegazioni, calcoli in colonna passo per passo e verifiche."
 }
