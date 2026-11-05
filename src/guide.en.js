@@ -1,0 +1,262 @@
+/* "What you'll learn this year": for each grade an introduction and, for each module, what children learn
+   and the words (definitions) they will meet in the games. English version. */
+(function (root) {
+  'use strict';
+  const G = {
+    1: {
+      intro: 'In Grade 1 you learn to <b>count</b>, to read and write numbers up to 20, and to do your first <b>additions</b> and <b>subtractions</b>. You will also discover shapes, positions and patterns.',
+      mods: {
+        c1op: { learn: 'Putting together and taking away: adding and subtracting up to 20, doubles and number bonds to 10.', terms: [
+          ['Addition', 'The operation that puts things together. 3 + 2 = 5.'],
+          ['Sum (or total)', 'The answer to an addition. In 3 + 2 = 5 the sum is 5.'],
+          ['Subtraction', 'The operation that takes away. 7 − 3 = 4.'],
+          ['Difference', 'The answer to a subtraction. In 7 − 3 = 4 the difference is 4.'],
+          ['The signs + − =', '<b>+</b> is read “plus”, <b>−</b> is read “minus”, <b>=</b> is read “equals”.'],
+          ['Double', 'A number added to itself: double 4 is 4 + 4 = 8.'],
+          ['Number bonds to 10', 'Pairs of numbers that make 10 together: 1 and 9, 2 and 8, 3 and 7, 4 and 6, 5 and 5.'],
+        ] },
+        c1n: { learn: 'Counting, reading, writing and comparing numbers up to 20.', terms: [
+          ['Number', 'Tells you how many things there are: 5 apples, 12 pencils.'],
+          ['Digit', 'One of the ten symbols we use to write numbers: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9. The number 14 has two digits.'],
+          ['Ones', 'Single things, counted one at a time.'],
+          ['Ten', 'A group of 10 ones. 14 = 1 ten and 4 ones.'],
+          ['Counting on and back', 'On: each number is 1 more (4, 5, 6…). Back: each number is 1 less (6, 5, 4…).'],
+          ['Before and after', 'The number before is 1 less, the number after is 1 more. For 8: before is 7, after is 9.'],
+          ['Number line', 'A line with the numbers in order, evenly spaced: going to the right, the numbers get bigger.'],
+          ['Greater than >, less than <', '7 > 3 is read “7 is greater than 3”; 2 < 9 is read “2 is less than 9”.'],
+        ] },
+        c1pr: { learn: 'Reading a short story with numbers and working out which operation answers the question.', terms: [
+          ['Word problem', 'A short story with some numbers and a question.'],
+          ['Information', 'The numbers in the problem that you need to answer it.'],
+          ['Question', 'What the problem asks you to find.'],
+          ['Helpful words', '“Altogether” and “in total” suggest addition; “left”, “gives away” and “takes away” suggest subtraction.'],
+        ] },
+        c1sp: { learn: 'Recognising shapes and saying where things are.', terms: [
+          ['Above, below, right, left', 'Words that say where something is compared with something else.'],
+          ['Flat shape', 'A shape you can draw on a sheet of paper.'],
+          ['Side', 'Each of the straight lines that make up the outline of a shape.'],
+          ['Circle, square, rectangle, triangle', 'A circle is round; a square has 4 equal sides; a rectangle has 4 sides, two long and two short; a triangle has 3 sides.'],
+        ] },
+        c1tm: { learn: 'The days of the week and the times of day.', terms: [
+          ['Week', '7 days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.'],
+          ['Yesterday, today, tomorrow', 'Yesterday is the day before today, tomorrow is the day after.'],
+          ['Times of day', 'Morning, afternoon, evening and night.'],
+        ] },
+        c1dt: { learn: 'Spotting patterns — sequences that repeat — and carrying them on.', terms: [
+          ['Sequence', 'A row of objects, colours or numbers in a certain order.'],
+          ['Pattern', 'A sequence in which the same group repeats again and again: red, blue, red, blue…'],
+        ] },
+      },
+    },
+    2: {
+      intro: 'In Grade 2 you go up to <b>100</b>, learn to calculate <b>in columns</b>, and discover <b>multiplication</b> with the times tables and <b>division</b>. You will also learn to tell the time and count money.',
+      mods: {
+        c2op: { learn: 'Adding and subtracting numbers up to 100, in your head and in columns.', terms: [
+          ['In columns', 'Writing the numbers one under the other: ones under ones, tens under tens. You start from the right.'],
+          ['Carrying', 'When the ones add up to 10 or more, you write the ones and carry 1 ten over to the tens column.'],
+          ['Borrowing (exchanging)', 'In a subtraction, if the top digit is smaller, you take 1 ten from the column on the left and exchange it for 10 ones.'],
+          ['Inverse operation', 'The operation that “undoes” another: subtraction is the inverse of addition. If 25 + 10 = 35, then 35 − 10 = 25.'],
+        ] },
+        c2mol: { learn: 'Multiplication with the times tables, and sharing into equal groups.', terms: [
+          ['Multiplication', 'A quick way to add equal numbers: 4 + 4 + 4 = 3 × 4 = 12.'],
+          ['Factors and product', 'In 3 × 4 = 12 the numbers 3 and 4 are the factors and 12 is the product.'],
+          ['Times table', 'The list of answers when a number is multiplied by 1, 2, 3… up to 10.'],
+          ['Array', 'Objects set out in rows and columns: 3 rows of 5 = 3 × 5.'],
+          ['Division', 'Sharing into equal parts (12 sweets between 3 children = 4 each), or counting how many times one number goes into another.'],
+          ['Dividend, divisor, quotient', 'In 12 ÷ 3 = 4, 12 is the dividend, 3 is the divisor and 4 is the quotient.'],
+          ['Double, triple, half', 'Double means × 2, triple means × 3, half means ÷ 2.'],
+        ] },
+        c2n: { learn: 'Reading, writing and comparing numbers up to 100.', terms: [
+          ['Tens and ones', '47 = 4 tens and 7 ones = 40 + 7.'],
+          ['Place value', 'A digit is worth more or less depending on its place: in 74 the 7 is worth 70, in 47 it is worth 7.'],
+          ['Hundred', '10 tens make 1 hundred, that is 100.'],
+          ['Odd and even', 'A number is even if it ends in 0, 2, 4, 6 or 8; it is odd if it ends in 1, 3, 5, 7 or 9.'],
+          ['Counting in steps', 'Counting by adding (or taking away) the same number each time: 2, 4, 6, 8… or 50, 40, 30…'],
+        ] },
+        c2mis: { learn: 'Telling the time to the quarter hour and knowing the months of the year.', terms: [
+          ['Hour hand and minute hand', 'The short hand shows the hours, the long hand shows the minutes.'],
+          ['Quarter past and quarter to', 'A quarter of an hour is 15 minutes. Long hand on the 3: quarter past; on the 9: quarter to.'],
+          ['Months', 'A year has 12 months. April, June, September and November have 30 days, February has 28 (or 29), the others 31.'],
+          ['O\'clock and half past', 'An hour lasts 60 minutes; half an hour lasts 30 minutes. Long hand on the 12: o\'clock. Long hand on the 6: half past.'],
+        ] },
+        c2sp: { learn: 'Learning the kinds of lines and discovering symmetry.', terms: [
+          ['Open and closed lines', 'A closed line has no beginning and no end and goes all the way round a space; an open line has two ends.'],
+          ['Curved and broken lines', 'A curved line has no corners; a broken line is made of straight pieces.'],
+          ['Symmetry', 'A shape is symmetrical if, when you fold it in half, the two halves match exactly.'],
+          ['Line of symmetry', 'The fold line that splits the shape into two matching halves.'],
+        ] },
+        c2dt: { learn: 'Collecting data and reading it on a chart.', terms: [
+          ['Data', 'The information you collect, for example by asking your classmates which snack they like best.'],
+          ['Bar chart', 'A chart with bars: the taller the bar, the more often that thing was chosen.'],
+        ] },
+      },
+    },
+    3: {
+      intro: 'In Grade 3 you go up to <b>1,000</b>, calculate in columns with bigger numbers, learn <b>division with remainders</b>, your first <b>fractions</b> and <b>decimals</b>, <b>measures</b> and the basics of <b>geometry</b>.',
+      mods: {
+        c3op: { learn: 'The four operations in columns, division with remainders and checking your answers.', terms: [
+          ['Carrying and borrowing', 'Carrying moves 1 to the column on the left in an addition; borrowing exchanges 1 from the column on the left for 10 in a subtraction.'],
+          ['× 10, 100, 1,000', 'Multiplying a whole number by 10 adds one zero, by 100 two zeros, by 1,000 three zeros: 7 × 100 = 700.'],
+          ['Remainder', 'What is left over in a division: 17 ÷ 5 = 3 remainder 2. The remainder is always smaller than the divisor.'],
+          ['Exact division', 'A division with remainder 0: 84 ÷ 4 = 21.'],
+          ['Checking', 'Using the inverse operation to check. For a division: quotient × divisor + remainder = dividend.'],
+        ] },
+        c3n: { learn: 'Reading, writing, comparing and rounding numbers up to 1,000.', terms: [
+          ['Hundreds, tens and ones', '365 = 3 hundreds, 6 tens and 5 ones = 300 + 60 + 5.'],
+          ['Thousand', '10 hundreds make 1 thousand, that is 1,000.'],
+          ['Rounding', 'Replacing a number with the nearest “round” number: 347 rounded to the nearest ten is 350.'],
+        ] },
+        c3fr: { learn: 'Splitting a whole into equal parts and writing fractions and your first decimals.', terms: [
+          ['Whole', 'The complete thing we split up: a pizza, a bar of chocolate.'],
+          ['Fraction', 'One or more equal parts of a whole, for example 3/4 (three quarters).'],
+          ['Denominator', 'The number below the line: it tells you how many equal parts the whole is split into.'],
+          ['Numerator', 'The number above the line: it tells you how many parts you take.'],
+          ['Unit fraction', 'A fraction with 1 as its numerator: 1/2, 1/3, 1/4…'],
+          ['Decimal fraction', 'A fraction with 10, 100 or 1,000 as its denominator: 3/10, 45/100.'],
+          ['Decimal number', 'A number with a decimal point: 0.3 = 3/10. On the left of the point is the whole-number part, on the right are the decimals.'],
+          ['Tenth and hundredth', 'A tenth is 1 part out of 10 (0.1); a hundredth is 1 part out of 100 (0.01).'],
+        ] },
+        c3mis: { learn: 'Measuring length, mass and capacity, converting units and telling the time to the minute.', terms: [
+          ['Measuring', 'Comparing an amount with a unit of measurement and saying how many times it fits.'],
+          ['Metre (m)', 'The unit of length. 1 m = 10 dm = 100 cm = 1,000 mm.'],
+          ['Kilogram and gram', 'The units of mass (weight). 1 kg = 1,000 g.'],
+          ['Litre (l)', 'The unit of capacity: how much liquid a container holds. 1 l = 1,000 ml.'],
+          ['Converting units', 'Writing the same measurement with a different unit: 2 m = 200 cm.'],
+          ['Minutes', 'For the long hand, each number on the clock is worth 5 minutes; 1 hour = 60 minutes.'],
+          ['am and pm', 'am means before midday (from midnight to midday), pm means after midday (from midday to midnight).'],
+          ['24-hour clock', 'After midday you keep counting: 3 pm is 15:00.'],
+          ['Duration', 'How much time passes from the start to the end of something.'],
+          ['Change', 'The money you get back when you pay more than the price: money given − price.'],
+        ] },
+        c3geo: { learn: 'Lines, angles and the perimeter of shapes.', terms: [
+          ['Line, ray, line segment', 'A line has no beginning and no end; a ray has a beginning but no end; a line segment is a piece of a line with two ends.'],
+          ['Parallel lines', 'They never meet, like railway tracks.'],
+          ['Intersecting lines', 'They cross at one point.'],
+          ['Perpendicular lines', 'They cross and make 4 right angles.'],
+          ['Horizontal and vertical', 'Horizontal is flat, like the horizon or the floor; vertical goes straight up and down, like a wall.'],
+          ['Angle', 'The space between two rays that start from the same point (the vertex).'],
+          ['Right, acute and obtuse angles', 'A right angle is like the corner of a sheet of paper (90°); an acute angle is smaller than a right angle; an obtuse angle is bigger.'],
+          ['Perimeter', 'The length all the way round a shape: add up all the sides.'],
+        ] },
+        c3dt: { learn: 'Deciding whether something is certain, possible or impossible.', terms: [
+          ['Event', 'Something that might happen, for example picking a red ball out of a bag.'],
+          ['Certain', 'It will definitely happen.'],
+          ['Possible', 'It might happen, but it is not sure.'],
+          ['Impossible', 'It cannot happen at all.'],
+        ] },
+      },
+    },
+    4: {
+      intro: 'In Grade 4 you work with <b>thousands</b> and <b>decimals</b>, learn to multiply and divide by <b>2-digit numbers</b>, equivalent fractions, unit conversions, angles in degrees, <b>perimeter</b> and <b>area</b>.',
+      mods: {
+        c4op: { learn: 'Multiplying and dividing by 2-digit numbers, multiples, factors and the properties of the operations.', terms: [
+          ['Partial product', 'In a 2-digit multiplication, the answer on each row: 34 × 26 → 34 × 6 and 34 × 20, then add them up.'],
+          ['Multiple', 'A number you get by multiplying by a whole number: the multiples of 4 are 4, 8, 12, 16…'],
+          ['Factor', 'A number that divides another with no remainder: 3 is a factor of 12.'],
+          ['Commutative property', 'Changing the order of the numbers doesn\'t change the answer: 4 × 7 = 7 × 4 (it works for addition too).'],
+          ['Associative property', 'You can group the numbers however you like: (2 × 5) × 3 = 2 × (5 × 3).'],
+          ['Distributive property', 'You can split a number up: 6 × 13 = 6 × 10 + 6 × 3.'],
+          ['Estimate', 'A quick calculation with rounded numbers, to check that an answer makes sense: 498 + 302 ≈ 800.'],
+        ] },
+        c4n: { learn: 'Reading and writing numbers up to hundreds of thousands.', terms: [
+          ['Thousands', 'Digits are read in groups of three: thousands, ten thousands, hundred thousands. In 45,207 the 4 is worth 4 ten thousands.'],
+          ['Thousands comma', 'The comma that separates the groups of three digits and makes numbers easier to read: 45,207.'],
+          ['Rounding', 'To the nearest thousand: look at the hundreds digit. 46,512 becomes 47,000.'],
+        ] },
+        c4dec: { learn: 'Decimals down to thousandths, and calculating with the decimal point.', terms: [
+          ['Whole-number part and decimal part', 'In 3.472 the whole-number part is 3 and the decimal part is 472.'],
+          ['Tenths, hundredths, thousandths', 'The digits after the decimal point: in 3.472 the 4 is 4 tenths, the 7 is seven hundredths and the 2 is two thousandths.'],
+          ['Lining up the decimal points', 'When you add or subtract decimals, put the decimal points one under the other.'],
+          ['× and ÷ by 10, 100, 1,000', 'Multiplying by 10 moves the decimal point one place to the right; dividing by 10 moves it one place to the left.'],
+        ] },
+        c4fr: { learn: 'Comparing fractions and recognising the different kinds.', terms: [
+          ['Equivalent fractions', 'Different fractions that show the same amount: 1/2 = 2/4 = 3/6.'],
+          ['Proper fraction', 'The numerator is smaller than the denominator: it is less than one whole (3/4).'],
+          ['Improper fraction', 'The numerator is bigger than the denominator: it is more than one whole (5/4).'],
+          ['Equal to a whole number', 'When the numerator is a multiple of the denominator, the fraction is a whole number: 6/3 = 2.'],
+          ['Making a whole', 'The part you need to add to make one whole: 3/8 + 5/8 = 8/8.'],
+        ] },
+        c4mis: { learn: 'Converting between all the units of measurement, and money problems.', terms: [
+          ['Bigger and smaller units', 'Units bigger and smaller than the metre: km, hm, dam, m, dm, cm, mm. Each step is worth 10.'],
+          ['Converting units', 'Going to smaller units you multiply, going to bigger units you divide: 3 km = 3,000 m.'],
+          ['Cost', 'How much you pay to buy something.'],
+          ['Sales', 'How much money you take when you sell.'],
+          ['Profit', 'Sales − cost, when you take in more than you spent.'],
+          ['Units of time', '1 minute = 60 seconds, 1 hour = 60 minutes, 1 day = 24 hours, 1 week = 7 days.'],
+          ['Time to the minute', 'On the long hand each number is worth 5 minutes and each small mark is worth 1 minute.'],
+        ] },
+        c4geo: { learn: 'Measuring angles in degrees, polygons, perimeter, area and moving shapes.', terms: [
+          ['Degree (°)', 'The unit for measuring angles. A right angle measures 90°.'],
+          ['Straight angle and full turn', 'A straight angle measures 180° (a straight line), a full turn 360°.'],
+          ['Polygon', 'A closed flat shape made only of straight sides.'],
+          ['Vertex', 'The point where two sides meet (plural: vertices).'],
+          ['Quadrilateral', 'A polygon with 4 sides, like a square or a rectangle.'],
+          ['Area', 'How much surface a shape covers, measured in squares or in cm². Rectangle: length × width.'],
+          ['Translation', 'The shape slides in a straight line without turning: only its position changes.'],
+          ['Rotation', 'The shape turns around a fixed point, the centre of rotation.'],
+          ['Reflection', 'The shape flips over a line, the mirror line, as if in a mirror.'],
+        ] },
+        c4dt: { learn: 'Working out the mean and finding the mode of a set of data.', terms: [
+          ['Mean', 'Add up all the values and divide by how many there are: (6 + 8 + 10) ÷ 3 = 8.'],
+          ['Mode', 'The value that appears most often.'],
+          ['Frequency', 'How many times a value appears.'],
+        ] },
+      },
+    },
+    5: {
+      intro: 'In Grade 5 you reach <b>millions</b> and <b>billions</b>, and learn to calculate with decimals, <b>order of operations</b>, <b>percentages</b>, <b>powers</b>, negative numbers, the areas of shapes, <b>circles</b> and <b>probability</b>.',
+      mods: {
+        c5calc: { learn: 'The four operations with decimals, and expressions with brackets.', terms: [
+          ['Decimal places', 'The digits after the decimal point. 2.5 has one decimal place, 3.75 has two.'],
+          ['Multiplying decimals', 'Multiply without the decimal points; the answer has as many decimal places as the two numbers together.'],
+          ['Decimal answer', 'When a division has a remainder you can carry on: put a decimal point in the quotient and bring down a zero.'],
+          ['Round and square brackets', 'Work out the round brackets ( ) first, then the square brackets [ ].'],
+        ] },
+        c5op: { learn: 'Order of operations, percentages, discounts and dividing by a decimal.', terms: [
+          ['Order of operations', 'The order for working out a calculation: brackets first, then × and ÷, and finally + and −.'],
+          ['Percentage (%)', 'A fraction out of 100: 25% = 25/100. 50% is a half, 25% is a quarter.'],
+          ['Discount', 'How much is taken off the price. Sale price = original price − discount.'],
+          ['Dividing by a decimal', 'If the divisor has a decimal point, multiply both numbers by 10 (or 100) and the answer stays the same: 7.5 ÷ 2.5 = 75 ÷ 25.'],
+        ] },
+        c5n: { learn: 'Large numbers, negative numbers, powers, Roman numerals and prime numbers.', terms: [
+          ['Millions and billions', 'The groups after thousands: 1,000,000 is a million, 1,000,000,000 is a billion.'],
+          ['Negative numbers', 'Numbers below zero, written with a minus sign (−3), like the cold temperatures on a thermometer. Numbers above zero are positive (+3).'],
+          ['Power', '2³ = 2 × 2 × 2 = 8. 2 is the <b>base</b> and 3 is the <b>exponent</b>: it says how many times the base is multiplied by itself.'],
+          ['Roman numerals', 'I = 1, V = 5, X = 10, L = 50, C = 100, D = 500, M = 1,000. A smaller symbol written before a bigger one is subtracted: IV = 4, XC = 90.'],
+          ['Divisibility rules', 'Quick rules to tell whether a number can be divided exactly by 2, 3, 5, 9 or 10.'],
+          ['Prime number', 'It can only be divided exactly by 1 and by itself: 2, 3, 5, 7, 11… The number 1 is not prime.'],
+        ] },
+        c5fr: { learn: 'Calculating with fractions, and how fractions link to percentages.', terms: [
+          ['Fractions with the same denominator', 'Add or subtract the numerators and keep the denominator: 2/7 + 3/7 = 5/7.'],
+          ['Fraction of a number', '2/3 of 12: divide by the denominator (12 ÷ 3 = 4) and multiply by the numerator (4 × 2 = 8).'],
+          ['From a fraction to the whole', 'If 3/5 of a number is 24: 24 ÷ 3 = 8 (one fifth), 8 × 5 = 40 (the whole).'],
+        ] },
+        c5mis: { learn: 'Gross weight, net weight and tare, units of area, timetables and prices.', terms: [
+          ['Gross weight', 'The weight of the goods together with the packaging.'],
+          ['Net weight', 'The weight of the goods alone. Net = gross − tare.'],
+          ['Tare', 'The weight of the packaging.'],
+          ['Finishing time', 'Starting time + duration. If the minutes go past 60, they make another hour.'],
+          ['Unit price', 'The price of one item: total price ÷ number of items. Total price = unit price × number of items.'],
+          ['Units of area', 'm², dm², cm², mm²: each step is worth 100. 1 m² = 100 dm².'],
+        ] },
+        c5geo: { learn: 'The area of polygons, circles and 3D shapes.', terms: [
+          ['Base and height', 'The base is the side the shape “sits” on; the height is the distance from the base, measured at a right angle.'],
+          ['Area of a triangle', 'Base × height ÷ 2 (it is half of a rectangle).'],
+          ['Parallelogram, rhombus, trapezium', 'Parallelogram: base × height. Rhombus: long diagonal × short diagonal ÷ 2. Trapezium: (long base + short base) × height ÷ 2.'],
+          ['Circle and circumference', 'The circumference is the curved line all the way round; the circle is the flat space inside it.'],
+          ['Radius and diameter', 'The radius goes from the centre to the edge; the diameter goes right across through the centre and is twice the radius.'],
+          ['π (pi)', 'About 3.14: circumference = diameter × 3.14; area of a circle = radius × radius × 3.14.'],
+          ['3D shape', 'A shape that takes up space (it isn\'t flat): cube, cuboid, pyramid, cylinder, cone, sphere.'],
+          ['Faces, edges, vertices', 'Faces are the surfaces of a 3D shape, edges are the lines where two faces meet, vertices are the corners.'],
+        ] },
+        c5dt: { learn: 'The median and probability.', terms: [
+          ['Median', 'The middle value when the data are put in order.'],
+          ['Probability', 'Favourable outcomes / possible outcomes. When you roll a dice, the probability of getting a 6 is 1/6.'],
+          ['Favourable and possible outcomes', 'Favourable outcomes are the ones you want; possible outcomes are all the things that could happen.'],
+        ] },
+      },
+    },
+  };
+  root.Guide = G;
+  if (typeof module !== 'undefined') module.exports = G;
+})(typeof window !== 'undefined' ? window : globalThis);

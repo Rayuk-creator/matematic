@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ea8ff"/><stop offset="1" stop-color="#7b5cf0"/></linearGradient>
+    <linearGradient id="sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="70" cy="90" r="46" fill="#fff" opacity=".12"/><circle cx="455" cy="70" r="30" fill="#fff" opacity=".14"/><circle cx="440" cy="450" r="60" fill="#fff" opacity=".1"/>
+  <path d="M398 118 l9 20 21 3 -15 15 4 21 -19 -10 -19 10 4 -21 -15 -15 21 -3z" fill="#ffd166"/>
+  <g font-family="Arial Rounded MT Bold, Arial, Helvetica, sans-serif" font-weight="900" text-anchor="middle">
+    <!-- mattoncino 1 -->
+    <g transform="translate(96 268)"><rect width="150" height="150" rx="30" fill="#c1121f"/><rect y="-10" width="150" height="150" rx="30" fill="#ef476f"/><rect y="-10" width="150" height="150" rx="30" fill="url(#sh)"/><text x="75" y="105" font-size="112" fill="#fff">1</text></g>
+    <!-- mattoncino 2 -->
+    <g transform="translate(266 268)"><rect width="150" height="150" rx="30" fill="#0b5cad"/><rect y="-10" width="150" height="150" rx="30" fill="#1d8cf0"/><rect y="-10" width="150" height="150" rx="30" fill="url(#sh)"/><text x="75" y="105" font-size="112" fill="#fff">2</text></g>
+    <!-- mattoncino 3 con il sorriso -->
+    <g transform="translate(181 104)"><rect width="150" height="150" rx="30" fill="#d18b00"/><rect y="-10" width="150" height="150" rx="30" fill="#ffc43d"/><rect y="-10" width="150" height="150" rx="30" fill="url(#sh)"/>
+      <text x="75" y="96" font-size="104" fill="#fff">3</text>
+      <circle cx="40" cy="104" r="9" fill="#ff8fa3" opacity=".8"/><circle cx="110" cy="104" r="9" fill="#ff8fa3" opacity=".8"/>
+    </g>
+  </g>
+</svg>
