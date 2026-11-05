@@ -28,15 +28,15 @@ Un gioco di matematica per la **scuola primaria italiana, dalla 1ª alla 5ª**, 
 
 **Contenuti:** 5 mondi, uno per classe. Ogni mondo ha dei moduli; ogni modulo ha dei livelli che si sbloccano uno dopo l'altro, più una verifica finale di 10 domande senza aiuti.
 
-| Classe | Mondo | Italiano | Inglese |
-|---|---|---|---|
-| 1ª | Il Prato dei Numeri | 6 moduli, 22 livelli | 21 livelli |
-| 2ª | Il Bosco delle Decine | 6 moduli, 29 livelli | 27 livelli |
-| 3ª | Il Mare delle Centinaia | 6 moduli, 28 livelli | 28 livelli |
-| 4ª | La Montagna delle Migliaia | 7 moduli, 30 livelli | 30 livelli |
-| 5ª | Lo Spazio dei Milioni | 7 moduli, 27 livelli | 27 livelli |
+| Classe | Mondo | Moduli e livelli |
+|---|---|---|
+| 1ª | Il Prato dei Numeri | 6 moduli, 22 livelli |
+| 2ª | Il Bosco delle Decine | 6 moduli, 29 livelli |
+| 3ª | Il Mare delle Centinaia | 6 moduli, 28 livelli |
+| 4ª | La Montagna delle Migliaia | 7 moduli, 30 livelli |
+| 5ª | Lo Spazio dei Milioni | 7 moduli, 27 livelli |
 
-In totale 136 livelli in italiano e 133 in inglese, perché in inglese non ci sono gli esercizi sugli euro.
+In totale 136 livelli, uguali nelle due lingue.
 
 ---
 
@@ -119,13 +119,15 @@ for L in it en; do
   LANG_GAME=$L python3 test/ui.py        # tutti i livelli giocati in Chrome (Playwright), errori = 0
 done
 python3 test/pwa.py                      # manifest, service worker, offline, pulsante Installa su iPad e Android
+python3 test/transfer.py                 # trasferimento dei progressi tra due dispositivi, file sbagliati rifiutati
 ```
 
 - Playwright con Chromium deve essere già installato: nelle sessioni cloud lo è.
 - `ui.py` salva le schermate in `/tmp/mate-shots/`, oppure nella cartella indicata da `SHOTS=…`.
 - Esito atteso:
   - `TUTTI I PASSAGGI CORRETTI` e `ERRORI: [] 0` in entrambe le lingue;
-  - `PWA OK`.
+  - `PWA OK`;
+  - `TRASFERIMENTO OK`.
 
 ---
 
@@ -168,12 +170,17 @@ python3 test/pwa.py                      # manifest, service worker, offline, pu
   - gli altri argomenti in Italia si fanno alle medie, quindi non vanno aggiunti.
 - **Orologio e soldi:** si trovano dalla 1ª alla 5ª, ripetuti in 3ª, 4ª e 5ª per tenerli allenati.
   - **IT:** orologio, 24 ore, durate, euro (monete e banconote disegnate), resto, prezzi.
-  - **EN:** **niente euro**; orologio con **am/pm**; problemi con i soldi in **dollari americani**.
-    - Si dice «bill», non «note», ed «eraser», non «rubber».
+  - **EN:** **euro anche in inglese**, come ha deciso l'utente il 5 novembre 2026: niente dollari. Orologio con **am/pm**.
+    - Si scrive `€2.50`; si dice «note», non «bill», ed «eraser», non «rubber».
     - Il resto dell'inglese è **britannico** («Maths», «colour»); l'utente non ha chiesto di cambiarlo.
 - **Moneta 🪙 dei premi:** è disegnata in CSS (`.coin`), perché su alcuni tablet l'emoji non si vede.
   - Evitare le emoji troppo recenti: sono già state sostituite 🪐, 🪨 e 🟰.
 - **Guida «Cosa imparerai»:** per ogni classe, con definizioni. Compare da sola la prima volta che si entra nel mondo.
+- **Trasferimento dei progressi** (⚙️ Impostazioni, `transferBox` in `game.js`):
+  - si salva in un file `.txt`, perché su Android i file `.json` non si possono inviare con il pulsante di condivisione;
+  - il file contiene i giocatori delle **due lingue**; non contiene le impostazioni né le domande recenti;
+  - caricare **non cancella mai**: i giocatori si riconoscono dall'id e per ogni livello si tiene il risultato migliore; le monete prendono il valore più alto, senza sommarsi;
+  - se cambia il formato del file, aumentare `BACKUP_VERSION`: i file vecchi devono continuare a caricarsi.
 
 ---
 
@@ -202,5 +209,4 @@ Il piano è una «Trusted Web Activity», cioè un'app che apre il sito: aggiorn
 ### Altre idee, non richieste
 
 Sono solo proposte, da non fare senza chiedere:
-- una pagina per l'insegnante con i progressi di più bambini;
-- esportare e importare i progressi, per cambiare tablet.
+- una pagina per l'insegnante con i progressi di più bambini (può partire dai file dei progressi).

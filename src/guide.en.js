@@ -37,10 +37,12 @@
           ['Side', 'Each of the straight lines that make up the outline of a shape.'],
           ['Circle, square, rectangle, triangle', 'A circle is round; a square has 4 equal sides; a rectangle has 4 sides, two long and two short; a triangle has 3 sides.'],
         ] },
-        c1tm: { learn: 'The days of the week and the times of day.', terms: [
+        c1tm: { learn: 'The days of the week, the times of day and your first coins and notes.', terms: [
           ['Week', '7 days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.'],
           ['Yesterday, today, tomorrow', 'Yesterday is the day before today, tomorrow is the day after.'],
           ['Times of day', 'Morning, afternoon, evening and night.'],
+          ['Euro (€)', 'The money used in Italy and many other European countries.'],
+          ['Coins and notes', 'Coins are made of metal (€1, €2), notes are made of paper (€5, €10, €20).'],
         ] },
         c1dt: { learn: 'Spotting patterns — sequences that repeat — and carrying them on.', terms: [
           ['Sequence', 'A row of objects, colours or numbers in a certain order.'],
@@ -73,11 +75,13 @@
           ['Odd and even', 'A number is even if it ends in 0, 2, 4, 6 or 8; it is odd if it ends in 1, 3, 5, 7 or 9.'],
           ['Counting in steps', 'Counting by adding (or taking away) the same number each time: 2, 4, 6, 8… or 50, 40, 30…'],
         ] },
-        c2mis: { learn: 'Telling the time to the quarter hour and knowing the months of the year.', terms: [
+        c2mis: { learn: 'Telling the time to the quarter hour, knowing the months of the year and counting euros and cents.', terms: [
           ['Hour hand and minute hand', 'The short hand shows the hours, the long hand shows the minutes.'],
           ['Quarter past and quarter to', 'A quarter of an hour is 15 minutes. Long hand on the 3: quarter past; on the 9: quarter to.'],
           ['Months', 'A year has 12 months. April, June, September and November have 30 days, February has 28 (or 29), the others 31.'],
           ['O\'clock and half past', 'An hour lasts 60 minutes; half an hour lasts 30 minutes. Long hand on the 12: o\'clock. Long hand on the 6: half past.'],
+          ['Euros and cents', 'The money used in Italy and many other European countries. 1 euro (€) is worth 100 cents.'],
+          ['Coins and notes', 'Coins are made of metal (for example €1 and €2), notes are made of paper (for example €5 and €10).'],
         ] },
         c2sp: { learn: 'Learning the kinds of lines and discovering symmetry.', terms: [
           ['Open and closed lines', 'A closed line has no beginning and no end and goes all the way round a space; an open line has two ends.'],

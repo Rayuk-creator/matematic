@@ -31,6 +31,9 @@ if (EN) {
   eq(M.D(375, 2), '3.75', 'D'); eq(M.D(12345678, 0), '12,345,678', 'F'); eq(M.D(5, 3), '0.005', 'D2'); eq(M.D(1200, 2), '12', 'D3');
   eq(M.parseNum('3.75'), 3.75, 'parse'); eq(M.parseNum('12,345'), 12345, 'parse thousands'); eq(M.parseNum('-4'), -4, 'parse neg'); eq(M.parseNum('1,234.5'), 1234.5, 'parse mixed'); eq(M.parseNum('€12.5'), 12.5, 'parse euro');
   eq(M.unitFmt('2.5', '€'), '€2.50', 'euro'); eq(M.unitFmt('25', '°'), '25°', 'deg');
+  // only euros: no dollars left anywhere in the English version
+  const USD = /\$|dollar|\bbills?\b/i;
+  for (const w of M.worlds) for (const m of w.modules) for (const l of m.levels) { if (USD.test(l.title + ' ' + l.theory)) bad(l.id, 'dollari', l.title); for (let i = 0; i < 60; i++) { const q = l.gen(); const txt = [q.t, q.x, M.answerText(q), q.unit, ...(q.o || [])].join(' '); if (USD.test(txt)) bad(l.id, 'dollari', txt); } }
   // no Italian words left in the English questions
   const IT = /\b(quanti|quante|della|delle|sono|numero|risultato|resto|virgola|decine|unità|centinaia|perché|scrivi|calcola)\b/i;
   for (const w of M.worlds) { if (IT.test(w.name)) bad('mondo', 'italiano', w.name); for (const m of w.modules) { if (IT.test(m.title)) bad(m.id, 'italiano', m.title); for (const l of m.levels) { if (IT.test(l.title + ' ' + l.theory)) bad(l.id, 'italiano', l.title); for (let i = 0; i < 60; i++) { const q = l.gen(); const t = q.t + ' ' + (q.x || '') + ' ' + (q.o || []).join(' ') + ' ' + (q.f || []).map(f => f.l).join(' '); if (IT.test(t)) { bad(l.id, 'italiano', t); break; } if (/\d,\d(?!\d\d)/.test(t.replace(/<[^>]+>/g, ''))) { bad(l.id, 'virgola decimale', t); break; } } } } }

@@ -6,7 +6,8 @@
   const EN = window.LANG === 'en';
   const t = (it, en) => EN ? en : it;
   const TH = EN ? ',' : '.', DP = EN ? '.' : ','; // separatore delle migliaia e dei decimali
-  const KEY = EN ? 'math-game-en-v1' : 'mate-gioco-v1';
+  const KEYS = { it: 'mate-gioco-v1', en: 'math-game-en-v1' }; // un salvataggio per ogni lingua
+  const MY_LANG = EN ? 'en' : 'it', KEY = KEYS[MY_LANG];
   const AVATARS = ['🐶', '🐱', '🐰', '🦊', '🐼', '🐨', '🐯', '🦁', '🐸', '🐵', '🦄', '🐙', '🐢', '🦖', '🐧', '🦉', '🐞', '🐬'];
   const WORLD_EMOJI = { prato: '🌼', bosco: '🌲', mare: '🐳', montagna: '🏔️', spazio: '🌌' };
   const BALLOON_COL = ['#e63946', '#3a86ff', '#ff9f1c', '#8338ec', '#2a9d8f', '#f72585'];
@@ -187,7 +188,7 @@
     }
     g.append(el('button', { class: 'player new', type: 'button', onclick: newPlayer }, el('div', { class: 'av' }, '➕'), el('div', { class: 'nm' }, t('Nuovo giocatore', 'New player'))));
     s.append(g);
-    s.append(el('p', { class: 'note', style: 'margin-top:22px' }, t('I progressi restano salvati su questo tablet o computer, in Chrome.', 'Progress is saved on this tablet or computer, in Chrome.')));
+    s.append(el('p', { class: 'note', style: 'margin-top:22px' }, t('I progressi restano salvati su questo tablet o computer, in Chrome. Per passarli a un altro dispositivo, tocca ⚙️ in alto.', 'Progress is saved on this tablet or computer, in Chrome. To move it to another device, tap ⚙️ at the top.')));
   }
   function modal(content) {
     const m = el('div', { class: 'modal', onclick: e => { if (e.target === m) m.remove(); } }, el('div', { class: 'box' }, content));
@@ -610,7 +611,155 @@
     const m = modal([el('h2', { style: 'margin-top:0' }, t('Impostazioni', 'Settings')),
       el('label', { style: 'display:flex;gap:10px;align-items:center;font-size:18px;font-weight:700' }, chk, t('Modalità insegnante: tutti i livelli sbloccati', 'Teacher mode: all levels unlocked')),
       el('p', { class: 'note', style: 'text-align:left' }, t('Utile per scegliere subito l\'argomento della lezione alla LIM o per ripassare.', 'Useful for going straight to the topic of the lesson on the interactive whiteboard, or for revision.')),
+      transferBox(),
       el('div', { class: 'row' }, el('button', { class: 'btn', type: 'button', onclick: () => { D.teacher = chk.checked; save(); m.remove(); if (me()) showWorlds(); } }, t('Fatto', 'Done')))]);
+  }
+
+  /* ---------------- trasferimento dei progressi su un altro dispositivo ----------------
+     Un file di testo con i giocatori delle due lingue: non passa da internet se non lo decide chi lo manda.
+     Il caricamento unisce e non cancella mai: per ogni livello si tiene il risultato migliore. */
+  const BACKUP_APP = 'matematica-in-gioco', BACKUP_VERSION = 1;
+  const LEVEL_KEY = /^[1-5]\/[\w-]+\/[\w-]+$/;
+  function readSave(lang) {
+    if (lang === MY_LANG) return D;
+    try { const s = JSON.parse(localStorage.getItem(KEYS[lang]) || 'null'); return s && Array.isArray(s.players) ? s : null; } catch (e) { return null; }
+  }
+  // tiene solo i dati validi di un giocatore (i file possono arrivare da fuori)
+  function cleanPlayer(x) {
+    if (!x || typeof x !== 'object' || typeof x.id !== 'string' || !/^[\w-]{1,40}$/.test(x.id) || typeof x.name !== 'string' || !x.name.trim()) return null;
+    const scores = (o, max) => {
+      const r = {};
+      if (o && typeof o === 'object') for (const [k, v] of Object.entries(o)) if (LEVEL_KEY.test(k) && Number.isInteger(v) && v >= 0 && v <= max) r[k] = v;
+      return r;
+    };
+    const guideSeen = {};
+    for (const n of [1, 2, 3, 4, 5]) if (x.guideSeen && typeof x.guideSeen === 'object' && x.guideSeen[n] === true) guideSeen[n] = true;
+    return {
+      id: x.id, name: x.name.trim().slice(0, 16),
+      avatar: typeof x.avatar === 'string' && x.avatar.length > 0 && x.avatar.length <= 8 ? x.avatar : AVATARS[0],
+      coins: Number.isSafeInteger(x.coins) && x.coins >= 0 ? x.coins : 0,
+      stars: scores(x.stars, 3), verif: scores(x.verif, 100), guideSeen,
+      seenFacts: Array.isArray(x.seenFacts) ? [...new Set(x.seenFacts.filter(v => Number.isInteger(v) && v >= 0))] : []
+    };
+  }
+  // unisce senza perdere niente: i giocatori nuovi si aggiungono, quelli già presenti tengono il risultato migliore
+  function mergePlayers(base, incoming) {
+    const out = base.map(p => ({ ...p }));
+    const best = (a, b) => { const r = { ...(a || {}) }; for (const [k, v] of Object.entries(b)) if (!(r[k] >= v)) r[k] = v; return r; };
+    for (const x of incoming) {
+      const p = out.find(o => o.id === x.id);
+      if (!p) { out.push(x); continue; }
+      p.coins = Math.max(p.coins || 0, x.coins);
+      p.stars = best(p.stars, x.stars); p.verif = best(p.verif, x.verif);
+      p.guideSeen = { ...(p.guideSeen || {}), ...x.guideSeen };
+      p.seenFacts = [...new Set([...(p.seenFacts || []), ...x.seenFacts])];
+    }
+    return out;
+  }
+  function makeBackup() {
+    const saves = {};
+    for (const lang of Object.keys(KEYS)) {
+      const s = readSave(lang), players = s ? s.players.map(cleanPlayer).filter(Boolean) : [];
+      if (players.length) saves[lang] = { players };
+    }
+    if (!Object.keys(saves).length) return null;
+    const now = new Date(), pad = n => String(n).padStart(2, '0');
+    const name = `${t('matematica-progressi', 'maths-progress')}-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}.txt`;
+    // .txt e non .json: su tablet e telefoni si può inviare e aprire senza problemi
+    const text = JSON.stringify({ app: BACKUP_APP, version: BACKUP_VERSION, info: 'Matematica in gioco / Maths at Play: file dei progressi, da non modificare / progress file, do not edit.', saved: now.toISOString(), saves });
+    return new File([text], name, { type: 'text/plain' });
+  }
+  // legge il file: restituisce i dati, oppure il motivo per cui non va bene
+  function readBackup(text) {
+    let o;
+    try { o = JSON.parse(text.replace(/^﻿/, '').trim()); } catch (e) { o = null; }
+    if (!o || o.app !== BACKUP_APP || !o.saves || typeof o.saves !== 'object') return { error: t('Questo non è un file dei progressi del gioco.', 'This is not a progress file from this game.') };
+    if (!Number.isInteger(o.version) || o.version < 1) return { error: t('Questo non è un file dei progressi del gioco.', 'This is not a progress file from this game.') };
+    if (o.version > BACKUP_VERSION) return { error: t('Questo file viene da una versione più nuova del gioco: aggiorna il gioco e riprova.', 'This file comes from a newer version of the game: update the game and try again.') };
+    const saves = {};
+    for (const lang of Object.keys(KEYS)) {
+      const s = o.saves[lang], seen = new Set();
+      const players = s && Array.isArray(s.players) ? s.players.map(cleanPlayer).filter(p => p && !seen.has(p.id) && seen.add(p.id)) : [];
+      if (players.length) saves[lang] = { players };
+    }
+    if (!Object.keys(saves).length) return { error: t('In questo file non ci sono giocatori.', 'There are no players in this file.') };
+    return { saves, saved: new Date(o.saved) };
+  }
+  // scrive tutto e solo se ci riesce aggiorna il gioco; se non riesce restituisce false
+  function applyBackup(saves) {
+    const mine = {};
+    try {
+      for (const lang of Object.keys(saves)) {
+        const s = readSave(lang) || { players: [], cur: null, teacher: false, sound: true };
+        const players = mergePlayers(s.players, saves[lang].players);
+        localStorage.setItem(KEYS[lang], JSON.stringify({ ...s, players }));
+        if (lang === MY_LANG) mine.players = players;
+      }
+    } catch (e) { return false; }
+    if (mine.players) D.players = mine.players;
+    return true;
+  }
+  function confirmImport(b, close) {
+    const line = p => {
+      let tot = 0; for (const v of Object.values(p.stars)) tot += v;
+      return el('div', { class: 'xfer-p' }, el('span', { class: 'xfer-n' }, p.avatar + ' ' + p.name), el('span', { class: 'xfer-s' }, `⭐ ${tot}  ·  🪙 ${p.coins}`));
+    };
+    const langs = Object.keys(b.saves);
+    const m = modal([el('h2', { style: 'margin-top:0' }, t('Caricare questi progressi?', 'Load this progress?')),
+      isNaN(b.saved) ? null : el('p', { class: 'note', style: 'text-align:left' }, t('File salvato il ', 'File saved on ') + b.saved.toLocaleDateString(t('it-IT', 'en-GB')) + '.'),
+      ...langs.flatMap(lang => [
+        el('div', { class: 'xfer-h' }, lang === 'it' ? t('Versione italiana', 'Italian version') : t('Versione inglese', 'English version')),
+        ...b.saves[lang].players.map(line)]),
+      el('p', { class: 'note', style: 'text-align:left' }, t('Non si cancella niente: i giocatori già presenti su questo dispositivo restano e, se un giocatore c\'è già, per ogni livello si tiene il risultato migliore.', 'Nothing gets deleted: players already on this device stay and, if a player is already here, the best result for each level is kept.')),
+      el('div', { class: 'row' }, el('button', { class: 'btn alt', type: 'button', onclick: () => m.remove() }, t('Annulla', 'Cancel')),
+        el('button', { class: 'btn ok', type: 'button', onclick: () => {
+          if (!applyBackup(b.saves)) { m.remove(); return close(t('Non riesco a salvare su questo dispositivo: controlla che il browser non sia in modalità privata e riprova.', 'I can\'t save on this device: check that the browser isn\'t in private mode and try again.'), true); }
+          m.remove(); document.querySelectorAll('.modal').forEach(x => x.remove());
+          showPlayers(); beep('win');
+          toast(b.saves[MY_LANG] ? t('Progressi caricati!', 'Progress loaded!') : t('Progressi caricati: li trovi nella versione inglese del gioco.', 'Progress loaded: you\'ll find it in the Italian version of the game.'));
+        } }, t('Carica', 'Load')))]);
+  }
+  // il riquadro dentro le Impostazioni
+  function transferBox() {
+    const status = el('p', { class: 'xfer-msg', role: 'status', hidden: true });
+    const say = (text, bad) => { status.textContent = text; status.hidden = false; status.classList.toggle('bad', !!bad); };
+    const SENT = t('Ora porta il file sull\'altro dispositivo e lì scegli «Carica da un file».', 'Now take the file to the other device and choose “Load from a file” there.');
+    const EMPTY = t('Non ci sono ancora progressi da salvare.', 'There is no progress to save yet.');
+    const download = () => {
+      const f = makeBackup();
+      if (!f) return say(EMPTY);
+      const url = URL.createObjectURL(f), a = el('a', { href: url, download: f.name, style: 'display:none' });
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      say(t('File «', 'File “') + f.name + t('» salvato, di solito nella cartella Download. ', '” saved, usually in the Downloads folder. ') + SENT);
+    };
+    const share = async () => {
+      const f = makeBackup();
+      if (!f) return say(EMPTY);
+      try { await navigator.share({ files: [f], title: f.name }); say(SENT); }
+      catch (e) { if (e && e.name !== 'AbortError') download(); }
+    };
+    let canShare = false;
+    try { canShare = !!navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.txt', { type: 'text/plain' })] }); } catch (e) { /* non disponibile */ }
+    // nessun filtro sul tipo di file: alcuni tablet renderebbero il file non selezionabile; il controllo si fa dopo, sul contenuto
+    const input = el('input', { type: 'file', style: 'display:none', 'aria-hidden': 'true', onchange: () => {
+      const f = input.files && input.files[0];
+      input.value = '';
+      if (!f) return;
+      const bad = t('Non riesco a leggere questo file.', 'I can\'t read this file.');
+      if (f.size > 5e6) return say(t('Questo non è un file dei progressi del gioco.', 'This is not a progress file from this game.'), true);
+      const r = new FileReader();
+      r.onerror = () => say(bad, true);
+      r.onload = () => { const b = readBackup(String(r.result)); if (b.error) say(b.error, true); else { status.hidden = true; confirmImport(b, say); } };
+      r.readAsText(f);
+    } });
+    return el('div', { class: 'xfer' }, el('div', { class: 'xfer-t' }, t('Passare a un altro tablet o computer', 'Moving to another tablet or computer')),
+      el('p', { class: 'note', style: 'text-align:left' }, t('Salva i progressi in un file, mandalo sull\'altro dispositivo (per esempio con un\'email) e lì scegli «Carica da un file». Il file contiene i nomi e i risultati dei giocatori: il gioco non lo invia a nessuno da solo.', 'Save your progress in a file, send it to the other device (by email, for example) and choose “Load from a file” there. The file contains the players\' names and results: the game never sends it anywhere by itself.')),
+      el('div', { class: 'row' },
+        el('button', { class: 'btn alt', type: 'button', id: 'xferSave', onclick: download }, t('💾 Salva in un file', '💾 Save to a file')),
+        canShare ? el('button', { class: 'btn alt', type: 'button', id: 'xferShare', onclick: share }, t('📤 Invia il file', '📤 Send the file')) : null,
+        el('button', { class: 'btn alt', type: 'button', id: 'xferLoad', onclick: () => input.click() }, t('📂 Carica da un file', '📂 Load from a file'))),
+      input, status);
   }
 
   document.addEventListener('keydown', e => {
