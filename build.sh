@@ -3,6 +3,8 @@
 set -e
 cd "$(dirname "$0")"
 python3 - <<'PY'
+import os
+os.makedirs('dist', exist_ok=True)
 shell = open('src/shell.html', encoding='utf-8').read()
 import base64
 css = open('src/style.css', encoding='utf-8').read().replace('__NUNITO__', base64.b64encode(open('pwa/font/nunito.woff', 'rb').read()).decode())
