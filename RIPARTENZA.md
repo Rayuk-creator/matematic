@@ -120,6 +120,7 @@ for L in it en; do
 done
 python3 test/pwa.py                      # manifest, service worker, offline, pulsante Installa su iPad e Android
 python3 test/transfer.py                 # trasferimento dei progressi tra due dispositivi, file sbagliati rifiutati
+python3 test/teacher.py                  # pagina per l'insegnante: conti per classe, file dei bambini, telefono
 ```
 
 - Playwright con Chromium deve essere già installato: nelle sessioni cloud lo è.
@@ -127,7 +128,8 @@ python3 test/transfer.py                 # trasferimento dei progressi tra due d
 - Esito atteso:
   - `TUTTI I PASSAGGI CORRETTI` e `ERRORI: [] 0` in entrambe le lingue;
   - `PWA OK`;
-  - `TRASFERIMENTO OK`.
+  - `TRASFERIMENTO OK`;
+  - `INSEGNANTE OK`.
 
 ---
 
@@ -181,6 +183,10 @@ python3 test/transfer.py                 # trasferimento dei progressi tra due d
   - il file contiene i giocatori delle **due lingue**; non contiene le impostazioni né le domande recenti;
   - caricare **non cancella mai**: i giocatori si riconoscono dall'id e per ogni livello si tiene il risultato migliore; le monete prendono il valore più alto, senza sommarsi;
   - se cambia il formato del file, aumentare `BACKUP_VERSION`: i file vecchi devono continuare a caricarsi.
+- **Progressi della classe** (⚙️ Impostazioni, `showTeacher` in `game.js`):
+  - mostra i giocatori del dispositivo e i file dei progressi raccolti dall'insegnante, una lingua alla volta;
+  - i file stanno in un elenco a parte (`mate-classe-v1`, `math-class-en-v1`): non diventano giocatori e non finiscono nel file dei progressi;
+  - niente password: l'ha deciso l'utente.
 
 ---
 
@@ -208,5 +214,4 @@ Il piano è una «Trusted Web Activity», cioè un'app che apre il sito: aggiorn
 
 ### Altre idee, non richieste
 
-Sono solo proposte, da non fare senza chiedere:
-- una pagina per l'insegnante con i progressi di più bambini (può partire dai file dei progressi).
+Per ora nessuna.
