@@ -27,6 +27,7 @@ Ogni classe è un mondo da esplorare: il Prato dei Numeri, il Bosco delle Decine
 - **La verifica finale.** Ogni modulo si chiude con una verifica di 10 domande, senza aiuti. Il giudizio usa i livelli della scuola primaria (Avanzato, Intermedio, Base, In via di prima acquisizione) e alla fine si rivedono gli errori uno per uno.
 - **Più bambini, un profilo ciascuno.** Ogni bambino ha il suo personaggio, le sue stelle e le sue monete.
 - **Modalità insegnante.** Sblocca tutti i livelli, per scegliere subito l'argomento della lezione, anche alla LIM.
+- **Progressi della classe.** Da ⚙️ Impostazioni l'insegnante vede a che punto è ogni bambino, classe per classe: i giocatori del dispositivo e i file dei progressi che raccoglie dai bambini. I dati restano sul suo dispositivo.
 
 ### Da sapere
 
@@ -63,6 +64,7 @@ Each school year is a world to explore: the Meadow of Numbers, the Forest of Ten
 - **The final test.** Each module ends with a 10-question test with no hints. The result uses four levels (Advanced, Intermediate, Basic, Still learning), and at the end every mistake is reviewed one by one.
 - **Several children, one profile each.** Every child has their own character, stars and coins.
 - **Teacher mode.** Unlocks every level, so you can go straight to the topic of the lesson, even on the interactive whiteboard.
+- **Class progress.** From ⚙️ Settings, teachers can see how far each child has got, grade by grade: the players on the device and the progress files collected from the children. The data stays on the teacher's device.
 
 ### Good to know
 

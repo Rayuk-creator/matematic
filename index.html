@@ -156,6 +156,34 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
 .xfer-p { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 7px 0; border-top: 1px solid var(--line); }
 .xfer-n { font-weight: 800; }
 .xfer-s { color: var(--muted); }
+.tch-msg { text-align: center; }
+.tch-tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 20px 0 14px; }
+.tch-tab { border: 2px solid var(--line); background: #fff; color: var(--ink); border-radius: 12px; padding: 9px 16px; font-size: 16px; font-weight: 800; }
+.tch-tab[aria-pressed="true"] { background: var(--pri); border-color: var(--pri); color: #fff; }
+.tch-wrap { overflow-x: auto; background: var(--card); border-radius: 18px; box-shadow: var(--shadow); }
+.tch { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 14px; }
+.tch th, .tch td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: center; vertical-align: middle; min-width: 92px; }
+.tch thead th { font-size: 13px; font-weight: 800; color: var(--muted); vertical-align: bottom; }
+.tch tbody tr:last-child th, .tch tbody tr:last-child td { border-bottom: 0; }
+.tch .tch-who { position: sticky; left: 0; background: var(--card); text-align: left; min-width: 150px; max-width: 190px; border-right: 1px solid var(--line); z-index: 1; }
+.tch-ic { font-size: 20px; }
+.tch-whorow { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.tch-name { border: 0; background: transparent; padding: 2px 0; font: inherit; font-size: 16px; font-weight: 800; color: var(--pri); text-align: left; text-decoration: underline; overflow-wrap: anywhere; }
+.tch-del { border: 0; background: transparent; color: var(--muted); font-size: 14px; padding: 2px 6px; }
+.tch-where { color: var(--muted); font-size: 12px; font-weight: 600; margin-top: 2px; }
+.tch-c { display: inline-block; min-width: 46px; padding: 3px 8px; border-radius: 8px; font-size: 15px; font-weight: 800; }
+.tch-c.none { background: #eef1f6; color: var(--muted); }
+.tch-c.some { background: #fff1d6; color: #7a4d00; }
+.tch-c.all { background: #d8f2e2; color: #17623a; }
+.tch-v { display: table; margin: 5px auto 0; padding: 2px 7px; border-radius: 7px; color: #fff; font-size: 11px; font-weight: 800; }
+.tch-tot { font-weight: 800; white-space: nowrap; }
+.tch-dm { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 800; margin-top: 14px; padding-bottom: 5px; border-bottom: 2px solid var(--line); }
+.tch-dv { font-size: 14px; white-space: nowrap; }
+.tch-dv .tch-v { display: inline-block; margin: 0; }
+.tch-no { color: var(--muted); font-size: 13px; font-weight: 600; }
+.tch-dl { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.tch-dl.none { color: var(--muted); }
+.tch-st { color: #e0a100; white-space: nowrap; }
 
 @media (max-width: 640px) {
   .qtext { font-size: 21px; }
@@ -2443,6 +2471,7 @@ window.PWA = true;
     const m = modal([el('h2', { style: 'margin-top:0' }, t('Impostazioni', 'Settings')),
       el('label', { style: 'display:flex;gap:10px;align-items:center;font-size:18px;font-weight:700' }, chk, t('Modalità insegnante: tutti i livelli sbloccati', 'Teacher mode: all levels unlocked')),
       el('p', { class: 'note', style: 'text-align:left' }, t('Utile per scegliere subito l\'argomento della lezione alla LIM o per ripassare.', 'Useful for going straight to the topic of the lesson on the interactive whiteboard, or for revision.')),
+      el('div', { class: 'row', style: 'justify-content:flex-start' }, el('button', { class: 'btn alt', type: 'button', id: 'tchOpen', onclick: () => { m.remove(); showTeacher(); } }, t('📊 Progressi della classe', '📊 Class progress'))),
       transferBox(),
       el('div', { class: 'row' }, el('button', { class: 'btn', type: 'button', onclick: () => { D.teacher = chk.checked; save(); m.remove(); if (me()) showWorlds(); } }, t('Fatto', 'Done')))]);
   }
@@ -2504,7 +2533,7 @@ window.PWA = true;
   // legge il file: restituisce i dati, oppure il motivo per cui non va bene
   function readBackup(text) {
     let o;
-    try { o = JSON.parse(text.replace(/^﻿/, '').trim()); } catch (e) { o = null; }
+    try { o = JSON.parse(text.replace(/^\uFEFF/, '').trim()); } catch (e) { o = null; }
     if (!o || o.app !== BACKUP_APP || !o.saves || typeof o.saves !== 'object') return { error: t('Questo non è un file dei progressi del gioco.', 'This is not a progress file from this game.') };
     if (!Number.isInteger(o.version) || o.version < 1) return { error: t('Questo non è un file dei progressi del gioco.', 'This is not a progress file from this game.') };
     if (o.version > BACKUP_VERSION) return { error: t('Questo file viene da una versione più nuova del gioco: aggiorna il gioco e riprova.', 'This file comes from a newer version of the game: update the game and try again.') };
@@ -2592,6 +2621,128 @@ window.PWA = true;
         canShare ? el('button', { class: 'btn alt', type: 'button', id: 'xferShare', onclick: share }, t('📤 Invia il file', '📤 Send the file')) : null,
         el('button', { class: 'btn alt', type: 'button', id: 'xferLoad', onclick: () => input.click() }, t('📂 Carica da un file', '📂 Load from a file'))),
       input, status);
+  }
+
+  /* ---------------- pagina per l'insegnante: i progressi di più bambini ----------------
+     Mostra i giocatori di questo dispositivo e quelli dei file dei progressi che l'insegnante raccoglie.
+     L'elenco dei file resta solo qui, a parte: non tocca i giocatori e non passa da internet. */
+  const CLASS_KEY = EN ? 'math-class-en-v1' : 'mate-classe-v1';
+  let teacherGrade = null;
+  function loadClass() {
+    try {
+      const s = JSON.parse(localStorage.getItem(CLASS_KEY) || 'null');
+      if (!s || !Array.isArray(s.players)) return [];
+      return s.players.map(x => { const p = cleanPlayer(x); if (p && typeof x.saved === 'string') p.saved = x.saved; return p; }).filter(Boolean);
+    } catch (e) { return []; }
+  }
+  function saveClass(players) {
+    try { localStorage.setItem(CLASS_KEY, JSON.stringify({ players })); return true; } catch (e) { return false; }
+  }
+  const readText = f => new Promise((ok, no) => { const r = new FileReader(); r.onerror = () => no(r.error); r.onload = () => ok(String(r.result)); r.readAsText(f); });
+  // aggiunge i file all'elenco: un bambino già presente viene aggiornato, tenendo il risultato migliore
+  async function addClassFiles(files) {
+    const list = loadClass(), names = new Set(), bad = [], other = [];
+    let used = 0;
+    for (const f of files) {
+      let b = null;
+      try { if (f.size <= 5e6) b = readBackup(await readText(f)); } catch (e) { /* illeggibile */ }
+      if (!b || b.error) { bad.push(f.name); continue; }
+      if (!b.saves[MY_LANG]) { other.push(f.name); continue; }
+      used++;
+      const saved = isNaN(b.saved) ? null : b.saved.toISOString();
+      for (const x of b.saves[MY_LANG].players) {
+        const i = list.findIndex(o => o.id === x.id);
+        names.add(x.id);
+        if (i < 0) { list.push(saved ? { ...x, saved } : x); continue; }
+        const last = [list[i].saved, saved].filter(Boolean).sort().pop();
+        list[i] = mergePlayers([list[i]], [x])[0];
+        if (last) list[i].saved = last;
+      }
+    }
+    const msgs = [];
+    if (used && !saveClass(list)) return { text: t('Non riesco a salvare su questo dispositivo: controlla che il browser non sia in modalità privata e riprova.', 'I can\'t save on this device: check that the browser isn\'t in private mode and try again.'), bad: true };
+    if (used) msgs.push(t(`File caricati: ${used}. Bambini aggiunti o aggiornati: ${names.size}.`, `Files loaded: ${used}. Children added or updated: ${names.size}.`));
+    if (bad.length) msgs.push(t('Non sono file dei progressi: ', 'These are not progress files: ') + bad.join(', ') + '.');
+    if (other.length) msgs.push(t('Contengono solo la versione inglese: ', 'These contain only the Italian version: ') + other.join(', ') + '.');
+    return { text: msgs.join(' '), bad: bad.length > 0 || other.length > 0 };
+  }
+  function classRows() {
+    const here = D.players.map(cleanPlayer).filter(Boolean), files = loadClass();
+    const hereIds = new Set(here.map(p => p.id));
+    const byId = new Map(files.map(f => [f.id, f]));
+    return mergePlayers(here, files).map(p => ({ p, here: hereIds.has(p.id), file: byId.get(p.id) || null }))
+      .sort((a, b) => a.p.name.localeCompare(b.p.name, MY_LANG) || a.p.id.localeCompare(b.p.id));
+  }
+  const levelsDone = (p, w, m) => m.levels.filter(l => starsOf(p, lkey(w.n, m.id, l.id)) > 0).length;
+  const fmtDate = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(t('it-IT', 'en-GB')); };
+  function verifBadge(p, w, m) {
+    const v = p.verif[lkey(w.n, m.id, 'verifica')];
+    if (v === undefined) return null;
+    const g = GIUDIZI(v);
+    return el('span', { class: 'tch-v', style: `background:${g.col}` }, g.short);
+  }
+  function classDetail(p, w) {
+    const body = [];
+    let done = 0, tot = 0, st = 0;
+    for (const m of w.modules) {
+      done += levelsDone(p, w, m); tot += m.levels.length;
+      const v = p.verif[lkey(w.n, m.id, 'verifica')];
+      body.push(el('div', { class: 'tch-dm' }, el('span', {}, `${m.icon} ${m.title}`), v === undefined ? el('span', { class: 'tch-no' }, t('Verifica non fatta', 'Test not taken')) : el('span', { class: 'tch-dv' }, verifBadge(p, w, m), ` ${v}%`)));
+      for (const l of m.levels) {
+        const n = starsOf(p, lkey(w.n, m.id, l.id)); st += n;
+        body.push(el('div', { class: 'tch-dl' + (n ? '' : ' none') }, el('span', {}, l.title), el('span', { class: 'tch-st', 'aria-label': t(`${n} stelle su 3`, `${n} stars out of 3`) }, '★'.repeat(n) + '☆'.repeat(3 - n))));
+      }
+    }
+    const m = modal([el('h2', { style: 'margin-top:0' }, `${p.avatar} ${p.name}`),
+      el('p', { class: 'note', style: 'text-align:left' }, t(`Classe ${w.n}ª: livelli superati ${done} su ${tot}, stelle ${st} su ${tot * 3}.`, `Grade ${w.n}: levels passed ${done} out of ${tot}, stars ${st} out of ${tot * 3}.`)),
+      ...body,
+      el('div', { class: 'row', style: 'margin-top:14px' }, el('button', { class: 'btn', type: 'button', onclick: () => m.remove() }, t('Chiudi', 'Close')))]);
+  }
+  function confirmRemove(title, text, ok, again) {
+    const m = modal([el('h2', { style: 'margin-top:0' }, title), el('p', {}, text),
+      el('div', { class: 'row' }, el('button', { class: 'btn alt', type: 'button', onclick: () => m.remove() }, t('No', 'No')),
+        el('button', { class: 'btn', style: 'background:#e63946;box-shadow:0 4px 0 #a4161a', type: 'button', onclick: () => { ok(); m.remove(); again(); } }, t('Sì, togli', 'Yes, remove')))]);
+  }
+  function showTeacher(status) {
+    setTop(t('Progressi della classe', 'Class progress'), () => { if (me()) showWorlds(); else showPlayers(); });
+    const s = screen();
+    const rows = classRows(), files = loadClass();
+    // finché l'insegnante non sceglie, si mostra la classe in cui ci sono più stelle
+    const score = x => rows.reduce((a, r) => a + worldStars(r.p, x)[0], 0);
+    const w = M.worlds.find(x => x.n === teacherGrade) || M.worlds.reduce((best, x) => score(x) > score(best) ? x : best, M.worlds[0]);
+    s.append(el('h1', {}, t('Progressi della classe', 'Class progress')));
+    const input = el('input', { type: 'file', multiple: true, style: 'display:none', 'aria-hidden': 'true', id: 'tchFiles', onchange: async () => {
+      const list = [...input.files];
+      input.value = '';
+      if (list.length) showTeacher(await addClassFiles(list));
+    } });
+    s.append(el('p', { class: 'sub' }, t('Ogni bambino salva i progressi in un file da ⚙️ Impostazioni. Tu raccogli i file e li carichi qui: restano solo su questo dispositivo.', 'Each child saves their progress to a file from ⚙️ Settings. You collect the files and load them here: they stay on this device only.')));
+    s.append(el('div', { class: 'row' }, el('button', { class: 'btn alt', type: 'button', id: 'tchAdd', onclick: () => input.click() }, t('📂 Aggiungi i file dei bambini', '📂 Add the children\'s files')),
+      files.length ? el('button', { class: 'btn alt', type: 'button', id: 'tchClear', onclick: () => confirmRemove(t('Svuotare l\'elenco dei file?', 'Clear the list of files?'), t('Si tolgono da questa pagina i bambini caricati dai file. I giocatori di questo dispositivo restano.', 'The children loaded from files are removed from this page. The players on this device stay.'), () => saveClass([]), () => showTeacher()) }, t('Svuota l\'elenco', 'Clear the list')) : null, input));
+    if (status && status.text) s.append(el('p', { class: 'xfer-msg tch-msg' + (status.bad ? ' bad' : ''), role: 'status' }, status.text));
+    if (!rows.length) { s.append(el('p', { class: 'note', style: 'margin-top:22px' }, t('Non ci sono ancora bambini da mostrare.', 'There are no children to show yet.'))); return; }
+    s.append(el('div', { class: 'tch-tabs', role: 'group', 'aria-label': t('Classe', 'Grade') }, M.worlds.map(x =>
+      el('button', { class: 'tch-tab', type: 'button', 'aria-pressed': String(x.n === w.n), onclick: () => { teacherGrade = x.n; showTeacher(); } }, t(`Classe ${x.n}ª`, `Grade ${x.n}`)))));
+    const head = el('tr', {}, el('th', { class: 'tch-who', scope: 'col' }, t('Bambino', 'Child')),
+      w.modules.map(m => el('th', { scope: 'col' }, el('div', { class: 'tch-ic' }, m.icon), m.title)), el('th', { scope: 'col' }, t('Stelle', 'Stars')));
+    const body = el('tbody', {});
+    for (const { p, here, file } of rows) {
+      const where = here ? t('su questo dispositivo', 'on this device') : t('file del ', 'file from ') + (file.saved ? fmtDate(file.saved) : '—');
+      const who = el('th', { class: 'tch-who', scope: 'row' }, el('div', { class: 'tch-whorow' },
+        el('button', { class: 'tch-name', type: 'button', title: t('Vedi i dettagli', 'See the details'), onclick: () => classDetail(p, w) }, `${p.avatar} ${p.name}`),
+        here ? null : el('button', { class: 'tch-del', type: 'button', 'aria-label': t('Togli ', 'Remove ') + p.name, onclick: () => confirmRemove(t(`Togliere ${p.name} dall'elenco?`, `Remove ${p.name} from the list?`), t('Sparisce solo da questa pagina. Il file e il gioco del bambino non cambiano.', 'It only disappears from this page. The file and the child\'s game do not change.'), () => saveClass(loadClass().filter(x => x.id !== p.id)), () => showTeacher()) }, '✕')),
+        el('div', { class: 'tch-where' }, where));
+      const tr = el('tr', {}, who);
+      for (const m of w.modules) {
+        const done = levelsDone(p, w, m), n = m.levels.length;
+        tr.append(el('td', {}, el('div', { class: 'tch-c ' + (done === 0 ? 'none' : done === n ? 'all' : 'some') }, `${done}/${n}`), verifBadge(p, w, m)));
+      }
+      const [st, tot] = worldStars(p, w);
+      tr.append(el('td', { class: 'tch-tot' }, `${st}/${tot}`));
+      body.append(tr);
+    }
+    s.append(el('div', { class: 'tch-wrap' }, el('table', { class: 'tch' }, el('thead', {}, head), body)));
+    s.append(el('p', { class: 'note', style: 'margin-top:14px' }, t('In ogni casella: livelli superati sul totale e, sotto, il giudizio della verifica finale. Tocca un nome per vedere il dettaglio dei livelli.', 'In each box: levels passed out of the total and, below, the result of the final test. Tap a name to see each level.')));
   }
 
   document.addEventListener('keydown', e => {
