@@ -144,9 +144,18 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
 @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
 .modal { position: fixed; inset: 0; background: rgba(20, 25, 50, .45); display: grid; place-items: center; z-index: 40; padding: 16px; }
-.modal .box { background: #fff; border-radius: 22px; padding: 22px; max-width: 520px; width: 100%; box-shadow: var(--shadow); }
+.modal .box { background: #fff; border-radius: 22px; padding: 22px; max-width: 520px; width: 100%; box-shadow: var(--shadow); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow: auto; }
 .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 12px; font-weight: 700; z-index: 60; }
 .note { color: var(--muted); font-size: 15px; text-align: center; }
+.xfer { border-top: 2px solid var(--line); margin: 16px 0; padding-top: 14px; }
+.xfer-t { font-size: 18px; font-weight: 800; }
+.xfer .row { justify-content: flex-start; }
+.xfer-msg { font-weight: 700; font-size: 16px; margin: 14px 0 0; color: #1d6f40; overflow-wrap: anywhere; }
+.xfer-msg.bad { color: #a4161a; }
+.xfer-h { font-weight: 800; margin: 12px 0 4px; }
+.xfer-p { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 7px 0; border-top: 1px solid var(--line); }
+.xfer-n { font-weight: 800; }
+.xfer-s { color: var(--muted); }
 
 @media (max-width: 640px) {
   .qtext { font-size: 21px; }
@@ -602,8 +611,8 @@ window.PWA = true;
   // a decimal from an integer and a number of decimal places (no floating-point errors)
   const D = (k, dec) => { if (!dec) return F(k); const neg = k < 0; const s = String(Math.abs(k)).padStart(dec + 1, '0'); const ip = s.slice(0, -dec), fp = s.slice(-dec).replace(/0+$/, ''); return (neg ? '−' : '') + F(+ip) + (fp ? '.' + fp : ''); };
   const val = (k, dec) => k / Math.pow(10, dec);
-  // money: $12 or $2.50
-  const EUR = v => '$' + (Number.isInteger(v) ? F(v) : F(Math.floor(v)) + '.' + String(Math.round(v * 100) % 100).padStart(2, '0'));
+  // money: €12 or €2.50
+  const EUR = v => '€' + (Number.isInteger(v) ? F(v) : F(Math.floor(v)) + '.' + String(Math.round(v * 100) % 100).padStart(2, '0'));
   // multiple-choice question: the right answer among distractors (no duplicates)
   function choice(t, correct, wrong, extra = {}) {
     const opts = [String(correct)];
@@ -706,8 +715,9 @@ window.PWA = true;
       lv('ripart', 'Sharing equally', 'Dividing means sharing into equal parts: 12 sweets shared between 3 children → 4 each (12 ÷ 3 = 4).', () => { const k = R(2, 5), q = R(2, 6); return num(`${k * q} sweets are shared equally between ${k} children. How many does each child get?`, q, { v: V.groups(k, q, 'stella'), x: `${k * q} ÷ ${k} = ${q}` }); }),
       lv('doppio', 'Double, triple and half', 'Double means × 2, triple means × 3, half means ÷ 2.', () => { const n = R(1, 20), t = pick(['double', 'triple', 'half']); if (t === 'half') { const m = R(1, 25) * 2; return num(`What is half of ${m}?`, m / 2, { x: `${m} ÷ 2 = ${m / 2}` }); } return num(`What is ${t} ${n}?`, t === 'double' ? 2 * n : 3 * n, { x: `${n} × ${t === 'double' ? 2 : 3} = ${t === 'double' ? 2 * n : 3 * n}` }); }),
     ]),
-    mod('c2mis', 'Clocks and calendar', '⏰', [
+    mod('c2mis', 'Clocks and money', '⏰', [
       lv('ore', 'O\'clock and half past', 'The short hand shows the hour, the long hand shows the minutes. Long hand on the 12 = o\'clock; long hand on the 6 = half past.', () => { const h = R(1, 12), m = pick([0, 30]); const say = (x, half) => half ? `half past ${x}` : `${x} o'clock`; const s = say(h, m); const opts = [s, say(h, !m), say((h % 12) + 1, true), say((h + 10) % 12 + 1, false)]; return choice('What time is it?', s, opts, { v: V.clock(h, m), x: m ? `The short hand is between the ${h} and the ${(h % 12) + 1}, and the long hand is on the 6: it's ${s}.` : `The short hand is on the ${h} and the long hand is on the 12: it's ${s}.` }); }, 'palloncini'),
+      lv('euro', 'Counting euros', 'Add up the value of each coin and note.', () => { const pool = [100, 200, 500, 1000]; const list = []; const n = R(2, 4); for (let i = 0; i < n; i++) list.push(pick(pool)); list.sort((a, b) => b - a); const tot = list.reduce((s, v) => s + v, 0) / 100; return num('How many euros are there?', tot, { v: V.money(list), unit: '€', x: `${list.map(v => '€' + v / 100).join(' + ')} = €${tot}` }); }),
       ]),
     mod('c2sp', 'Lines and symmetry', '〰️', [
       lv('linee', 'Open and closed lines', 'A <b>closed</b> line has no beginning and no end, and it goes all the way round a space; an <b>open</b> line has two ends. A line can be <b>curved</b> or <b>broken</b> (made of straight pieces).', () => { const K = { 'aperta curva': 'open curved line', 'chiusa curva': 'closed curved line', 'aperta spezzata': 'open broken line', 'chiusa spezzata': 'closed broken line' }; const k = pick(Object.keys(K)); return choice('What kind of line is this?', K[k], Object.values(K), { v: V.curve(k), x: `It's ${an(K[k])}.` }); }, 'palloncini'),
@@ -781,7 +791,7 @@ window.PWA = true;
     ]),
     mod('c4mis', 'Measures and money', '⚖️', [
       lv('equiv4', 'Converting units', 'km hm dam m dm cm mm: each step is worth 10. Towards smaller units you multiply, towards bigger units you divide.', () => pick([() => equiv(['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm'], ['kilometres', 'hectometres', 'decametres', 'metres', 'decimetres', 'centimetres', 'millimetres']), () => equiv(['kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg'], ['kilograms', 'hectograms', 'decagrams', 'grams', 'decigrams', 'centigrams', 'milligrams']), () => equiv(['hl', 'dal', 'l', 'dl', 'cl', 'ml'], ['hectolitres', 'decalitres', 'litres', 'decilitres', 'centilitres', 'millilitres'])])()),
-      lv('spesa', 'Cost, sales and profit', 'Profit = sales − cost. Cost = sales − profit. Sales = cost + profit.', () => { const s = R(20, 300), g = R(5, 150), r = s + g; const t = pick(['g', 's', 'r']); if (t === 'g') return num(`A shopkeeper spends ${EUR(s)} on goods and sells them all for ${EUR(r)}. How much profit does she make?`, g, { unit: '$', x: `${EUR(r)} − ${EUR(s)} = ${EUR(g)}` }); if (t === 's') return num(`A shopkeeper sells his goods for ${EUR(r)} and makes a profit of ${EUR(g)}. How much did the goods cost him?`, s, { unit: '$', x: `${EUR(r)} − ${EUR(g)} = ${EUR(s)}` }); return num(`A shopkeeper spends ${EUR(s)} on goods and makes a profit of ${EUR(g)}. How much does she sell them for?`, r, { unit: '$', x: `${EUR(s)} + ${EUR(g)} = ${EUR(r)}` }); }),
+      lv('spesa', 'Cost, sales and profit', 'Profit = sales − cost. Cost = sales − profit. Sales = cost + profit.', () => { const s = R(20, 300), g = R(5, 150), r = s + g; const t = pick(['g', 's', 'r']); if (t === 'g') return num(`A shopkeeper spends ${EUR(s)} on goods and sells them all for ${EUR(r)}. How much profit does she make?`, g, { unit: '€', x: `${EUR(r)} − ${EUR(s)} = ${EUR(g)}` }); if (t === 's') return num(`A shopkeeper sells his goods for ${EUR(r)} and makes a profit of ${EUR(g)}. How much did the goods cost him?`, s, { unit: '€', x: `${EUR(r)} − ${EUR(g)} = ${EUR(s)}` }); return num(`A shopkeeper spends ${EUR(s)} on goods and makes a profit of ${EUR(g)}. How much does she sell them for?`, r, { unit: '€', x: `${EUR(s)} + ${EUR(g)} = ${EUR(r)}` }); }),
     ]),
     mod('c4geo', 'Geometry', '📐', [
       lv('gradi', 'Measuring angles', 'A right angle measures 90°, a straight angle 180° and a full turn 360°. Acute: less than 90°; obtuse: between 90° and 180°.', () => { const deg = pick([R(10, 85), 90, R(95, 175), 180]); const t = deg < 90 ? 'acute' : deg === 90 ? 'right' : deg < 180 ? 'obtuse' : 'straight'; if (Math.random() < 0.6) return choice(`An angle of <b>${deg}°</b> is…`, t, ['acute', 'right', 'obtuse', 'straight'], { keep: true, x: `${deg}°: ${t}.` }); const a = R(10, 80); return num(`How many degrees must you add to ${a}° to make a right angle?`, 90 - a, { unit: '°', x: `90° − ${a}° = ${90 - a}° (complementary angles)` }); }, 'palloncini'),
@@ -808,7 +818,7 @@ window.PWA = true;
     mod('c5op', 'Expressions and percentages', '🧮', [
       lv('espr', 'Order of operations', 'Brackets first, then multiplication and division (from left to right), and finally addition and subtraction.', () => { const r = Math.random(); if (r < 0.35) { const a = R(2, 20), b = R(2, 9), c = R(2, 9); return num(`${a} + ${b} × ${c} = ?`, a + b * c, { x: `Multiplication first: ${b} × ${c} = ${b * c}; then ${a} + ${b * c} = ${a + b * c}` }); } if (r < 0.7) { const a = R(2, 20), b = R(2, 20), c = R(2, 9); return num(`(${a} + ${b}) × ${c} = ?`, (a + b) * c, { x: `Brackets first: ${a + b}; then × ${c} = ${(a + b) * c}` }); } const c = R(2, 9), q = R(2, 9), a = c * q, b = R(1, 30), d = R(1, b); return num(`${a} ÷ ${c} + ${b} − ${d} = ?`, q + b - d, { x: `${a} ÷ ${c} = ${q}; ${q} + ${b} = ${q + b}; − ${d} = ${q + b - d}` }); }),
       lv('perc', 'Percentages', '25% of 80 = 80 ÷ 100 × 25 = 20. 50% is a half, 25% is a quarter, 10% is a tenth.', () => { const p = pick([10, 20, 25, 50, 75, 5, 30, 40]); const t = R(1, 40) * (100 / gcd(p, 100)); return num(`What is ${p}% of ${F(t)}?`, t * p / 100, { x: `${F(t)} ÷ 100 × ${p} = ${F(t * p / 100)}` }); }),
-      lv('sconto', 'Discounts', 'Sale price = original price − discount. A 20% discount on $50 is $10, so you pay $40.', () => { const p = pick([10, 20, 25, 30, 50]); const pr = R(2, 30) * (100 / gcd(p, 100)); const sc = pr * p / 100; return Math.random() < 0.5 ? num(`A game costs ${EUR(pr)}. It has a ${p}% discount. How much do you pay?`, pr - sc, { unit: '$', x: `Discount: ${EUR(pr)} ÷ 100 × ${p} = ${EUR(sc)}; price: ${EUR(pr)} − ${EUR(sc)} = ${EUR(pr - sc)}` }) : num(`A game costs ${EUR(pr)} and has a ${p}% discount. How many dollars is the discount?`, sc, { unit: '$', x: `${EUR(pr)} ÷ 100 × ${p} = ${EUR(sc)}` }); }),
+      lv('sconto', 'Discounts', 'Sale price = original price − discount. A 20% discount on €50 is €10, so you pay €40.', () => { const p = pick([10, 20, 25, 30, 50]); const pr = R(2, 30) * (100 / gcd(p, 100)); const sc = pr * p / 100; return Math.random() < 0.5 ? num(`A game costs ${EUR(pr)}. It has a ${p}% discount. How much do you pay?`, pr - sc, { unit: '€', x: `Discount: ${EUR(pr)} ÷ 100 × ${p} = ${EUR(sc)}; price: ${EUR(pr)} − ${EUR(sc)} = ${EUR(pr - sc)}` }) : num(`A game costs ${EUR(pr)} and has a ${p}% discount. How many euros is the discount?`, sc, { unit: '€', x: `${EUR(pr)} ÷ 100 × ${p} = ${EUR(sc)}` }); }),
       lv('divdec', 'Dividing by a decimal', 'If the divisor is a decimal, multiply both numbers by 10 (or 100) to get rid of the decimal point: 7.5 ÷ 2.5 = 75 ÷ 25 = 3.', () => { const q = R(2, 12), dk = R(11, 99); const a = q * dk; return num(`${D(a, 1)} ÷ ${D(dk, 1)} = ?`, q, { calc: { op: ':', a, b: dk, shift: 1 }, x: `Multiply both numbers by 10: ${F(a)} ÷ ${dk} = ${q}` }); }),
     ]),
     mod('c5fr', 'Fractions', '🍫', [
@@ -886,12 +896,14 @@ window.PWA = true;
     const seq = [0, 1, 2, 3, 4].map(k => back ? st - k * step : st + k * step); const i = R(1, 4);
     return num(`Fill in the gap, counting ${back ? 'back' : 'on'}${label}: ${seq.map((v, k) => k === i ? '☐' : F(v)).join(', ')}`, seq[i], { x: `Each time you ${back ? 'take away' : 'add'} ${F(step)}: ${seq.map(F).join(', ')}.` });
   }
+  const VALUE = v => v >= 100 ? '€' + (v / 100) : v === 1 ? '1 cent' : v + ' cents';
   // grade 1
   M_(1, 'c1n').levels.splice(1, 0,
     lv('contaav', 'Counting on and back', 'When you count <b>on</b>, each number is 1 more: 5, 6, 7… When you count <b>back</b>, each number is 1 less: 7, 6, 5…', () => { const back = Math.random() < 0.5; return seqQ(back ? R(5, 20) : R(0, 16), 1, back, ''); }),
   );
-  W_(1).modules.push(mod('c1tm', 'Time', '📅', [
+  W_(1).modules.push(mod('c1tm', 'Time and money', '📅', [
     lv('settimana', 'Days of the week and times of day', 'A week has 7 days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday. A day is split into morning, afternoon, evening and night. <b>Yesterday</b> is the day before today, <b>tomorrow</b> is the day after.', () => { const r = Math.random(); if (r < 0.4) { const d = R(0, 6), a = (d + 1) % 7; return choice(`Which day comes after <b>${DAYS[d]}</b>?`, DAYS[a], shuffle(DAYS.filter((_, k) => k !== a)), { x: `The days in order are: ${DAYS.join(', ')}. After ${DAYS[d]} comes ${DAYS[a]}.` }); } if (r < 0.75) { const d = R(0, 6), yest = Math.random() < 0.5, a = (d + (yest ? 6 : 1)) % 7; return choice(`If today is <b>${DAYS[d]}</b>, ${yest ? 'yesterday was' : 'tomorrow will be'}…`, DAYS[a], shuffle(DAYS.filter((_, k) => k !== a)), { x: `${yest ? 'Yesterday is the day before today' : 'Tomorrow is the day after today'}: ${DAYS[a]}.` }); } const p = R(0, 3), a = (p + 1) % 4; return choice(`What comes after <b>${PARTS[p]}</b>?`, PARTS[a], PARTS.filter((_, k) => k !== a), { x: `The times of day in order are: the morning, the afternoon, the evening, the night (and then the morning again). After ${PARTS[p]} comes ${PARTS[a]}.` }); }, 'palloncini'),
+    lv('euro1', 'Coins and notes', 'Euros are the money used in Italy and many other European countries. <b>Coins</b> are made of metal (€1, €2) and <b>notes</b> are made of paper (€5, €10, €20…). To find out how much money there is, add up the value of each one.', () => { const items = [100, 200, 500, 1000, 2000]; if (Math.random() < 0.5) { const v = pick(items); return choice(`How much is this ${v >= 500 ? 'note' : 'coin'} worth?`, VALUE(v), items.filter(x => x !== v).map(VALUE), { v: V.money([v]), x: `It is a €${v / 100} ${v >= 500 ? 'note' : 'coin'}.` }); } let list = [], tot = 0; const n = R(2, 3); for (let i = 0; i < n; i++) { const ok = items.filter(x => tot + x <= 2000); if (!ok.length) break; const v = pick(ok); list.push(v); tot += v; } list.sort((a, b) => b - a); return num('How many euros are there altogether?', tot / 100, { v: V.money(list), unit: '€', x: `${list.map(v => '€' + v / 100).join(' + ')} = €${tot / 100}` }); }),
   ]));
   // grade 2
   M_(2, 'c2n').levels.push(
@@ -900,6 +912,9 @@ window.PWA = true;
   M_(2, 'c2mis').levels.splice(1, 0,
     lv('quarti', 'Quarter past and quarter to', 'A quarter of an hour is 15 minutes. Long hand on the 12: o\'clock; on the 3: quarter past; on the 6: half past; on the 9: quarter to — a quarter of an hour before the next hour.', () => { const h = R(1, 12), q = R(0, 3), h2 = h % 12 + 1; const names = [`${h} o'clock`, `quarter past ${h}`, `half past ${h}`, `quarter to ${h2}`]; const pos = ['on the 12', 'on the 3', 'on the 6', 'on the 9']; return choice('What time is it?', names[q], names.filter((_, k) => k !== q), { v: V.clock(h, q * 15), x: `The long hand is ${pos[q]}${q === 3 ? ` and the short hand has nearly reached the ${h2}` : ''}: it's ${names[q]}.` }); }, 'palloncini'),
     lv('mesi', 'Months of the year', 'A year has 12 months: January, February, March, April, May, June, July, August, September, October, November, December. April, June, September and November have 30 days; February has 28 (29 in a leap year); all the others have 31.', () => { const m = R(0, 11); if (Math.random() < 0.5) { const a = (m + 1) % 12; return choice(`Which month comes after <b>${MONTHS[m]}</b>?`, MONTHS[a], shuffle(MONTHS.filter((_, k) => k !== a)), { x: `After ${MONTHS[m]} comes ${MONTHS[a]}.` }); } return choice(`How many days are there in <b>${MONTHS[m]}</b>?`, MDAYS[m], ['30', '31', '28 or 29'], { keep: true, x: m === 1 ? 'February has 28 days, or 29 in a leap year.' : `${MONTHS[m]} has ${MDAYS[m]} days.` }); }, 'palloncini'),
+  );
+  M_(2, 'c2mis').levels.push(
+    lv('cent', 'Euros and cents', '1 euro is worth 100 cents. The 1, 2 and 5 cent coins are copper-coloured, the 10, 20 and 50 cent coins are gold-coloured, and the €1 and €2 coins have two colours.', () => { if (Math.random() < 0.5) { const C = [1, 2, 5, 10, 20, 50, 100, 200]; const v = pick(C); return choice('How much is this coin worth?', VALUE(v), shuffle(C.filter(x => x !== v)).map(VALUE), { v: V.money([v]), x: `It is the ${v >= 100 ? '€' + v / 100 : v + ' cent'} coin.` }); } let list = [], tot = 0; const n = R(2, 4); for (let i = 0; i < n; i++) { const v = pick([1, 2, 5, 10, 20, 50].filter(x => tot + x < 100)); list.push(v); tot += v; } list.sort((a, b) => b - a); return num('How many cents are there altogether?', tot, { v: V.money(list), unit: 'cents', x: `${list.join(' + ')} = ${tot} cents` }); }),
   );
   // grade 3
   M_(3, 'c3n').levels.push(
@@ -915,7 +930,7 @@ window.PWA = true;
   );
   /* ============ CLOCK AND MONEY PRACTICE IN GRADES 4 AND 5 (to keep the skills active) ============ */
   const HRS_MIN = min => { const h = Math.floor(min / 60), m = min % 60; return (h ? `${h} ${h === 1 ? 'hour' : 'hours'}` : '') + (h && m ? ' and ' : '') + (m ? `${m} minutes` : ''); };
-  const USD = c => '$' + Math.floor(c / 100) + '.' + String(c % 100).padStart(2, '0');
+  const EC = c => '€' + Math.floor(c / 100) + '.' + String(c % 100).padStart(2, '0');
   function explainDuration(H, M, d) {
     const end = H * 60 + M + d, H2 = Math.floor(end / 60), M2 = end % 60; const p = [];
     if (M) p.push(`from ${hhmm(H, M)} to ${hhmm(H + 1, 0)} is ${60 - M} minutes`);
@@ -924,24 +939,23 @@ window.PWA = true;
     return p.join('; ') + `: ${HRS_MIN(d)} altogether.`;
   }
   M_(3, 'c3mis').levels.push(
-    lv('resto', 'Paying and getting change', 'Your <b>change</b> is the money you get back when you pay more than the price: change = money given − price. If a book costs $3.40 and you pay with $5, your change is $1.60.', () => { const price = R(11, 189) * 10; const pay = [500, 1000, 2000].find(v => v > price); return num(`You buy an exercise book for ${USD(price)} and pay with a $${pay / 100} bill. How much change do you get?`, (pay - price) / 100, { unit: '$', x: `$${pay / 100} − ${USD(price)} = ${USD(pay - price)}` }); }),
+    lv('resto', 'Paying and getting change', 'Your <b>change</b> is the money you get back when you pay more than the price: change = money given − price. If a book costs €3.40 and you pay with €5, your change is €1.60.', () => { const price = R(11, 189) * 10; const pay = [500, 1000, 2000].find(v => v > price); return num(`You buy an exercise book for ${EC(price)} and pay with a €${pay / 100} note. How much change do you get?`, (pay - price) / 100, { v: V.money([pay]), unit: '€', x: `€${pay / 100} − ${EC(price)} = ${EC(pay - price)}` }); }),
   );
   M_(4, 'c4mis').levels.push(
     lv('orologio4', 'Time to the minute and timetables', 'On the long hand each number is worth 5 minutes and each small mark is worth 1 minute. To work out how long a journey takes, get to the next o\'clock first, then count the whole hours and finally the minutes left over.', () => { if (Math.random() < 0.5) { const h = R(1, 12); let m; do { m = R(1, 59); } while (m % 5 === 0); return { t: 'What time is it? (hours and minutes)', k: 'multi', v: V.clock(h, m, true), f: [{ l: 'hours', a: h }, { l: 'minutes', a: m }], x: `The short hand has passed the ${h}; the long hand is ${m % 5} small ${m % 5 === 1 ? 'mark' : 'marks'} past ${m >= 5 ? Math.floor(m / 5) * 5 + ' minutes' : 'the 12'}: ${m} minutes. It's ${hhmm(h, m)}.` }; } const H = R(7, 18), M = R(0, 11) * 5, d = R(13, 40) * 5, end = H * 60 + M + d; return { t: `The train leaves at ${hhmm(H, M)} and arrives at ${hhmm(Math.floor(end / 60), end % 60)}. How long is the journey?`, k: 'multi', f: [{ l: 'hours', a: Math.floor(d / 60) }, { l: 'minutes', a: d % 60 }], x: explainDuration(H, M, d).replace(/^f/, 'F') }; }),
-    lv('soldi4', 'Shopping and change', 'To find out how much you spend, add up the prices in columns, decimal point under decimal point. Your change is: money given − amount spent.', () => { const THINGS = ['a pencil case', 'an eraser', 'a notebook', 'a ruler', 'a glue stick', 'a felt-tip pen', 'a book']; const n = R(2, 3), items = shuffle(THINGS).slice(0, n), prices = items.map(() => R(3, 120) * 5); const tot = prices.reduce((s, v) => s + v, 0); const el = items.map((c, i) => `${c} for ${USD(prices[i])}`), list = el.slice(0, -1).join(', ') + ' and ' + el[el.length - 1]; const sum = `${prices.map(USD).join(' + ')} = ${USD(tot)}`; if (Math.random() < 0.5) return num(`You buy ${list}. How much do you spend altogether?`, tot / 100, { unit: '$', x: sum }); const pay = [500, 1000, 2000, 5000].find(v => v > tot); return num(`You buy ${list}. You pay with a $${pay / 100} bill. How much change do you get?`, (pay - tot) / 100, { unit: '$', x: `${sum}; $${pay / 100} − ${USD(tot)} = ${USD(pay - tot)}` }); }),
+    lv('soldi4', 'Shopping and change', 'To find out how much you spend, add up the prices in columns, decimal point under decimal point. Your change is: money given − amount spent.', () => { const THINGS = ['a pencil case', 'an eraser', 'a notebook', 'a ruler', 'a glue stick', 'a felt-tip pen', 'a book']; const n = R(2, 3), items = shuffle(THINGS).slice(0, n), prices = items.map(() => R(3, 120) * 5); const tot = prices.reduce((s, v) => s + v, 0); const el = items.map((c, i) => `${c} for ${EC(prices[i])}`), list = el.slice(0, -1).join(', ') + ' and ' + el[el.length - 1]; const sum = `${prices.map(EC).join(' + ')} = ${EC(tot)}`; if (Math.random() < 0.5) return num(`You buy ${list}. How much do you spend altogether?`, tot / 100, { unit: '€', x: sum }); const pay = [500, 1000, 2000, 5000].find(v => v > tot); return num(`You buy ${list}. You pay with a €${pay / 100} note. How much change do you get?`, (pay - tot) / 100, { unit: '€', v: V.money([pay]), x: `${sum}; €${pay / 100} − ${EC(tot)} = ${EC(pay - tot)}` }); }),
   );
   M_(5, 'c5mis').levels.push(
     lv('orologio5', 'Timetables and durations', 'To find the finishing time, add the duration to the starting time: first the hours, then the minutes. If the minutes go past 60, they make another hour: 60 minutes = 1 hour.', () => { if (Math.random() < 0.55) { const H = R(6, 15), M = R(0, 11) * 5, dh = R(1, 4), dm = R(1, 11) * 5; const end = H * 60 + M + dh * 60 + dm, H2 = Math.floor(end / 60), M2 = end % 60; return { t: `A school trip starts at ${hhmm(H, M)} and lasts ${HRS_MIN(dh * 60 + dm)}. What time does it finish? (24-hour clock)`, k: 'multi', f: [{ l: 'hours', a: H2 }, { l: 'minutes', a: M2 }], x: `${hhmm(H, M)} + ${dh} ${dh === 1 ? 'hour' : 'hours'} = ${hhmm(H + dh, M)}; + ${dm} minutes: ${M + dm >= 60 ? `${M} + ${dm} = ${M + dm} minutes = 1 hour and ${M + dm - 60} minutes, so ` : ''}${hhmm(H2, M2)}.` }; } const tot = R(13, 59) * 5; return { t: `${tot} minutes = ? hours and ? minutes`, k: 'multi', f: [{ l: 'hours', a: Math.floor(tot / 60) }, { l: 'minutes', a: tot % 60 }], x: `${tot} ÷ 60 = ${Math.floor(tot / 60)} remainder ${tot % 60}: ${HRS_MIN(tot)}.` }; }),
-    lv('soldi5', 'Unit price and total price', 'Total price = price of one item × number of items. Price of one item (unit price) = total price ÷ number of items.', () => { const THINGS = [['notebooks', 'notebook'], ['tickets', 'ticket'], ['ice creams', 'ice cream'], ['pens', 'pen'], ['sandwiches', 'sandwich']]; const [pl, sg] = pick(THINGS), q = R(2, 9), u = R(9, 150) * 5; if (Math.random() < 0.5) return num(`${q} ${pl} cost ${USD(u)} each. How much do you spend altogether?`, q * u / 100, { unit: '$', x: `${USD(u)} × ${q} = ${USD(q * u)}` }); return num(`${q} ${pl} cost ${USD(q * u)} altogether. How much does one ${sg} cost?`, u / 100, { unit: '$', x: `${USD(q * u)} ÷ ${q} = ${USD(u)}` }); }),
+    lv('soldi5', 'Unit price and total price', 'Total price = price of one item × number of items. Price of one item (unit price) = total price ÷ number of items.', () => { const THINGS = [['notebooks', 'notebook'], ['tickets', 'ticket'], ['ice creams', 'ice cream'], ['pens', 'pen'], ['sandwiches', 'sandwich']]; const [pl, sg] = pick(THINGS), q = R(2, 9), u = R(9, 150) * 5; if (Math.random() < 0.5) return num(`${q} ${pl} cost ${EC(u)} each. How much do you spend altogether?`, q * u / 100, { unit: '€', x: `${EC(u)} × ${q} = ${EC(q * u)}` }); return num(`${q} ${pl} cost ${EC(q * u)} altogether. How much does one ${sg} cost?`, u / 100, { unit: '€', x: `${EC(q * u)} ÷ ${q} = ${EC(u)}` }); }),
   );
-  for (const w of W) for (const m of w.modules) m.levels = m.levels.filter(l => !['euro', 'euro1', 'cent'].includes(l.id));
   // operations modules first in every grade
   const FIRST = { 1: ['c1op'], 2: ['c2op', 'c2mol'], 3: ['c3op'], 4: ['c4op'], 5: ['c5calc', 'c5op'] };
   for (const w of W) { const ids = FIRST[w.n] || []; w.modules.sort((x, y) => { const ix = ids.indexOf(x.id), iy = ids.indexOf(y.id); return (ix < 0 ? 99 : ix) - (iy < 0 ? 99 : iy); }); }
 
   // checking answers (English format: decimal point, comma for thousands)
   function parseNum(s) {
-    s = String(s).trim().replace(/\s/g, '').replace(/−/g, '-').replace(/[€$°%]|cm²|cm|m²|g$/g, '');
+    s = String(s).trim().replace(/\s/g, '').replace(/−/g, '-').replace(/[€°%]|cm²|cm|m²|g$/g, '');
     if (!s) return NaN;
     if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
     if (!/^-?\d*\.?\d+$/.test(s)) return NaN;
@@ -955,14 +969,14 @@ window.PWA = true;
     if (q.k === 'multi') return q.f.every((f, i) => same(parseNum(given[i]), f.a));
     return false;
   }
-  // a number with its unit: $12.50, 25°, 30%, 12 cm
+  // a number with its unit: €12.50, 25°, 30%, 12 cm
   function unitFmt(s, unit) {
     if (!unit) return s;
-    if (unit === '€' || unit === '$') { const neg = s.startsWith('−'); const b = neg ? s.slice(1) : s; return (neg ? '−' : '') + unit + (/\.\d$/.test(b) ? b + '0' : b); }
+    if (unit === '€') { const neg = s.startsWith('−'); const b = neg ? s.slice(1) : s; return (neg ? '−' : '') + unit + (/\.\d$/.test(b) ? b + '0' : b); }
     if (unit === '°' || unit === '%') return s + unit;
     return s + ' ' + unit;
   }
-  const unitBefore = unit => unit === '€' || unit === '$';
+  const unitBefore = unit => unit === '€';
   const fmtNum = a => { if (Number.isInteger(a)) return F(a); const s = (Math.round(a * 1e6) / 1e6).toString().split('.'); return (a < 0 ? '−' : '') + F(Math.abs(+s[0])) + '.' + s[1]; };
   function answerText(q) {
     if (q.k === 'num') return unitFmt(fmtNum(q.a), q.unit);
@@ -1246,10 +1260,12 @@ window.PWA = true;
           ['Side', 'Each of the straight lines that make up the outline of a shape.'],
           ['Circle, square, rectangle, triangle', 'A circle is round; a square has 4 equal sides; a rectangle has 4 sides, two long and two short; a triangle has 3 sides.'],
         ] },
-        c1tm: { learn: 'The days of the week and the times of day.', terms: [
+        c1tm: { learn: 'The days of the week, the times of day and your first coins and notes.', terms: [
           ['Week', '7 days: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.'],
           ['Yesterday, today, tomorrow', 'Yesterday is the day before today, tomorrow is the day after.'],
           ['Times of day', 'Morning, afternoon, evening and night.'],
+          ['Euro (€)', 'The money used in Italy and many other European countries.'],
+          ['Coins and notes', 'Coins are made of metal (€1, €2), notes are made of paper (€5, €10, €20).'],
         ] },
         c1dt: { learn: 'Spotting patterns — sequences that repeat — and carrying them on.', terms: [
           ['Sequence', 'A row of objects, colours or numbers in a certain order.'],
@@ -1282,11 +1298,13 @@ window.PWA = true;
           ['Odd and even', 'A number is even if it ends in 0, 2, 4, 6 or 8; it is odd if it ends in 1, 3, 5, 7 or 9.'],
           ['Counting in steps', 'Counting by adding (or taking away) the same number each time: 2, 4, 6, 8… or 50, 40, 30…'],
         ] },
-        c2mis: { learn: 'Telling the time to the quarter hour and knowing the months of the year.', terms: [
+        c2mis: { learn: 'Telling the time to the quarter hour, knowing the months of the year and counting euros and cents.', terms: [
           ['Hour hand and minute hand', 'The short hand shows the hours, the long hand shows the minutes.'],
           ['Quarter past and quarter to', 'A quarter of an hour is 15 minutes. Long hand on the 3: quarter past; on the 9: quarter to.'],
           ['Months', 'A year has 12 months. April, June, September and November have 30 days, February has 28 (or 29), the others 31.'],
           ['O\'clock and half past', 'An hour lasts 60 minutes; half an hour lasts 30 minutes. Long hand on the 12: o\'clock. Long hand on the 6: half past.'],
+          ['Euros and cents', 'The money used in Italy and many other European countries. 1 euro (€) is worth 100 cents.'],
+          ['Coins and notes', 'Coins are made of metal (for example €1 and €2), notes are made of paper (for example €5 and €10).'],
         ] },
         c2sp: { learn: 'Learning the kinds of lines and discovering symmetry.', terms: [
           ['Open and closed lines', 'A closed line has no beginning and no end and goes all the way round a space; an open line has two ends.'],
@@ -1825,7 +1843,8 @@ window.PWA = true;
   const EN = window.LANG === 'en';
   const t = (it, en) => EN ? en : it;
   const TH = EN ? ',' : '.', DP = EN ? '.' : ','; // separatore delle migliaia e dei decimali
-  const KEY = EN ? 'math-game-en-v1' : 'mate-gioco-v1';
+  const KEYS = { it: 'mate-gioco-v1', en: 'math-game-en-v1' }; // un salvataggio per ogni lingua
+  const MY_LANG = EN ? 'en' : 'it', KEY = KEYS[MY_LANG];
   const AVATARS = ['🐶', '🐱', '🐰', '🦊', '🐼', '🐨', '🐯', '🦁', '🐸', '🐵', '🦄', '🐙', '🐢', '🦖', '🐧', '🦉', '🐞', '🐬'];
   const WORLD_EMOJI = { prato: '🌼', bosco: '🌲', mare: '🐳', montagna: '🏔️', spazio: '🌌' };
   const BALLOON_COL = ['#e63946', '#3a86ff', '#ff9f1c', '#8338ec', '#2a9d8f', '#f72585'];
@@ -2006,7 +2025,7 @@ window.PWA = true;
     }
     g.append(el('button', { class: 'player new', type: 'button', onclick: newPlayer }, el('div', { class: 'av' }, '➕'), el('div', { class: 'nm' }, t('Nuovo giocatore', 'New player'))));
     s.append(g);
-    s.append(el('p', { class: 'note', style: 'margin-top:22px' }, t('I progressi restano salvati su questo tablet o computer, in Chrome.', 'Progress is saved on this tablet or computer, in Chrome.')));
+    s.append(el('p', { class: 'note', style: 'margin-top:22px' }, t('I progressi restano salvati su questo tablet o computer, in Chrome. Per passarli a un altro dispositivo, tocca ⚙️ in alto.', 'Progress is saved on this tablet or computer, in Chrome. To move it to another device, tap ⚙️ at the top.')));
   }
   function modal(content) {
     const m = el('div', { class: 'modal', onclick: e => { if (e.target === m) m.remove(); } }, el('div', { class: 'box' }, content));
@@ -2429,7 +2448,155 @@ window.PWA = true;
     const m = modal([el('h2', { style: 'margin-top:0' }, t('Impostazioni', 'Settings')),
       el('label', { style: 'display:flex;gap:10px;align-items:center;font-size:18px;font-weight:700' }, chk, t('Modalità insegnante: tutti i livelli sbloccati', 'Teacher mode: all levels unlocked')),
       el('p', { class: 'note', style: 'text-align:left' }, t('Utile per scegliere subito l\'argomento della lezione alla LIM o per ripassare.', 'Useful for going straight to the topic of the lesson on the interactive whiteboard, or for revision.')),
+      transferBox(),
       el('div', { class: 'row' }, el('button', { class: 'btn', type: 'button', onclick: () => { D.teacher = chk.checked; save(); m.remove(); if (me()) showWorlds(); } }, t('Fatto', 'Done')))]);
+  }
+
+  /* ---------------- trasferimento dei progressi su un altro dispositivo ----------------
+     Un file di testo con i giocatori delle due lingue: non passa da internet se non lo decide chi lo manda.
+     Il caricamento unisce e non cancella mai: per ogni livello si tiene il risultato migliore. */
+  const BACKUP_APP = 'matematica-in-gioco', BACKUP_VERSION = 1;
+  const LEVEL_KEY = /^[1-5]\/[\w-]+\/[\w-]+$/;
+  function readSave(lang) {
+    if (lang === MY_LANG) return D;
+    try { const s = JSON.parse(localStorage.getItem(KEYS[lang]) || 'null'); return s && Array.isArray(s.players) ? s : null; } catch (e) { return null; }
+  }
+  // tiene solo i dati validi di un giocatore (i file possono arrivare da fuori)
+  function cleanPlayer(x) {
+    if (!x || typeof x !== 'object' || typeof x.id !== 'string' || !/^[\w-]{1,40}$/.test(x.id) || typeof x.name !== 'string' || !x.name.trim()) return null;
+    const scores = (o, max) => {
+      const r = {};
+      if (o && typeof o === 'object') for (const [k, v] of Object.entries(o)) if (LEVEL_KEY.test(k) && Number.isInteger(v) && v >= 0 && v <= max) r[k] = v;
+      return r;
+    };
+    const guideSeen = {};
+    for (const n of [1, 2, 3, 4, 5]) if (x.guideSeen && typeof x.guideSeen === 'object' && x.guideSeen[n] === true) guideSeen[n] = true;
+    return {
+      id: x.id, name: x.name.trim().slice(0, 16),
+      avatar: typeof x.avatar === 'string' && x.avatar.length > 0 && x.avatar.length <= 8 ? x.avatar : AVATARS[0],
+      coins: Number.isSafeInteger(x.coins) && x.coins >= 0 ? x.coins : 0,
+      stars: scores(x.stars, 3), verif: scores(x.verif, 100), guideSeen,
+      seenFacts: Array.isArray(x.seenFacts) ? [...new Set(x.seenFacts.filter(v => Number.isInteger(v) && v >= 0))] : []
+    };
+  }
+  // unisce senza perdere niente: i giocatori nuovi si aggiungono, quelli già presenti tengono il risultato migliore
+  function mergePlayers(base, incoming) {
+    const out = base.map(p => ({ ...p }));
+    const best = (a, b) => { const r = { ...(a || {}) }; for (const [k, v] of Object.entries(b)) if (!(r[k] >= v)) r[k] = v; return r; };
+    for (const x of incoming) {
+      const p = out.find(o => o.id === x.id);
+      if (!p) { out.push(x); continue; }
+      p.coins = Math.max(p.coins || 0, x.coins);
+      p.stars = best(p.stars, x.stars); p.verif = best(p.verif, x.verif);
+      p.guideSeen = { ...(p.guideSeen || {}), ...x.guideSeen };
+      p.seenFacts = [...new Set([...(p.seenFacts || []), ...x.seenFacts])];
+    }
+    return out;
+  }
+  function makeBackup() {
+    const saves = {};
+    for (const lang of Object.keys(KEYS)) {
+      const s = readSave(lang), players = s ? s.players.map(cleanPlayer).filter(Boolean) : [];
+      if (players.length) saves[lang] = { players };
+    }
+    if (!Object.keys(saves).length) return null;
+    const now = new Date(), pad = n => String(n).padStart(2, '0');
+    const name = `${t('matematica-progressi', 'maths-progress')}-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}.txt`;
+    // .txt e non .json: su tablet e telefoni si può inviare e aprire senza problemi
+    const text = JSON.stringify({ app: BACKUP_APP, version: BACKUP_VERSION, info: 'Matematica in gioco / Maths at Play: file dei progressi, da non modificare / progress file, do not edit.', saved: now.toISOString(), saves });
+    return new File([text], name, { type: 'text/plain' });
+  }
+  // legge il file: restituisce i dati, oppure il motivo per cui non va bene
+  function readBackup(text) {
+    let o;
+    try { o = JSON.parse(text.replace(/^﻿/, '').trim()); } catch (e) { o = null; }
+    if (!o || o.app !== BACKUP_APP || !o.saves || typeof o.saves !== 'object') return { error: t('Questo non è un file dei progressi del gioco.', 'This is not a progress file from this game.') };
+    if (!Number.isInteger(o.version) || o.version < 1) return { error: t('Questo non è un file dei progressi del gioco.', 'This is not a progress file from this game.') };
+    if (o.version > BACKUP_VERSION) return { error: t('Questo file viene da una versione più nuova del gioco: aggiorna il gioco e riprova.', 'This file comes from a newer version of the game: update the game and try again.') };
+    const saves = {};
+    for (const lang of Object.keys(KEYS)) {
+      const s = o.saves[lang], seen = new Set();
+      const players = s && Array.isArray(s.players) ? s.players.map(cleanPlayer).filter(p => p && !seen.has(p.id) && seen.add(p.id)) : [];
+      if (players.length) saves[lang] = { players };
+    }
+    if (!Object.keys(saves).length) return { error: t('In questo file non ci sono giocatori.', 'There are no players in this file.') };
+    return { saves, saved: new Date(o.saved) };
+  }
+  // scrive tutto e solo se ci riesce aggiorna il gioco; se non riesce restituisce false
+  function applyBackup(saves) {
+    const mine = {};
+    try {
+      for (const lang of Object.keys(saves)) {
+        const s = readSave(lang) || { players: [], cur: null, teacher: false, sound: true };
+        const players = mergePlayers(s.players, saves[lang].players);
+        localStorage.setItem(KEYS[lang], JSON.stringify({ ...s, players }));
+        if (lang === MY_LANG) mine.players = players;
+      }
+    } catch (e) { return false; }
+    if (mine.players) D.players = mine.players;
+    return true;
+  }
+  function confirmImport(b, close) {
+    const line = p => {
+      let tot = 0; for (const v of Object.values(p.stars)) tot += v;
+      return el('div', { class: 'xfer-p' }, el('span', { class: 'xfer-n' }, p.avatar + ' ' + p.name), el('span', { class: 'xfer-s' }, `⭐ ${tot}  ·  🪙 ${p.coins}`));
+    };
+    const langs = Object.keys(b.saves);
+    const m = modal([el('h2', { style: 'margin-top:0' }, t('Caricare questi progressi?', 'Load this progress?')),
+      isNaN(b.saved) ? null : el('p', { class: 'note', style: 'text-align:left' }, t('File salvato il ', 'File saved on ') + b.saved.toLocaleDateString(t('it-IT', 'en-GB')) + '.'),
+      ...langs.flatMap(lang => [
+        el('div', { class: 'xfer-h' }, lang === 'it' ? t('Versione italiana', 'Italian version') : t('Versione inglese', 'English version')),
+        ...b.saves[lang].players.map(line)]),
+      el('p', { class: 'note', style: 'text-align:left' }, t('Non si cancella niente: i giocatori già presenti su questo dispositivo restano e, se un giocatore c\'è già, per ogni livello si tiene il risultato migliore.', 'Nothing gets deleted: players already on this device stay and, if a player is already here, the best result for each level is kept.')),
+      el('div', { class: 'row' }, el('button', { class: 'btn alt', type: 'button', onclick: () => m.remove() }, t('Annulla', 'Cancel')),
+        el('button', { class: 'btn ok', type: 'button', onclick: () => {
+          if (!applyBackup(b.saves)) { m.remove(); return close(t('Non riesco a salvare su questo dispositivo: controlla che il browser non sia in modalità privata e riprova.', 'I can\'t save on this device: check that the browser isn\'t in private mode and try again.'), true); }
+          m.remove(); document.querySelectorAll('.modal').forEach(x => x.remove());
+          showPlayers(); beep('win');
+          toast(b.saves[MY_LANG] ? t('Progressi caricati!', 'Progress loaded!') : t('Progressi caricati: li trovi nella versione inglese del gioco.', 'Progress loaded: you\'ll find it in the Italian version of the game.'));
+        } }, t('Carica', 'Load')))]);
+  }
+  // il riquadro dentro le Impostazioni
+  function transferBox() {
+    const status = el('p', { class: 'xfer-msg', role: 'status', hidden: true });
+    const say = (text, bad) => { status.textContent = text; status.hidden = false; status.classList.toggle('bad', !!bad); };
+    const SENT = t('Ora porta il file sull\'altro dispositivo e lì scegli «Carica da un file».', 'Now take the file to the other device and choose “Load from a file” there.');
+    const EMPTY = t('Non ci sono ancora progressi da salvare.', 'There is no progress to save yet.');
+    const download = () => {
+      const f = makeBackup();
+      if (!f) return say(EMPTY);
+      const url = URL.createObjectURL(f), a = el('a', { href: url, download: f.name, style: 'display:none' });
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      say(t('File «', 'File “') + f.name + t('» salvato, di solito nella cartella Download. ', '” saved, usually in the Downloads folder. ') + SENT);
+    };
+    const share = async () => {
+      const f = makeBackup();
+      if (!f) return say(EMPTY);
+      try { await navigator.share({ files: [f], title: f.name }); say(SENT); }
+      catch (e) { if (e && e.name !== 'AbortError') download(); }
+    };
+    let canShare = false;
+    try { canShare = !!navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.txt', { type: 'text/plain' })] }); } catch (e) { /* non disponibile */ }
+    // nessun filtro sul tipo di file: alcuni tablet renderebbero il file non selezionabile; il controllo si fa dopo, sul contenuto
+    const input = el('input', { type: 'file', style: 'display:none', 'aria-hidden': 'true', onchange: () => {
+      const f = input.files && input.files[0];
+      input.value = '';
+      if (!f) return;
+      const bad = t('Non riesco a leggere questo file.', 'I can\'t read this file.');
+      if (f.size > 5e6) return say(t('Questo non è un file dei progressi del gioco.', 'This is not a progress file from this game.'), true);
+      const r = new FileReader();
+      r.onerror = () => say(bad, true);
+      r.onload = () => { const b = readBackup(String(r.result)); if (b.error) say(b.error, true); else { status.hidden = true; confirmImport(b, say); } };
+      r.readAsText(f);
+    } });
+    return el('div', { class: 'xfer' }, el('div', { class: 'xfer-t' }, t('Passare a un altro tablet o computer', 'Moving to another tablet or computer')),
+      el('p', { class: 'note', style: 'text-align:left' }, t('Salva i progressi in un file, mandalo sull\'altro dispositivo (per esempio con un\'email) e lì scegli «Carica da un file». Il file contiene i nomi e i risultati dei giocatori: il gioco non lo invia a nessuno da solo.', 'Save your progress in a file, send it to the other device (by email, for example) and choose “Load from a file” there. The file contains the players\' names and results: the game never sends it anywhere by itself.')),
+      el('div', { class: 'row' },
+        el('button', { class: 'btn alt', type: 'button', id: 'xferSave', onclick: download }, t('💾 Salva in un file', '💾 Save to a file')),
+        canShare ? el('button', { class: 'btn alt', type: 'button', id: 'xferShare', onclick: share }, t('📤 Invia il file', '📤 Send the file')) : null,
+        el('button', { class: 'btn alt', type: 'button', id: 'xferLoad', onclick: () => input.click() }, t('📂 Carica da un file', '📂 Load from a file'))),
+      input, status);
   }
 
   document.addEventListener('keydown', e => {

@@ -37,7 +37,8 @@ Ogni classe è un mondo da esplorare: il Prato dei Numeri, il Bosco delle Decine
   - **Computer (Chrome o Edge):** pulsante 📲 in alto nel gioco, oppure l'icona di installazione nella barra degli indirizzi.
   - Gli aggiornamenti arrivano da soli: basta aprire l'app con internet attivo.
 - I progressi restano salvati solo sul dispositivo usato. Il gioco **non raccoglie e non invia dati**: niente account, niente pubblicità.
-- Con il pulsante **EN** in alto si passa alla versione inglese (*Maths at Play*), che usa le convenzioni inglesi (1,234.5 e la *long division*) e i dollari americani nei problemi con i soldi.
+- **Cambi tablet?** Da ⚙️ Impostazioni si salvano i progressi in un file e sull'altro dispositivo si caricano. Non si cancella niente: se un giocatore c'è già, per ogni livello si tiene il risultato migliore.
+- Con il pulsante **EN** in alto si passa alla versione inglese (*Maths at Play*), che usa le convenzioni inglesi (1,234.5, la *long division* e l'orologio con am/pm).
 
 ---
 
@@ -53,7 +54,7 @@ Each school year is a world to explore: the Meadow of Numbers, the Forest of Ten
 ### How it works
 
 - **“What you'll learn”.** At the start of each grade a guide explains what children will learn and the words (definitions) they will meet in the games.
-- **Clocks, calendar and money.** From Grade 1 to Grade 5: counting, days and months, telling the time to the minute, am/pm and the 24-hour clock, durations, and money problems in US dollars.
+- **Clocks, calendar and money.** From Grade 1 to Grade 5: counting, days and months, telling the time to the minute, am/pm and the 24-hour clock, durations, euro coins and notes, change and prices.
 - **Mini-games that keep changing.** Children answer by popping balloons, catching fish, turning over cards, helping the crocodile with the < > = signs, or opening the treasure chest with the keypad. Every time they play again, the questions and the games change.
 - **If you make a mistake, it explains.** After a wrong answer the game shows the right answer, why it is right and the rule to remember.
 - **Column calculations, step by step.** Additions, subtractions, multiplications and divisions are already set out in columns. Children work them out by hand in their exercise book and type only the answer into the game. Then they can go through every step: carrying, borrowing, partial products and long division, decimals included.
@@ -72,4 +73,5 @@ Each school year is a world to explore: the Meadow of Numbers, the Forest of Ten
   - **Computer (Chrome or Edge):** the 📲 button at the top of the game, or the install icon in the address bar.
   - Updates arrive by themselves: just open the app while online.
 - Progress is saved only on the device being used. The game **does not collect or send any data**: no accounts, no ads.
+- **Changing tablet?** In ⚙️ Settings you can save your progress to a file and load it on the other device. Nothing gets deleted: if a player is already there, the best result for each level is kept.
 - The **IT** button at the top switches to the Italian version (*Matematica in gioco*), which follows Italian conventions: 1.234,5 and the Italian division method.
