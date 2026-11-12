@@ -49,14 +49,14 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
 /* mondi */
 .worlds { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
 .world { border: 0; border-radius: 22px; padding: 18px 14px 16px; color: #fff; text-align: left; box-shadow: var(--shadow); position: relative; overflow: hidden; min-height: 170px; display: flex; flex-direction: column; }
-.world .num { font-size: 15px; font-weight: 900; opacity: .9; text-transform: uppercase; letter-spacing: .06em; }
+.world .num { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; }
 .world .wn { font-size: 22px; font-weight: 900; line-height: 1.15; margin: 6px 0 10px; }
 .world .em { position: absolute; right: 10px; bottom: 4px; font-size: 64px; opacity: .9; }
 .world .prog { margin-top: auto; font-weight: 800; background: rgba(0,0,0,.18); align-self: flex-start; padding: 3px 10px; border-radius: 999px; }
-.t-prato { background: linear-gradient(140deg, #52b788, #2d6a4f); }
-.t-bosco { background: linear-gradient(140deg, #6a994e, #386641); }
-.t-mare { background: linear-gradient(140deg, #4cc9f0, #3a56d4); }
-.t-montagna { background: linear-gradient(140deg, #9d8189, #5e548e); }
+.t-prato { background: linear-gradient(140deg, #2d7d57, #1b5e40); }
+.t-bosco { background: linear-gradient(140deg, #4a7a35, #386641); }
+.t-mare { background: linear-gradient(140deg, #1d6fae, #3a56d4); }
+.t-montagna { background: linear-gradient(140deg, #7d6470, #5e548e); }
 .t-spazio { background: linear-gradient(140deg, #3c096c, #10002b); }
 
 /* moduli e livelli (mappa a sentiero) */
@@ -184,6 +184,9 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
 .tch-dl { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
 .tch-dl.none { color: var(--muted); }
 .tch-st { color: #e0a100; white-space: nowrap; }
+.cmds { display: inline-flex; gap: 4px; vertical-align: middle; flex-wrap: wrap; }
+.cmd { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: #4361ee; color: #fff; font-weight: 900; font-size: 20px; line-height: 1; }
+.priv-link { display: inline-block; margin-top: 4px; font-weight: 700; color: var(--pri); }
 
 @media (max-width: 640px) {
   .qtext { font-size: 21px; }
@@ -620,8 +623,203 @@ window.PWA = true;
     for (let i = 0; i < n; i++) s += `<rect x="${14 + (i + 1) * cw - 11}" y="90" width="22" height="30" rx="4" fill="#fff3bf" stroke="#f59f00"/>`;
     return svg(w, 126, s);
   };
+  // griglia del coding: il robot, la stella e le caselle segnate con le lettere
+  V.grid = function (cols, rows, o = {}) {
+    const S = 48, P = 4; let b = '';
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) b += `<rect x="${P + x * S}" y="${P + y * S}" width="${S}" height="${S}" fill="${(x + y) % 2 ? '#eef3ff' : '#f8faff'}" stroke="#c9d6ff" stroke-width="1.5"/>`;
+    const at = (p, s, size = 28) => T(P + p[0] * S + S / 2, P + p[1] * S + S / 2 + size * 0.36, s, size);
+    for (const [k, p] of Object.entries(o.marks || {})) b += `<circle cx="${P + p[0] * S + S / 2}" cy="${P + p[1] * S + S / 2}" r="17" fill="#ffd166" stroke="#e0a100" stroke-width="2"/>` + T(P + p[0] * S + S / 2, P + p[1] * S + S / 2 + 7, k, 20, '#2b2d42', 'middle', 800);
+    if (o.star) b += at(o.star, '⭐');
+    if (o.robot) b += at(o.robot, '🤖');
+    return svg(cols * S + 2 * P, rows * S + 2 * P, b);
+  };
   root.Vis = V;
   if (typeof module !== 'undefined') module.exports = V;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Coding e algoritmi (Nuove Indicazioni nazionali 2025: l'informatica dentro la matematica).
+   Un modulo per classe, in italiano e in inglese: percorsi su una griglia, sequenze di comandi,
+   ripetizioni, errori da trovare, «se… allora», figure disegnate con un ciclo, variabili. */
+(function (root) {
+  'use strict';
+  function addCoding(W, H, EN) {
+    const { lv, mod, choice, num, R, pick, shuffle, V } = H;
+    const t = (it, en) => EN ? en : it;
+    const W_ = n => W.find(w => w.n === n);
+    const F = n => String(n);
+    const DIR = { '↑': [0, -1], '↓': [0, 1], '←': [-1, 0], '→': [1, 0] };
+    const ARROWS = Object.keys(DIR);
+    const NAME = { '↑': t('su', 'up'), '↓': t('giù', 'down'), '←': t('sinistra', 'left'), '→': t('destra', 'right') };
+    const cmd = c => `<span class="cmd">${c}</span>`;
+    const cmds = list => `<span class="cmds">${list.map(cmd).join('')}</span>`;
+    const inside = (p, c, r) => p[0] >= 0 && p[0] < c && p[1] >= 0 && p[1] < r;
+    const go = (p, list) => list.reduce((q, c) => [q[0] + DIR[c][0], q[1] + DIR[c][1]], p);
+    const same = (a, b) => a[0] === b[0] && a[1] === b[1];
+    // percorso a caso dentro la griglia, senza tornare subito indietro
+    function walk(start, n, c, r) {
+      for (let g = 0; g < 200; g++) {
+        const out = []; let p = start, ok = true;
+        for (let i = 0; i < n; i++) {
+          const back = out.length ? { '↑': '↓', '↓': '↑', '←': '→', '→': '←' }[out[out.length - 1]] : null;
+          const opts = ARROWS.filter(a => a !== back && inside(go(p, [a]), c, r));
+          if (!opts.length) { ok = false; break; }
+          const a = pick(opts); out.push(a); p = go(p, [a]);
+        }
+        if (ok && !same(p, start)) return out;
+      }
+      return null;
+    }
+    const cell = (c, r) => [R(0, c - 1), R(0, r - 1)];
+    const LET = ['A', 'B', 'C', 'D'];
+    // opzioni sempre nello stesso ordine (A B C D, ↑ ↓ ← →, 1° 2° 3°…): la risposta giusta può stare ovunque
+    const fixed = (q, opts, correct, extra) => ({ t: q, k: 'choice', o: opts, a: opts.indexOf(correct), ...extra });
+    // domanda «dove arriva il robot?»: la casella giusta e tre caselle sbagliate, segnate con le lettere
+    function whereQ(c, r, list, robot, intro, why) {
+      const end = go(robot, list);
+      const cand = [];
+      const add = p => { if (inside(p, c, r) && !same(p, robot) && !cand.some(q => same(q, p))) cand.push(p); };
+      add(end);
+      // errori tipici: un comando dimenticato, destra e sinistra scambiate, su e giù scambiati
+      add(go(robot, list.slice(0, -1)));
+      add(go(robot, list.map(a => ({ '←': '→', '→': '←' }[a] || a))));
+      add(go(robot, list.map(a => ({ '↑': '↓', '↓': '↑' }[a] || a))));
+      add(go(robot, list.slice(1)));
+      for (let g = 0; cand.length < 4 && g < 100; g++) add(cell(c, r));
+      const four = [cand[0], ...shuffle(cand.slice(1)).slice(0, 3)];
+      const order = shuffle(four);
+      const marks = {}; order.forEach((p, i) => { marks[LET[i]] = p; });
+      const right = LET[order.findIndex(p => same(p, end))];
+      return fixed(intro, LET, right, { v: V.grid(c, r, { robot, marks }), x: why(right) });
+    }
+    const steps = (robot, list) => { let p = robot; return list.map(a => { p = go(p, [a]); return NAME[a]; }).join(', '); };
+
+    /* ---------------- classe 1: il percorso del robot ---------------- */
+    W_(1).modules.push(mod('c1cod', t('Coding', 'Coding'), '🤖', [
+      lv('percorso1', t('Il percorso del robot', 'The robot\'s path'), t('Il robot esegue i comandi uno alla volta, nell\'ordine in cui sono scritti. Ogni freccia lo sposta di una casella: ↑ su, ↓ giù, ← a sinistra, → a destra.', 'The robot follows the commands one at a time, in the order they are written. Each arrow moves it one square: ↑ up, ↓ down, ← left, → right.'), () => {
+        const c = 5, r = 4, robot = cell(c, r); const list = walk(robot, R(2, 3), c, r) || ['→'];
+        if (!inside(go(robot, list), c, r)) return null;
+        return whereQ(c, r, list, robot, t(`Il robot 🤖 esegue i comandi ${cmds(list)}. In quale casella arriva?`, `The robot 🤖 follows the commands ${cmds(list)}. Which square does it reach?`),
+          right => t(`Muovi il robot una casella per volta: ${steps(robot, list)}. Arriva nella casella ${right}.`, `Move the robot one square at a time: ${steps(robot, list)}. It reaches square ${right}.`));
+      }),
+      lv('freccia1', t('Quale freccia?', 'Which arrow?'), t('Guarda dove si trova la stella rispetto al robot: sopra, sotto, a destra o a sinistra. La freccia indica la direzione in cui il robot si sposta.', 'Look at where the star is compared with the robot: above, below, to the right or to the left. The arrow shows the direction the robot moves in.'), () => {
+        const c = 5, r = 4; let robot, a, star;
+        do { robot = cell(c, r); a = pick(ARROWS); star = go(robot, [a]); } while (!inside(star, c, r));
+        const n = Math.random() < 0.5 ? 1 : 2; const far = go(star, [a]);
+        const two = n === 2 && inside(far, c, r);
+        const goal = two ? far : star;
+        return fixed(two ? t('Quale freccia deve usare il robot <b>2 volte</b> per arrivare sulla stella ⭐?', 'Which arrow must the robot use <b>twice</b> to reach the star ⭐?') : t('Quale comando porta il robot sulla stella ⭐?', 'Which command takes the robot to the star ⭐?'),
+          ARROWS, a, { v: V.grid(c, r, { robot, star: goal }), x: t(`La stella è ${{ '↑': 'sopra', '↓': 'sotto', '←': 'a sinistra', '→': 'a destra' }[a]} il robot: serve la freccia ${a}${two ? ' due volte' : ''}.`, `The star is ${{ '↑': 'above', '↓': 'below', '←': 'to the left of', '→': 'to the right of' }[a]} the robot: it needs the ${a} arrow${two ? ' twice' : ''}.`) });
+      }, 'palloncini'),
+    ]));
+
+    /* ---------------- classe 2: scrivere il percorso ---------------- */
+    W_(2).modules.push(mod('c2cod', t('Coding', 'Coding'), '🤖', [
+      lv('percorso2', t('Scrivere il percorso', 'Writing the path'), t('Un <b>algoritmo</b> è una serie di istruzioni in ordine. Per controllare un percorso, prova a eseguirlo: muovi il dito sulla griglia un comando alla volta.', 'An <b>algorithm</b> is a list of instructions in order. To check a path, try it out: move your finger on the grid one command at a time.'), () => {
+        const c = 5, r = 4, robot = cell(c, r); const list = walk(robot, R(3, 4), c, r);
+        if (!list) return null;
+        const star = go(robot, list), wrong = [];
+        for (let g = 0; wrong.length < 3 && g < 200; g++) {
+          const w = list.slice(), i = R(0, w.length - 1);
+          if (Math.random() < 0.5) w[i] = pick(ARROWS.filter(x => x !== w[i])); else { const j = R(0, w.length - 1); [w[i], w[j]] = [w[j], w[i]]; }
+          const s = w.join(' ');
+          if (!same(go(robot, w), star) && !wrong.includes(s) && s !== list.join(' ')) wrong.push(s);
+        }
+        if (wrong.length < 3) return null;
+        return choice(t('Quale percorso porta il robot sulla stella ⭐?', 'Which path takes the robot to the star ⭐?'), list.join(' '), wrong,
+          { v: V.grid(c, r, { robot, star }), x: t(`Con ${list.join(' ')} il robot va: ${steps(robot, list)}, e arriva sulla stella.`, `With ${list.join(' ')} the robot goes: ${steps(robot, list)}, and reaches the star.`) });
+      }),
+      lv('passi2', t('Il percorso più corto', 'The shortest path'), t('Il percorso più corto non torna mai indietro: conta quante caselle ci sono in orizzontale e quante in verticale, poi somma.', 'The shortest path never goes back: count how many squares there are across and how many up or down, then add them.'), () => {
+        const c = 6, r = 5; let robot, star;
+        do { robot = cell(c, r); star = cell(c, r); } while (Math.abs(robot[0] - star[0]) + Math.abs(robot[1] - star[1]) < 3);
+        const dx = Math.abs(robot[0] - star[0]), dy = Math.abs(robot[1] - star[1]);
+        return num(t('Quanti passi fa il robot per arrivare alla stella ⭐ con il percorso più corto?', 'How many steps does the robot take to reach the star ⭐ along the shortest path?'), dx + dy,
+          { v: V.grid(c, r, { robot, star }), x: t(`${dx} ${dx === 1 ? 'passo' : 'passi'} in orizzontale e ${dy} in verticale: ${dx} + ${dy} = ${dx + dy}.`, `${dx} ${dx === 1 ? 'step' : 'steps'} across and ${dy} up or down: ${dx} + ${dy} = ${dx + dy}.`) });
+      }),
+    ]));
+
+    /* ---------------- classe 3: ripetizioni ed errori ---------------- */
+    W_(3).modules.push(mod('c3cod', t('Coding', 'Coding'), '🤖', [
+      lv('ripeti3', t('Le ripetizioni', 'Repeats'), t('<b>Ripeti 3 volte</b> vuol dire eseguire gli stessi comandi 3 volte di seguito. «Ripeti 2 volte: → ↑» è uguale a → ↑ → ↑.', '<b>Repeat 3 times</b> means doing the same commands 3 times in a row. “Repeat 2 times: → ↑” is the same as → ↑ → ↑.'), () => {
+        const c = 7, r = 5;
+        for (let g = 0; g < 100; g++) {
+          const n = R(2, 3), body = [pick(ARROWS)]; if (Math.random() < 0.7) body.push(pick(ARROWS.filter(a => a !== { '↑': '↓', '↓': '↑', '←': '→', '→': '←' }[body[0]])));
+          const full = []; for (let i = 0; i < n; i++) full.push(...body);
+          const robot = cell(c, r); let p = robot, ok = true;
+          for (const a of full) { p = go(p, [a]); if (!inside(p, c, r)) { ok = false; break; } }
+          if (!ok || same(p, robot)) continue;
+          if (Math.random() < 0.4) return num(t(`Il robot esegue: <b>ripeti ${n} volte</b> ${cmds(body)}. Quanti passi fa in tutto?`, `The robot runs: <b>repeat ${n} times</b> ${cmds(body)}. How many steps does it take altogether?`), n * body.length,
+            { x: t(`Ogni ripetizione fa ${body.length} ${body.length === 1 ? 'passo' : 'passi'}: ${body.length} × ${n} = ${n * body.length}.`, `Each repeat is ${body.length} ${body.length === 1 ? 'step' : 'steps'}: ${body.length} × ${n} = ${n * body.length}.`) });
+          return whereQ(c, r, full, robot, t(`Il robot esegue: <b>ripeti ${n} volte</b> ${cmds(body)}. In quale casella arriva?`, `The robot runs: <b>repeat ${n} times</b> ${cmds(body)}. Which square does it reach?`),
+            right => t(`Ripetere ${n} volte ${body.join(' ')} vuol dire ${full.join(' ')}. Il robot arriva nella casella ${right}.`, `Repeating ${body.join(' ')} ${n} times means ${full.join(' ')}. The robot reaches square ${right}.`));
+        }
+        return null;
+      }),
+      lv('errore3', t('Trova l\'errore', 'Find the bug'), t('Quando un programma non funziona si cerca l\'errore (in inglese <i>bug</i>): si eseguono i comandi uno alla volta e si guarda dove il robot smette di andare verso la meta.', 'When a program doesn\'t work, you look for the mistake, called a <b>bug</b>: run the commands one at a time and see where the robot stops heading for the goal.'), () => {
+        const c = 6, r = 5;
+        for (let g = 0; g < 300; g++) {
+          const robot = cell(c, r), list = walk(robot, R(4, 5), c, r); if (!list) continue;
+          const star = go(robot, list), i = R(0, list.length - 1), bad = list.slice();
+          bad[i] = pick(ARROWS.filter(a => a !== list[i]));
+          const end = go(robot, bad); if (same(end, star)) continue;
+          // l'errore deve essere uno solo: nessun'altra posizione, cambiata, sistema il programma
+          const fix = new Set();
+          bad.forEach((a, j) => ARROWS.forEach(b => { if (b !== a) { const w = bad.slice(); w[j] = b; if (same(go(robot, w), star)) fix.add(j); } }));
+          if (fix.size !== 1 || !fix.has(i)) continue;
+          const ord = k => t(`${k + 1}° comando`, ['1st', '2nd', '3rd', '4th', '5th'][k] + ' command');
+          return fixed(t(`Il programma ${cmds(bad)} doveva portare il robot sulla stella ⭐, ma c'è un errore. Quale comando è sbagliato?`, `The program ${cmds(bad)} should take the robot to the star ⭐, but there is a bug. Which command is wrong?`),
+            bad.map((_, k) => ord(k)), ord(i), { v: V.grid(c, r, { robot, star }), x: t(`Il ${i + 1}° comando dovrebbe essere ${list[i]} e non ${bad[i]}: il programma giusto è ${list.join(' ')}.`, `The ${ord(i).replace(' command', '')} command should be ${list[i]}, not ${bad[i]}: the right program is ${list.join(' ')}.`) });
+        }
+        return null;
+      }),
+    ]));
+
+    /* ---------------- classe 4: se… allora, figure con un ciclo ---------------- */
+    const RULES = [
+      { it: 'se il numero è pari, dividilo per 2; altrimenti aggiungi 1', en: 'if the number is even, divide it by 2; otherwise add 1', f: n => n % 2 ? n + 1 : n / 2, w: n => n % 2 ? t(`${n} è dispari: ${n} + 1 = ${n + 1}`, `${n} is odd: ${n} + 1 = ${n + 1}`) : t(`${n} è pari: ${n} : 2 = ${n / 2}`, `${n} is even: ${n} ÷ 2 = ${n / 2}`), start: () => R(10, 60) },
+      { it: 'se il numero è maggiore di 10, togli 4; altrimenti aggiungi 7', en: 'if the number is greater than 10, take away 4; otherwise add 7', f: n => n > 10 ? n - 4 : n + 7, w: n => n > 10 ? t(`${n} è maggiore di 10: ${n} − 4 = ${n - 4}`, `${n} is greater than 10: ${n} − 4 = ${n - 4}`) : t(`${n} non è maggiore di 10: ${n} + 7 = ${n + 7}`, `${n} is not greater than 10: ${n} + 7 = ${n + 7}`), start: () => R(3, 25) },
+      { it: 'se il numero finisce con 0, dividilo per 10; altrimenti aggiungi 3', en: 'if the number ends in 0, divide it by 10; otherwise add 3', f: n => n % 10 ? n + 3 : n / 10, w: n => n % 10 ? t(`${n} non finisce con 0: ${n} + 3 = ${n + 3}`, `${n} does not end in 0: ${n} + 3 = ${n + 3}`) : t(`${n} finisce con 0: ${n} : 10 = ${n / 10}`, `${n} ends in 0: ${n} ÷ 10 = ${n / 10}`), start: () => R(1, 9) * 10 + pick([0, 0, 1, 4, 7]) },
+    ];
+    const SHAPES = [[3, 120, 'triangolo', 'triangle'], [4, 90, 'quadrato', 'square'], [5, 72, 'pentagono', 'pentagon'], [6, 60, 'esagono', 'hexagon'], [8, 45, 'ottagono', 'octagon']];
+    W_(4).modules.push(mod('c4cod', t('Coding', 'Coding'), '🤖', [
+      lv('seallora4', t('Se… allora… altrimenti', 'If… then… otherwise'), t('Con <b>se… allora… altrimenti</b> un programma sceglie che cosa fare: controlla la condizione e, se è vera, fa la prima cosa; se è falsa, fa la seconda.', 'With <b>if… then… otherwise</b> a program chooses what to do: it checks the condition and, if it is true, does the first thing; if it is false, it does the second.'), () => {
+        const rule = pick(RULES), k = R(2, 3); let n = rule.start(); const s = n, why = [];
+        for (let i = 0; i < k; i++) { why.push(rule.w(n)); n = rule.f(n); }
+        return num(t(`Una macchina dei numeri segue questa regola: <b>${rule.it}</b>. Si parte da <b>${s}</b> e la macchina lavora ${k} volte di seguito. Che numero esce alla fine?`, `A number machine follows this rule: <b>${rule.en}</b>. It starts from <b>${s}</b> and works ${k} times in a row. What number comes out at the end?`), n,
+          { x: why.join('; ') + '.' });
+      }),
+      lv('figure4', t('Disegnare con un ciclo', 'Drawing with a loop'), t('Un robot che disegna può ripetere «avanti, poi gira». Se gira sempre dello stesso angolo e alla fine ha fatto un giro completo (360°), disegna un poligono regolare: il numero di ripetizioni è il numero dei lati.', 'A drawing robot can repeat “forward, then turn”. If it always turns by the same angle and ends up turning all the way round (360°), it draws a regular polygon: the number of repeats is the number of sides.'), () => {
+        const [n, deg, it, en] = pick(SHAPES), L = R(2, 9);
+        const prog = t(`<b>ripeti ${n} volte</b>: avanti ${L} cm, gira a destra di ${deg}°`, `<b>repeat ${n} times</b>: forward ${L} cm, turn right ${deg}°`);
+        if (Math.random() < 0.5) return choice(t(`Un robot esegue: ${prog}. Che figura disegna?`, `A robot runs: ${prog}. What shape does it draw?`), t(it, en), SHAPES.filter(s => s[0] !== n).map(s => t(s[2], s[3])),
+          { x: t(`Ripete ${n} volte, quindi la figura ha ${n} lati uguali; ${n} × ${deg}° = 360°, un giro completo: è un ${it}.`, `It repeats ${n} times, so the shape has ${n} equal sides; ${n} × ${deg}° = 360°, a full turn: it is a ${en}.`) });
+        return num(t(`Un robot esegue: ${prog}. Quanti centimetri è lunga la linea che disegna?`, `A robot runs: ${prog}. How many centimetres long is the line it draws?`), n * L,
+          { unit: 'cm', x: t(`${n} lati da ${L} cm: ${L} × ${n} = ${n * L} cm (è il perimetro del ${it}).`, `${n} sides of ${L} cm: ${L} × ${n} = ${n * L} cm (the perimeter of the ${en}).`) });
+      }),
+    ]));
+
+    /* ---------------- classe 5: variabili e cicli con condizioni ---------------- */
+    W_(5).modules.push(mod('c5cod', t('Coding', 'Coding'), '🤖', [
+      lv('variabili5', t('Le variabili', 'Variables'), t('Una <b>variabile</b> è una scatola con un nome che contiene un valore. L\'istruzione «x = x + 2» vuol dire: prendi il valore di x, aggiungi 2 e rimetti il risultato in x.', 'A <b>variable</b> is a box with a name that holds a value. The instruction “x = x + 2” means: take the value of x, add 2 and put the result back in x.'), () => {
+        const kind = R(0, 2);
+        if (kind === 0) { const a = R(0, 20), b = R(2, 9), n = R(3, 8); return num(t(`x = ${a}<br><b>ripeti ${n} volte</b>: x = x + ${b}<br>Quanto vale x alla fine?`, `x = ${a}<br><b>repeat ${n} times</b>: x = x + ${b}<br>What is x at the end?`), a + n * b, { x: t(`x aumenta di ${b} per ${n} volte: ${a} + ${b} × ${n} = ${a + n * b}.`, `x goes up by ${b}, ${n} times: ${a} + ${b} × ${n} = ${a + n * b}.`) }); }
+        if (kind === 1) { const a = R(1, 6), n = R(2, 5); const vals = [a]; for (let i = 0; i < n; i++) vals.push(vals[vals.length - 1] * 2); return num(t(`x = ${a}<br><b>ripeti ${n} volte</b>: x = x × 2<br>Quanto vale x alla fine?`, `x = ${a}<br><b>repeat ${n} times</b>: x = x × 2<br>What is x at the end?`), vals[n], { x: t(`x raddoppia ogni volta: ${vals.join(' → ')}.`, `x doubles every time: ${vals.join(' → ')}.`) }); }
+        const a = R(2, 15), b = R(2, 15), s = a + b;
+        return num(t(`a = ${a}<br>b = ${b}<br>a = a + b<br>b = a − b<br>Quanto vale b alla fine?`, `a = ${a}<br>b = ${b}<br>a = a + b<br>b = a − b<br>What is b at the end?`), a,
+          { x: t(`Dopo «a = a + b», a vale ${a} + ${b} = ${s}. Poi «b = a − b»: ${s} − ${b} = ${a}.`, `After “a = a + b”, a is ${a} + ${b} = ${s}. Then “b = a − b”: ${s} − ${b} = ${a}.`) });
+      }),
+      lv('cicli5', t('Cicli e condizioni', 'Loops and conditions'), t('Un <b>ciclo</b> ripete le istruzioni per ogni numero di un elenco; dentro il ciclo una <b>condizione</b> decide se fare qualcosa. Per seguirlo, scrivi i passaggi uno sotto l\'altro.', 'A <b>loop</b> repeats the instructions for each number in a list; inside the loop a <b>condition</b> decides whether to do something. To follow it, write the steps down one under the other.'), () => {
+        const N = R(10, 30), k = R(2, 5), mult = []; for (let i = k; i <= N; i += k) mult.push(i);
+        if (Math.random() < 0.5) return num(t(`totale = 0<br><b>per ogni numero da 1 a ${N}</b>: se il numero è divisibile per ${k}, totale = totale + il numero<br>Quanto vale totale alla fine?`, `total = 0<br><b>for each number from 1 to ${N}</b>: if the number can be divided by ${k}, total = total + the number<br>What is total at the end?`), mult.reduce((s, v) => s + v, 0),
+          { x: t(`I numeri divisibili per ${k} sono ${mult.join(', ')}: ${mult.join(' + ')} = ${mult.reduce((s, v) => s + v, 0)}.`, `The numbers that can be divided by ${k} are ${mult.join(', ')}: ${mult.join(' + ')} = ${mult.reduce((s, v) => s + v, 0)}.`) });
+        return num(t(`conta = 0<br><b>per ogni numero da 1 a ${N}</b>: se il numero è divisibile per ${k}, conta = conta + 1<br>Quanto vale conta alla fine?`, `count = 0<br><b>for each number from 1 to ${N}</b>: if the number can be divided by ${k}, count = count + 1<br>What is count at the end?`), mult.length,
+          { x: t(`I numeri divisibili per ${k} sono ${mult.join(', ')}: ${mult.length === 1 ? 'è 1 numero' : 'sono ' + mult.length + ' numeri'}.`, `The numbers that can be divided by ${k} are ${mult.join(', ')}: that is ${mult.length} ${mult.length === 1 ? 'number' : 'numbers'}.`) });
+      }),
+    ]));
+    // i generatori che a volte non trovano un esercizio adatto riprovano da soli; niente calcoli in colonna: qui conta il ragionamento
+    for (const w of W) for (const m of w.modules) if (/cod$/.test(m.id)) for (const l of m.levels) { const g = l.gen; l.gen = () => { for (let i = 0; i < 50; i++) { const q = g(); if (q) { q.noCalc = true; q.plain = true; return q; } } throw new Error('coding: nessuna domanda'); }; }
+  }
+  root.Coding = addCoding;
+  if (typeof module !== 'undefined') module.exports = addCoding;
 })(typeof window !== 'undefined' ? window : globalThis);
 
 /* Programma di matematica della scuola primaria (Indicazioni nazionali): 5 mondi (classi),
@@ -977,6 +1175,8 @@ window.PWA = true;
     lv('soldi5', 'Prezzo unitario e prezzo totale', 'Prezzo totale = prezzo di un oggetto × quantità. Prezzo di un oggetto (prezzo unitario) = prezzo totale : quantità.', () => { const COSE = [['quaderni', 'quaderno'], ['biglietti', 'biglietto'], ['gelati', 'gelato'], ['penne', 'penna'], ['panini', 'panino']]; const [pl, sg] = pick(COSE), q = R(2, 9), u = R(9, 150) * 5; if (Math.random() < 0.5) return num(`Compri ${q} ${pl} a ${EURO(u)} ${sg === 'penna' ? 'l\'una' : 'l\'uno'}. Quanto spendi in tutto?`, q * u / 100, { unit: '€', x: `${EURO(u)} × ${q} = ${EURO(q * u)}` }); return num(`${q} ${pl} costano in tutto ${EURO(q * u)}. Quanto costa ${sg === 'penna' ? 'una' : 'un'} ${sg}?`, u / 100, { unit: '€', x: `${EURO(q * u)} : ${q} = ${EURO(u)}` }); }),
   );
   // i moduli delle operazioni al primo posto in ogni classe
+  // coding e algoritmi, un modulo per classe (Nuove Indicazioni nazionali 2025)
+  (root.Coding || require('./coding.js'))(W, { lv, mod, choice, num, R, pick, shuffle, V }, false);
   const FIRST = { 1: ['c1op'], 2: ['c2op', 'c2mol'], 3: ['c3op'], 4: ['c4op'], 5: ['c5calc', 'c5op'] };
   for (const w of W) { const ids = FIRST[w.n] || []; w.modules.sort((x, y) => { const ix = ids.indexOf(x.id), iy = ids.indexOf(y.id); return (ix < 0 ? 99 : ix) - (iy < 0 ? 99 : iy); }); }
 
@@ -1130,7 +1330,7 @@ window.PWA = true;
 
   const strip = t => String(t || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
   function derive(q) {
-    if (q.calc || q.calcs) return null;
+    if (q.calc || q.calcs || q.noCalc) return null;
     const ans = q.k === 'num' ? q.a : null;
     // 1) l'operazione è nel testo della domanda: «… = ?» oppure «Calcola in colonna: a + b»
     const t = strip(q.t).replace(/^(?:Calcola in colonna|Work it out in columns): (.*)$/, '$1 = ?');
@@ -1252,6 +1452,10 @@ window.PWA = true;
     1: {
       intro: 'In prima impari a <b>contare</b>, a leggere e scrivere i numeri fino a 20 e a fare le prime <b>addizioni</b> e <b>sottrazioni</b>. Scoprirai anche le figure, le posizioni e i ritmi.',
       mods: {
+        c1cod: { learn: 'Dare comandi a un robot con le frecce e seguire un percorso su una griglia.', terms: [
+          ['Comando', 'Un ordine che il robot esegue: ↑ su, ↓ giù, ← sinistra, → destra.'],
+          ['Percorso', 'La strada che il robot fa, una casella alla volta.'],
+        ] },
         c1op: { learn: 'Mettere insieme e togliere: le addizioni e le sottrazioni fino a 20, i doppi e gli «amici del 10».', terms: [
           ['Addizione', 'L\'operazione che mette insieme. 3 + 2 = 5.'],
           ['Addendi', 'I numeri che si sommano. In 3 + 2 i numeri 3 e 2 sono gli addendi.'],
@@ -1300,6 +1504,10 @@ window.PWA = true;
     2: {
       intro: 'In seconda arrivi fino a <b>100</b>, impari a fare i calcoli <b>in colonna</b>, scopri la <b>moltiplicazione</b> con le tabelline e la <b>divisione</b>. Imparerai anche a leggere l\'orologio e a contare i soldi.',
       mods: {
+        c2cod: { learn: 'Scrivere e controllare un percorso, e trovare la strada più corta.', terms: [
+          ['Algoritmo', 'Una serie di istruzioni da eseguire in ordine, una dopo l\'altra.'],
+          ['Percorso più corto', 'La strada con meno passi: non torna mai indietro.'],
+        ] },
         c2op: { learn: 'Addizioni e sottrazioni con i numeri fino a 100, a mente e in colonna.', terms: [
           ['In colonna', 'Scrivere i numeri uno sotto l\'altro: unità sotto unità, decine sotto decine. Si calcola partendo da destra.'],
           ['Riporto', 'Quando le unità sommate fanno 10 o più, si scrivono le unità e si «porta» 1 decina nella colonna delle decine.'],
@@ -1345,6 +1553,10 @@ window.PWA = true;
     3: {
       intro: 'In terza arrivi fino a <b>1.000</b>, impari a calcolare in colonna con numeri più grandi, la <b>divisione con il resto</b>, le prime <b>frazioni</b> e i <b>numeri decimali</b>, le <b>misure</b> e le basi della <b>geometria</b>.',
       mods: {
+        c3cod: { learn: 'Usare le ripetizioni e trovare gli errori in un programma.', terms: [
+          ['Ripetizione (ciclo)', '«Ripeti 3 volte» vuol dire eseguire gli stessi comandi 3 volte di seguito.'],
+          ['Errore (bug)', 'Un comando sbagliato che non fa arrivare il programma dove deve.'],
+        ] },
         c3op: { learn: 'Le quattro operazioni in colonna, la divisione con il resto e la prova.', terms: [
           ['Riporto e prestito', 'Il riporto passa 1 alla colonna a sinistra nell\'addizione; il prestito cambia 1 della colonna a sinistra in 10 nella sottrazione.'],
           ['× 10, 100, 1.000', 'Moltiplicare un numero intero per 10 aggiunge uno zero, per 100 due zeri, per 1.000 tre zeri: 7 × 100 = 700.'],
@@ -1399,6 +1611,10 @@ window.PWA = true;
     4: {
       intro: 'In quarta lavori con le <b>migliaia</b> e con i <b>numeri decimali</b>, impari le moltiplicazioni e le divisioni a <b>due cifre</b>, le frazioni equivalenti, le equivalenze, gli angoli in gradi, il <b>perimetro</b> e l\'<b>area</b>.',
       mods: {
+        c4cod: { learn: 'Programmi che scelgono che cosa fare e disegni fatti con un ciclo.', terms: [
+          ['Se… allora… altrimenti', 'Il programma controlla una condizione: se è vera fa una cosa, se è falsa ne fa un\'altra.'],
+          ['Poligono con un ciclo', 'Ripetendo «avanti, gira» fino a fare un giro completo (360°) si disegna un poligono regolare.'],
+        ] },
         c4op: { learn: 'Moltiplicazioni e divisioni con due cifre, i multipli, i divisori e le proprietà delle operazioni.', terms: [
           ['Prodotto parziale', 'Nella moltiplicazione a due cifre, il risultato di ogni riga: 34 × 26 → 34 × 6 e 34 × 20, poi si sommano.'],
           ['Multiplo', 'Un numero che si ottiene moltiplicando per un numero intero: i multipli di 4 sono 4, 8, 12, 16…'],
@@ -1456,6 +1672,10 @@ window.PWA = true;
     5: {
       intro: 'In quinta arrivi ai <b>milioni</b> e ai <b>miliardi</b>, impari le operazioni con i decimali, le <b>espressioni</b>, le <b>percentuali</b>, le <b>potenze</b>, i numeri relativi, le aree delle figure, la <b>circonferenza</b> e la <b>probabilità</b>.',
       mods: {
+        c5cod: { learn: 'Usare le variabili e seguire cicli con condizioni.', terms: [
+          ['Variabile', 'Una scatola con un nome che contiene un valore che può cambiare: x = x + 2.'],
+          ['Ciclo con condizione', 'Le istruzioni si ripetono per ogni numero di un elenco, ma solo quando la condizione è vera.'],
+        ] },
         c5calc: { learn: 'Le quattro operazioni con i numeri decimali e le espressioni con le parentesi.', terms: [
           ['Cifre decimali', 'Le cifre dopo la virgola. 2,5 ha una cifra decimale, 3,75 ne ha due.'],
           ['Moltiplicare i decimali', 'Si moltiplica senza virgole; nel risultato le cifre decimali sono tante quante quelle dei due fattori insieme.'],
@@ -2265,6 +2485,7 @@ window.PWA = true;
     if (q.k === 'choice') balloons(area, q, kind);
     else if (q.k === 'cmp') crocs(area, q);
     else chest(area, q);
+    if (q.plain) return; // coding: niente colori delle cifre, qui i numeri sono comandi e valori
     deco(card);
     // legenda dei colori delle cifre
     const txt = card.querySelector('.qtext').textContent + ' ' + (q.o || []).join(' ');
@@ -2473,6 +2694,8 @@ window.PWA = true;
       el('p', { class: 'note', style: 'text-align:left' }, t('Utile per scegliere subito l\'argomento della lezione alla LIM o per ripassare.', 'Useful for going straight to the topic of the lesson on the interactive whiteboard, or for revision.')),
       el('div', { class: 'row', style: 'justify-content:flex-start' }, el('button', { class: 'btn alt', type: 'button', id: 'tchOpen', onclick: () => { m.remove(); showTeacher(); } }, t('📊 Progressi della classe', '📊 Class progress'))),
       transferBox(),
+      el('p', { class: 'note', style: 'text-align:left' }, t('Il gioco non raccoglie dati: niente account, pubblicità o statistiche. ', 'The game collects no data: no accounts, ads or analytics. '),
+        el('a', { class: 'priv-link', id: 'privLink', href: (window.PWA ? '' : 'https://rayuk-creator.github.io/matematic/') + 'privacy.html' + t('', '#en'), target: '_blank', rel: 'noopener' }, t('🔒 Leggi la privacy', '🔒 Read the privacy policy'))),
       el('div', { class: 'row' }, el('button', { class: 'btn', type: 'button', onclick: () => { D.teacher = chk.checked; save(); m.remove(); if (me()) showWorlds(); } }, t('Fatto', 'Done')))]);
   }
 

@@ -1,7 +1,7 @@
 /* Matematica in gioco · Maths at Play — funziona anche senza internet.
    Le pagine si prendono prima dalla rete (così gli aggiornamenti arrivano subito) e, se manca la connessione, dalla copia salvata. */
-const CACHE = 'matematica-266017d30e';
-const FILES = ['./', './index.html', './english.html', './manifest.webmanifest', './manifest-en.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png'];
+const CACHE = 'matematica-f1c5b6e23e';
+const FILES = ['./', './index.html', './english.html', './privacy.html', './manifest.webmanifest', './manifest-en.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
