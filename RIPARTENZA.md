@@ -217,12 +217,13 @@ In breve:
 - progetto Android, pacchetto v1 (versionCode 1) costruito, controllato e firmato;
 - testi IT/EN, icona, grafica in evidenza, schermate telefono e tablet;
 - verifica del dominio: repository `Rayuk-creator.github.io` creato, `assetlinks.json` pubblicato con le due impronte (copia in `store/dominio/`);
-- app creata in Play Console e pacchetto `1 (1.0)` pubblicato nel **test interno**.
+- app creata in Play Console e pacchetto `1 (1.0)` pubblicato nel **test interno**; provata dall'utente su Android: si apre, parte in italiano, a tutto schermo, nome giusto sotto l'icona;
+- tutte le dichiarazioni compilate (classificazione PEGI 3, fasce d'età 6-8 e 9-12, nessun dato raccolto, nessun annuncio, iscrizione al programma «App approvate dagli insegnanti»);
+- scheda dello store completa in it-IT, en-GB ed en-US, con schermate di telefono, tablet e desktop; icona e grafica in evidenza dichiarate come «create con l'AI» (scelta dell'utente: essere onesti), schermate no.
 
 **Da fare:**
-- l'utente prova l'app dal test interno (deve aprirsi a tutto schermo, senza barra dell'indirizzo);
-- l'utente compila questionari e scheda dello store, poi apre il test chiuso;
-- **test chiuso con almeno 12 tester per 14 giorni di fila**, poi richiesta di accesso alla produzione;
+- **test chiuso**: l'utente sta cercando i tester (12 novembre 2026). Consigliato: avviare subito il canale con lui e la compagna e mandarlo in revisione, aggiungendo gli altri indirizzi man mano;
+- **almeno 12 tester per 14 giorni di fila**, poi richiesta di accesso alla produzione (Claude prepara le risposte);
 - prima della produzione: una riga sull'app Android in `pwa/privacy.html` (da far approvare all'utente).
 
 ### Altre idee, non richieste
