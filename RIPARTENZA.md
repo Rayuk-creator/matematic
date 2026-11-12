@@ -2,7 +2,7 @@
 
 File per riprendere il lavoro in una **nuova task**. Leggerlo tutto prima di cominciare.
 
-Ultimo aggiornamento: 5 novembre 2026.
+Ultimo aggiornamento: 12 novembre 2026.
 
 ---
 
