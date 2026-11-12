@@ -216,12 +216,12 @@ In breve:
 - account sviluppatore creato dall'utente (12 novembre 2026);
 - progetto Android, pacchetto v1 (versionCode 1) costruito, controllato e firmato;
 - testi IT/EN, icona, grafica in evidenza, schermate telefono e tablet;
-- file per la verifica del dominio, in `store/dominio/`.
+- verifica del dominio: repository `Rayuk-creator.github.io` creato, `assetlinks.json` pubblicato con le due impronte (copia in `store/dominio/`);
+- app creata in Play Console e pacchetto `1 (1.0)` pubblicato nel **test interno**.
 
 **Da fare:**
-- l'utente crea il repository `Rayuk-creator.github.io`; poi Claude ci carica i file di `store/dominio/`;
-- l'utente crea l'app in Play Console, compila questionari e scheda, carica il pacchetto nel test chiuso;
-- aggiungere ad `assetlinks.json` l'impronta della chiave di firma dell'app che crea Google;
+- l'utente prova l'app dal test interno (deve aprirsi a tutto schermo, senza barra dell'indirizzo);
+- l'utente compila questionari e scheda dello store, poi apre il test chiuso;
 - **test chiuso con almeno 12 tester per 14 giorni di fila**, poi richiesta di accesso alla produzione;
 - prima della produzione: una riga sull'app Android in `pwa/privacy.html` (da far approvare all'utente).
 

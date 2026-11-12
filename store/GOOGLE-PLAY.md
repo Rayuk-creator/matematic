@@ -62,10 +62,10 @@ che deve stare in un repository a parte, chiamato esattamente **`Rayuk-creator.g
 
 Nel file vanno **due impronte**:
 
-1. quella della chiave di caricamento (già inserita);
-2. quella della **chiave di firma dell'app** creata da Google: si legge in Play Console dopo il primo caricamento, in *Test e release → Integrità dell'app → Firma dell'app → Impronta digitale del certificato SHA-256*. **Va ancora aggiunta.**
+1. quella della **chiave di firma dell'app** creata da Google (aggiunta il 12 novembre 2026): `CD:91:BE:AD:67:DA:B2:71:EE:2C:4C:4D:0F:8C:CA:B8:39:53:99:20:76:BE:97:70:F1:22:4F:73:B5:FB:1B:03`. In Play Console si legge in *Protetto con Play → Protezione del Play Store → Firma dell'app di Play*;
+2. quella della chiave di caricamento.
 
-Finché manca la seconda impronta, l'app scaricata da Google Play funziona ma mostra in alto la barra con l'indirizzo.
+Le due impronte sono già nel file pubblicato. Se cambiano, vanno aggiornate sia in `store/dominio/` sia nel repository `Rayuk-creator.github.io`.
 
 ---
 
