@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appName">Matematica in gioco</string>
+    <string name="launcherName">Matematica in gioco</string>
+    <string name="launchUrl" translatable="false">https://rayuk-creator.github.io/matematic/index.html</string>
+</resources>

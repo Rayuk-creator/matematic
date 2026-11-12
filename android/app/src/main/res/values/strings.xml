@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Testi per tutte le lingue tranne l'italiano (vedi values-it). -->
+<resources>
+    <string name="appName">Maths at Play</string>
+    <string name="launcherName">Maths at Play</string>
+    <string name="launchUrl" translatable="false">https://rayuk-creator.github.io/matematic/english.html</string>
+    <string name="providerAuthority" translatable="false">io.github.rayukcreator.matematica.fileprovider</string>
+    <string name="assetStatements" translatable="false">[{ \"relation\": [\"delegate_permission/common.handle_all_urls\"], \"target\": { \"namespace\": \"web\", \"site\": \"https://rayuk-creator.github.io\" } }]</string>
+</resources>

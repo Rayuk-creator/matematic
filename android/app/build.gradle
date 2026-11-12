@@ -1,0 +1,40 @@
+// App Android «Matematica in gioco · Maths at Play»: una Trusted Web Activity che apre il sito.
+// Non contiene il gioco: lo mostra dal sito, quindi aggiornando il sito si aggiorna anche l'app.
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.rayukcreator.matematica'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'io.github.rayukcreator.matematica'   // non si può più cambiare dopo la pubblicazione
+        minSdk 23
+        targetSdk 36          // richiesto da Google Play per le app nuove dal 31 agosto 2026
+        versionCode 1         // aumentare di 1 a ogni pacchetto caricato su Google Play
+        versionName '1.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            // La firma si mette dopo, con la chiave di caricamento, fuori da GitHub.
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    bundle {
+        language { enableSplit = false }   // italiano e inglese sempre insieme
+    }
+}
+
+dependencies {
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.6.2'
+}
