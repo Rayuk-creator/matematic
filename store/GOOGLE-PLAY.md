@@ -236,7 +236,7 @@ Le stesse schermate «tablet» vanno caricate sia nella sezione dei tablet da 7 
 3. **Creare l'app** in Play Console (utente): nome «Matematica in gioco», lingua predefinita italiano, tipo App, gratuita.
 4. **Contenuti dell'app** (utente, con le risposte del punto 5).
 5. **Scheda dello store** (utente, con testi e immagini del punto 4).
-6. **Test chiuso** (utente): *Test e release → Test → Test chiuso*; caricare `matematica-in-gioco-v1.aab`; accettare la «Firma dell'app di Google Play»; aggiungere le email dei tester; mandare in revisione.
+6. **Test chiuso** (utente): *Test e release → Test → Test chiuso*; caricare `matematica-in-gioco-v1b.aab`; accettare la «Firma dell'app di Google Play»; aggiungere le email dei tester; mandare in revisione.
 7. **Seconda impronta** (utente, poi Claude): copiare l'impronta SHA-256 della chiave di firma dell'app e passarla a Claude, che aggiorna `assetlinks.json`.
 8. **12 tester per 14 giorni di fila** (utente): obbligatorio per gli account personali creati dopo il 13 novembre 2023. I tester devono accettare l'invito dal link e restare iscritti per 14 giorni consecutivi.
 9. **Richiesta di accesso alla produzione** (utente, con le risposte che prepara Claude): domande sul test, sull'app e su come si è capito che è pronta. La revisione dura di solito fino a 7 giorni.
