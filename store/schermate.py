@@ -52,7 +52,7 @@ with sync_playwright() as p:
             def scatta():
                 global n
                 pg.wait_for_timeout(1300 if pg.locator('.result').count() else 350)   # nel risultato si aspettano le tre stelle
-                if not pg.locator('.result').count(): pg.evaluate("document.querySelectorAll('.confetti').forEach(e => e.remove())")
+                pg.evaluate("document.querySelectorAll('.confetti').forEach(e => e.remove())")   # i coriandoli coprirebbero il testo
                 pg.evaluate("window.scrollTo(0, 0)")
                 pg.screenshot(path=out + '%02d.png' % n); n += 1
             pg.evaluate("__mate.showWorlds()"); scatta()                                # 1: i cinque mondi
