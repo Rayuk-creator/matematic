@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId 'io.github.rayukcreator.matematica'   // non si può più cambiare dopo la pubblicazione
-        minSdk 23
+        minSdk 24             // Android 7: il minimo accettato dalla protezione automatica di Google Play
         targetSdk 36          // richiesto da Google Play per le app nuove dal 31 agosto 2026
         versionCode 1         // aumentare di 1 a ogni pacchetto caricato su Google Play
         versionName '1.0'
