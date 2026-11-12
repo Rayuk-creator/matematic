@@ -3,3 +3,5 @@ site/*
 !site/README.md
 node_modules/
 __pycache__/
+store/schermate/
+store/grafica/

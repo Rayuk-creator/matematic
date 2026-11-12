@@ -42,7 +42,7 @@ In totale 146 livelli, uguali nelle due lingue. L'ultimo modulo di ogni classe �
 
 ## 3. Dove sta il codice
 
-Il repository ha **due rami**:
+Il repository ha **due rami** di lavoro (più `android-build`, che GitHub riempie da solo con il pacchetto Android):
 
 - **`main`**: solo il sito già costruito, che GitHub Pages pubblica dalla radice.
   - `index.html` e `english.html`: il gioco, un solo file ciascuno.
@@ -69,6 +69,9 @@ Il repository ha **due rami**:
     - `font/nunito.woff`, il font Nunito, licenza SIL OFL 1.1, con `OFL.txt`.
   - `test/`: le prove, vedi il punto 5.
   - `build.sh`: costruisce tutto.
+  - `android/`: l'app per Google Play, che apre il sito;
+  - `store/`: tutto per la scheda di Google Play, a partire da `GOOGLE-PLAY.md`;
+  - `.github/workflows/android.yml`: fa costruire a GitHub il pacchetto Android.
   - `site/README.md`: il README bilingue (è un sorgente; il resto di `site/` viene generato).
   - `RIPARTENZA.md`: questo file.
 
@@ -199,25 +202,28 @@ python3 test/teacher.py                  # pagina per l'insegnante: conti per cl
 
 ## 8. Lavori in attesa
 
-### Google Play (deciso di rimandare)
+### Google Play (in corso dal 12 novembre 2026)
 
-Il piano è una «Trusted Web Activity», cioè un'app che apre il sito: aggiornando GitHub si aggiorna anche l'app.
+**Tutto è spiegato in `store/GOOGLE-PLAY.md`**: decisioni, com'è fatta l'app, testi della scheda, risposte ai questionari e passi in ordine. Leggerlo prima di toccare qualcosa.
 
-**Cosa prepara Claude:**
-- ~~la pagina «Privacy policy» IT/EN~~: fatta, è `privacy.html` sul sito;
-- il repository `rayuk-creator.github.io` con `.well-known/assetlinks.json`, per verificare il dominio;
-- il pacchetto Android TWA;
-- testi della scheda IT/EN, icona 512, grafica in evidenza 1024×500 e schermate;
-- le risposte pronte per i questionari: pubblico ed età, programma «Families», sicurezza dei dati.
+In breve:
+- una sola app per le due lingue, identificativo `io.github.rayukcreator.matematica`;
+- è una «Trusted Web Activity», cioè un'app che apre il sito: aggiornando GitHub si aggiorna anche l'app;
+- il progetto è in `android/`; il pacchetto lo costruisce GitHub e lo salva, senza firma, nel ramo `android-build`;
+- la chiave di caricamento e la sua password le tiene **solo l'utente**: non vanno su GitHub.
 
-**Cosa fa l'utente:**
-- crea l'account sviluppatore Google Play (25 $ una tantum);
-- fa il **test chiuso con almeno 12 tester per 14 giorni di fila**, obbligatorio per i nuovi account personali;
-- carica il pacchetto e compila i questionari.
+**Fatto:**
+- account sviluppatore creato dall'utente (12 novembre 2026);
+- progetto Android, pacchetto v1 (versionCode 1) costruito, controllato e firmato;
+- testi IT/EN, icona, grafica in evidenza, schermate telefono e tablet;
+- file per la verifica del dominio, in `store/dominio/`.
 
-**Decisioni ancora da chiedere all'utente:**
-- una sola app con il pulsante IT/EN (consigliato) oppure due app;
-- il nome sul Play Store.
+**Da fare:**
+- l'utente crea il repository `Rayuk-creator.github.io`; poi Claude ci carica i file di `store/dominio/`;
+- l'utente crea l'app in Play Console, compila questionari e scheda, carica il pacchetto nel test chiuso;
+- aggiungere ad `assetlinks.json` l'impronta della chiave di firma dell'app che crea Google;
+- **test chiuso con almeno 12 tester per 14 giorni di fila**, poi richiesta di accesso alla produzione;
+- prima della produzione: una riga sull'app Android in `pwa/privacy.html` (da far approvare all'utente).
 
 ### Altre idee, non richieste
 

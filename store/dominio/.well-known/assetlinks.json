@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.rayukcreator.matematica",
+      "sha256_cert_fingerprints": [
+        "9B:6D:72:00:82:98:68:EE:C3:08:34:92:56:50:A8:4E:59:B4:30:93:73:11:56:8A:24:86:81:10:0D:8C:22:0E"
+      ]
+    }
+  }
+]
