@@ -6,6 +6,10 @@
     1: {
       intro: 'In prima impari a <b>contare</b>, a leggere e scrivere i numeri fino a 20 e a fare le prime <b>addizioni</b> e <b>sottrazioni</b>. Scoprirai anche le figure, le posizioni e i ritmi.',
       mods: {
+        c1cod: { learn: 'Dare comandi a un robot con le frecce e seguire un percorso su una griglia.', terms: [
+          ['Comando', 'Un ordine che il robot esegue: ↑ su, ↓ giù, ← sinistra, → destra.'],
+          ['Percorso', 'La strada che il robot fa, una casella alla volta.'],
+        ] },
         c1op: { learn: 'Mettere insieme e togliere: le addizioni e le sottrazioni fino a 20, i doppi e gli «amici del 10».', terms: [
           ['Addizione', 'L\'operazione che mette insieme. 3 + 2 = 5.'],
           ['Addendi', 'I numeri che si sommano. In 3 + 2 i numeri 3 e 2 sono gli addendi.'],
@@ -54,6 +58,10 @@
     2: {
       intro: 'In seconda arrivi fino a <b>100</b>, impari a fare i calcoli <b>in colonna</b>, scopri la <b>moltiplicazione</b> con le tabelline e la <b>divisione</b>. Imparerai anche a leggere l\'orologio e a contare i soldi.',
       mods: {
+        c2cod: { learn: 'Scrivere e controllare un percorso, e trovare la strada più corta.', terms: [
+          ['Algoritmo', 'Una serie di istruzioni da eseguire in ordine, una dopo l\'altra.'],
+          ['Percorso più corto', 'La strada con meno passi: non torna mai indietro.'],
+        ] },
         c2op: { learn: 'Addizioni e sottrazioni con i numeri fino a 100, a mente e in colonna.', terms: [
           ['In colonna', 'Scrivere i numeri uno sotto l\'altro: unità sotto unità, decine sotto decine. Si calcola partendo da destra.'],
           ['Riporto', 'Quando le unità sommate fanno 10 o più, si scrivono le unità e si «porta» 1 decina nella colonna delle decine.'],
@@ -99,6 +107,10 @@
     3: {
       intro: 'In terza arrivi fino a <b>1.000</b>, impari a calcolare in colonna con numeri più grandi, la <b>divisione con il resto</b>, le prime <b>frazioni</b> e i <b>numeri decimali</b>, le <b>misure</b> e le basi della <b>geometria</b>.',
       mods: {
+        c3cod: { learn: 'Usare le ripetizioni e trovare gli errori in un programma.', terms: [
+          ['Ripetizione (ciclo)', '«Ripeti 3 volte» vuol dire eseguire gli stessi comandi 3 volte di seguito.'],
+          ['Errore (bug)', 'Un comando sbagliato che non fa arrivare il programma dove deve.'],
+        ] },
         c3op: { learn: 'Le quattro operazioni in colonna, la divisione con il resto e la prova.', terms: [
           ['Riporto e prestito', 'Il riporto passa 1 alla colonna a sinistra nell\'addizione; il prestito cambia 1 della colonna a sinistra in 10 nella sottrazione.'],
           ['× 10, 100, 1.000', 'Moltiplicare un numero intero per 10 aggiunge uno zero, per 100 due zeri, per 1.000 tre zeri: 7 × 100 = 700.'],
@@ -153,6 +165,10 @@
     4: {
       intro: 'In quarta lavori con le <b>migliaia</b> e con i <b>numeri decimali</b>, impari le moltiplicazioni e le divisioni a <b>due cifre</b>, le frazioni equivalenti, le equivalenze, gli angoli in gradi, il <b>perimetro</b> e l\'<b>area</b>.',
       mods: {
+        c4cod: { learn: 'Programmi che scelgono che cosa fare e disegni fatti con un ciclo.', terms: [
+          ['Se… allora… altrimenti', 'Il programma controlla una condizione: se è vera fa una cosa, se è falsa ne fa un\'altra.'],
+          ['Poligono con un ciclo', 'Ripetendo «avanti, gira» fino a fare un giro completo (360°) si disegna un poligono regolare.'],
+        ] },
         c4op: { learn: 'Moltiplicazioni e divisioni con due cifre, i multipli, i divisori e le proprietà delle operazioni.', terms: [
           ['Prodotto parziale', 'Nella moltiplicazione a due cifre, il risultato di ogni riga: 34 × 26 → 34 × 6 e 34 × 20, poi si sommano.'],
           ['Multiplo', 'Un numero che si ottiene moltiplicando per un numero intero: i multipli di 4 sono 4, 8, 12, 16…'],
@@ -210,6 +226,10 @@
     5: {
       intro: 'In quinta arrivi ai <b>milioni</b> e ai <b>miliardi</b>, impari le operazioni con i decimali, le <b>espressioni</b>, le <b>percentuali</b>, le <b>potenze</b>, i numeri relativi, le aree delle figure, la <b>circonferenza</b> e la <b>probabilità</b>.',
       mods: {
+        c5cod: { learn: 'Usare le variabili e seguire cicli con condizioni.', terms: [
+          ['Variabile', 'Una scatola con un nome che contiene un valore che può cambiare: x = x + 2.'],
+          ['Ciclo con condizione', 'Le istruzioni si ripetono per ogni numero di un elenco, ma solo quando la condizione è vera.'],
+        ] },
         c5calc: { learn: 'Le quattro operazioni con i numeri decimali e le espressioni con le parentesi.', terms: [
           ['Cifre decimali', 'Le cifre dopo la virgola. 2,5 ha una cifra decimale, 3,75 ne ha due.'],
           ['Moltiplicare i decimali', 'Si moltiplica senza virgole; nel risultato le cifre decimali sono tante quante quelle dei due fattori insieme.'],

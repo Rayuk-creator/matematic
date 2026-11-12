@@ -405,6 +405,7 @@
     if (q.k === 'choice') balloons(area, q, kind);
     else if (q.k === 'cmp') crocs(area, q);
     else chest(area, q);
+    if (q.plain) return; // coding: niente colori delle cifre, qui i numeri sono comandi e valori
     deco(card);
     // legenda dei colori delle cifre
     const txt = card.querySelector('.qtext').textContent + ' ' + (q.o || []).join(' ');
@@ -613,6 +614,8 @@
       el('p', { class: 'note', style: 'text-align:left' }, t('Utile per scegliere subito l\'argomento della lezione alla LIM o per ripassare.', 'Useful for going straight to the topic of the lesson on the interactive whiteboard, or for revision.')),
       el('div', { class: 'row', style: 'justify-content:flex-start' }, el('button', { class: 'btn alt', type: 'button', id: 'tchOpen', onclick: () => { m.remove(); showTeacher(); } }, t('📊 Progressi della classe', '📊 Class progress'))),
       transferBox(),
+      el('p', { class: 'note', style: 'text-align:left' }, t('Il gioco non raccoglie dati: niente account, pubblicità o statistiche. ', 'The game collects no data: no accounts, ads or analytics. '),
+        el('a', { class: 'priv-link', id: 'privLink', href: (window.PWA ? '' : 'https://rayuk-creator.github.io/matematic/') + 'privacy.html' + t('', '#en'), target: '_blank', rel: 'noopener' }, t('🔒 Leggi la privacy', '🔒 Read the privacy policy'))),
       el('div', { class: 'row' }, el('button', { class: 'btn', type: 'button', onclick: () => { D.teacher = chk.checked; save(); m.remove(); if (me()) showWorlds(); } }, t('Fatto', 'Done')))]);
   }
 

@@ -28,6 +28,7 @@ Ogni classe è un mondo da esplorare: il Prato dei Numeri, il Bosco delle Decine
 - **Più bambini, un profilo ciascuno.** Ogni bambino ha il suo personaggio, le sue stelle e le sue monete.
 - **Modalità insegnante.** Sblocca tutti i livelli, per scegliere subito l'argomento della lezione, anche alla LIM.
 - **Progressi della classe.** Da ⚙️ Impostazioni l'insegnante vede a che punto è ogni bambino, classe per classe: i giocatori del dispositivo e i file dei progressi che raccoglie dai bambini. I dati restano sul suo dispositivo.
+- **Coding e algoritmi.** In ogni classe c'è un modulo di informatica, come chiedono le nuove Indicazioni nazionali: percorsi del robot, ripetizioni, errori da trovare, «se… allora», variabili.
 
 ### Da sapere
 
@@ -37,7 +38,7 @@ Ogni classe è un mondo da esplorare: il Prato dei Numeri, il Bosco delle Decine
   - **iPad o iPhone (Safari):** pulsante Condividi → «Aggiungi a Home».
   - **Computer (Chrome o Edge):** pulsante 📲 in alto nel gioco, oppure l'icona di installazione nella barra degli indirizzi.
   - Gli aggiornamenti arrivano da soli: basta aprire l'app con internet attivo.
-- I progressi restano salvati solo sul dispositivo usato. Il gioco **non raccoglie e non invia dati**: niente account, niente pubblicità.
+- I progressi restano salvati solo sul dispositivo usato. Il gioco **non raccoglie e non invia dati**: niente account, niente pubblicità. Tutti i dettagli nella [pagina sulla privacy](https://rayuk-creator.github.io/matematic/privacy.html).
 - **Cambi tablet?** Da ⚙️ Impostazioni si salvano i progressi in un file e sull'altro dispositivo si caricano. Non si cancella niente: se un giocatore c'è già, per ogni livello si tiene il risultato migliore.
 - Con il pulsante **EN** in alto si passa alla versione inglese (*Maths at Play*), che usa le convenzioni inglesi (1,234.5, la *long division* e l'orologio con am/pm).
 
@@ -65,6 +66,7 @@ Each school year is a world to explore: the Meadow of Numbers, the Forest of Ten
 - **Several children, one profile each.** Every child has their own character, stars and coins.
 - **Teacher mode.** Unlocks every level, so you can go straight to the topic of the lesson, even on the interactive whiteboard.
 - **Class progress.** From ⚙️ Settings, teachers can see how far each child has got, grade by grade: the players on the device and the progress files collected from the children. The data stays on the teacher's device.
+- **Coding and algorithms.** Every grade has a computing module, as the new Italian national curriculum asks: robot paths, repeats, finding bugs, “if… then”, variables.
 
 ### Good to know
 
@@ -74,6 +76,6 @@ Each school year is a world to explore: the Meadow of Numbers, the Forest of Ten
   - **iPad or iPhone (Safari):** Share button → “Add to Home Screen”.
   - **Computer (Chrome or Edge):** the 📲 button at the top of the game, or the install icon in the address bar.
   - Updates arrive by themselves: just open the app while online.
-- Progress is saved only on the device being used. The game **does not collect or send any data**: no accounts, no ads.
+- Progress is saved only on the device being used. The game **does not collect or send any data**: no accounts, no ads. Full details in the [privacy policy](https://rayuk-creator.github.io/matematic/privacy.html#en).
 - **Changing tablet?** In ⚙️ Settings you can save your progress to a file and load it on the other device. Nothing gets deleted: if a player is already there, the best result for each level is kept.
 - The **IT** button at the top switches to the Italian version (*Matematica in gioco*), which follows Italian conventions: 1.234,5 and the Italian division method.

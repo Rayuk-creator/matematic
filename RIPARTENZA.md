@@ -30,13 +30,13 @@ Un gioco di matematica per la **scuola primaria italiana, dalla 1ª alla 5ª**, 
 
 | Classe | Mondo | Moduli e livelli |
 |---|---|---|
-| 1ª | Il Prato dei Numeri | 6 moduli, 22 livelli |
-| 2ª | Il Bosco delle Decine | 6 moduli, 29 livelli |
-| 3ª | Il Mare delle Centinaia | 6 moduli, 28 livelli |
-| 4ª | La Montagna delle Migliaia | 7 moduli, 30 livelli |
-| 5ª | Lo Spazio dei Milioni | 7 moduli, 27 livelli |
+| 1ª | Il Prato dei Numeri | 7 moduli, 24 livelli |
+| 2ª | Il Bosco delle Decine | 7 moduli, 31 livelli |
+| 3ª | Il Mare delle Centinaia | 7 moduli, 30 livelli |
+| 4ª | La Montagna delle Migliaia | 8 moduli, 32 livelli |
+| 5ª | Lo Spazio dei Milioni | 8 moduli, 29 livelli |
 
-In totale 136 livelli, uguali nelle due lingue.
+In totale 146 livelli, uguali nelle due lingue. L'ultimo modulo di ogni classe è «Coding» (2 livelli).
 
 ---
 
@@ -54,12 +54,14 @@ Il repository ha **due rami**:
     - `style.css`;
     - `vis.js`: i disegni SVG (abaco, regoli, orologio, monete…);
     - `curriculum.js` e `curriculum.en.js`: livelli e generatori di domande, stessi id nelle due lingue;
+    - `coding.js`: il modulo «Coding» di ogni classe, uno solo per le due lingue (testi con `t(it, en)`), con il disegno della griglia `V.grid` in `vis.js`;
     - `autocalc.js`: ricava i calcoli in colonna dal testo o dalla spiegazione;
     - `steps.js`: i passaggi in colonna;
     - `facts.js` e `facts.en.js`: le curiosità «Lo sai che…?»;
     - `guide.js` e `guide.en.js`: la guida «Cosa imparerai»;
     - `game.js`: schermate, minigiochi, salvataggio, PWA, pulsante Installa.
   - `pwa/`:
+    - `privacy.html`: la pagina sulla privacy, IT ed EN nella stessa pagina (`#en` per l'inglese), copiata nel sito da `build.sh`;
     - `icon.svg` e le icone PNG;
     - `logo-64.png`;
     - i manifest;
@@ -116,6 +118,7 @@ sh build.sh
 for L in it en; do
   LANG_GAME=$L node test/gen.test.js     # ogni livello: 400 domande, risposte e passaggi coerenti
   LANG_GAME=$L node test/steps.test.js   # i calcoli in colonna passo per passo
+  LANG_GAME=$L node test/coding.test.js  # coding: ogni risposta ricalcolata leggendo domanda e griglia
   LANG_GAME=$L python3 test/ui.py        # tutti i livelli giocati in Chrome (Playwright), errori = 0
 done
 python3 test/pwa.py                      # manifest, service worker, offline, pulsante Installa su iPad e Android
@@ -126,7 +129,7 @@ python3 test/teacher.py                  # pagina per l'insegnante: conti per cl
 - Playwright con Chromium deve essere già installato: nelle sessioni cloud lo è.
 - `ui.py` salva le schermate in `/tmp/mate-shots/`, oppure nella cartella indicata da `SHOTS=…`.
 - Esito atteso:
-  - `TUTTI I PASSAGGI CORRETTI` e `ERRORI: [] 0` in entrambe le lingue;
+  - `TUTTI I PASSAGGI CORRETTI`, `TUTTE GIUSTE` (coding) e `ERRORI: [] 0` in entrambe le lingue;
   - `PWA OK`;
   - `TRASFERIMENTO OK`;
   - `INSEGNANTE OK`.
@@ -159,6 +162,8 @@ python3 test/teacher.py                  # pagina per l'insegnante: conti per cl
   - Divisione col **metodo italiano** in IT e con la **long division** in EN.
   - Decimali, divisore decimale «spostato», addizioni con più addendi.
 - **I calcoli si fanno a mano sul quaderno**: nel gioco si scrive solo il risultato, e una nota lo dice ai bambini.
+- **Colori dei mondi:** il testo bianco delle card deve avere contrasto almeno 4,5 (WCAG AA) su tutto il gradiente; scuriti il 12 novembre 2026.
+- **Privacy:** il gioco non raccoglie dati; l'unico dato che esce è l'IP che GitHub Pages registra per sicurezza. Se si aggiunge qualcosa che manda dati (statistiche, servizi esterni, font online…), va aggiornata `pwa/privacy.html` e va chiesto all'utente.
 - **Colori delle cifre:**
   - unità **blu**;
   - decine **rosse**;
@@ -167,7 +172,9 @@ python3 test/teacher.py                  # pagina per l'insegnante: conti per cl
   - IT: `1.234,5`;
   - EN: `1,234.5`.
 - **Programma:**
-  - segue le Indicazioni nazionali;
+  - segue le **Indicazioni nazionali del 2012**, ancora valide per le classi dalla 2ª alla 5ª;
+  - le **Nuove Indicazioni nazionali** (DM 221 del 9 dicembre 2025) partono dalle classi prime nel 2026/27 e arrivano alla 5ª nel 2030/31. La novità principale per la matematica è l'**informatica** (coding, algoritmi, ripetizioni, «se… allora», variabili): c'è il modulo «Coding» in ogni classe, aggiunto il 12 novembre 2026;
+  - niente *problem posing* (far inventare problemi ai bambini), altra novità delle Nuove Indicazioni: l'utente ha deciso di non aggiungerlo (12 novembre 2026);
   - dalla revisione «internazionale» è stato aggiunto **solo** «Traslazioni e rotazioni» (isometrie, 4ª);
   - gli altri argomenti in Italia si fanno alle medie, quindi non vanno aggiunti.
 - **Orologio e soldi:** si trovano dalla 1ª alla 5ª, ripetuti in 3ª, 4ª e 5ª per tenerli allenati.
@@ -197,7 +204,7 @@ python3 test/teacher.py                  # pagina per l'insegnante: conti per cl
 Il piano è una «Trusted Web Activity», cioè un'app che apre il sito: aggiornando GitHub si aggiorna anche l'app.
 
 **Cosa prepara Claude:**
-- la pagina «Privacy policy» IT/EN sul sito (il gioco non raccoglie dati);
+- ~~la pagina «Privacy policy» IT/EN~~: fatta, è `privacy.html` sul sito;
 - il repository `rayuk-creator.github.io` con `.well-known/assetlinks.json`, per verificare il dominio;
 - il pacchetto Android TWA;
 - testi della scheda IT/EN, icona 512, grafica in evidenza 1024×500 e schermate;

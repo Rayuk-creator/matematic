@@ -48,14 +48,14 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
 /* mondi */
 .worlds { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
 .world { border: 0; border-radius: 22px; padding: 18px 14px 16px; color: #fff; text-align: left; box-shadow: var(--shadow); position: relative; overflow: hidden; min-height: 170px; display: flex; flex-direction: column; }
-.world .num { font-size: 15px; font-weight: 900; opacity: .9; text-transform: uppercase; letter-spacing: .06em; }
+.world .num { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; }
 .world .wn { font-size: 22px; font-weight: 900; line-height: 1.15; margin: 6px 0 10px; }
 .world .em { position: absolute; right: 10px; bottom: 4px; font-size: 64px; opacity: .9; }
 .world .prog { margin-top: auto; font-weight: 800; background: rgba(0,0,0,.18); align-self: flex-start; padding: 3px 10px; border-radius: 999px; }
-.t-prato { background: linear-gradient(140deg, #52b788, #2d6a4f); }
-.t-bosco { background: linear-gradient(140deg, #6a994e, #386641); }
-.t-mare { background: linear-gradient(140deg, #4cc9f0, #3a56d4); }
-.t-montagna { background: linear-gradient(140deg, #9d8189, #5e548e); }
+.t-prato { background: linear-gradient(140deg, #2d7d57, #1b5e40); }
+.t-bosco { background: linear-gradient(140deg, #4a7a35, #386641); }
+.t-mare { background: linear-gradient(140deg, #1d6fae, #3a56d4); }
+.t-montagna { background: linear-gradient(140deg, #7d6470, #5e548e); }
 .t-spazio { background: linear-gradient(140deg, #3c096c, #10002b); }
 
 /* moduli e livelli (mappa a sentiero) */
@@ -183,6 +183,9 @@ h2 { font-size: 22px; margin: 18px 0 10px; }
 .tch-dl { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
 .tch-dl.none { color: var(--muted); }
 .tch-st { color: #e0a100; white-space: nowrap; }
+.cmds { display: inline-flex; gap: 4px; vertical-align: middle; flex-wrap: wrap; }
+.cmd { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: #4361ee; color: #fff; font-weight: 900; font-size: 20px; line-height: 1; }
+.priv-link { display: inline-block; margin-top: 4px; font-weight: 700; color: var(--pri); }
 
 @media (max-width: 640px) {
   .qtext { font-size: 21px; }

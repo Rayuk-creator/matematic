@@ -115,7 +115,7 @@
 
   const strip = t => String(t || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
   function derive(q) {
-    if (q.calc || q.calcs) return null;
+    if (q.calc || q.calcs || q.noCalc) return null;
     const ans = q.k === 'num' ? q.a : null;
     // 1) l'operazione è nel testo della domanda: «… = ?» oppure «Calcola in colonna: a + b»
     const t = strip(q.t).replace(/^(?:Calcola in colonna|Work it out in columns): (.*)$/, '$1 = ?');

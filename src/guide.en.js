@@ -6,6 +6,10 @@
     1: {
       intro: 'In Grade 1 you learn to <b>count</b>, to read and write numbers up to 20, and to do your first <b>additions</b> and <b>subtractions</b>. You will also discover shapes, positions and patterns.',
       mods: {
+        c1cod: { learn: 'Giving a robot commands with arrows and following a path on a grid.', terms: [
+          ['Command', 'An instruction the robot carries out: ↑ up, ↓ down, ← left, → right.'],
+          ['Path', 'The way the robot goes, one square at a time.'],
+        ] },
         c1op: { learn: 'Putting together and taking away: adding and subtracting up to 20, doubles and number bonds to 10.', terms: [
           ['Addition', 'The operation that puts things together. 3 + 2 = 5.'],
           ['Sum (or total)', 'The answer to an addition. In 3 + 2 = 5 the sum is 5.'],
@@ -53,6 +57,10 @@
     2: {
       intro: 'In Grade 2 you go up to <b>100</b>, learn to calculate <b>in columns</b>, and discover <b>multiplication</b> with the times tables and <b>division</b>. You will also learn to tell the time and count money.',
       mods: {
+        c2cod: { learn: 'Writing and checking a path, and finding the shortest way.', terms: [
+          ['Algorithm', 'A list of instructions carried out in order, one after the other.'],
+          ['Shortest path', 'The way with the fewest steps: it never goes back.'],
+        ] },
         c2op: { learn: 'Adding and subtracting numbers up to 100, in your head and in columns.', terms: [
           ['In columns', 'Writing the numbers one under the other: ones under ones, tens under tens. You start from the right.'],
           ['Carrying', 'When the ones add up to 10 or more, you write the ones and carry 1 ten over to the tens column.'],
@@ -98,6 +106,10 @@
     3: {
       intro: 'In Grade 3 you go up to <b>1,000</b>, calculate in columns with bigger numbers, learn <b>division with remainders</b>, your first <b>fractions</b> and <b>decimals</b>, <b>measures</b> and the basics of <b>geometry</b>.',
       mods: {
+        c3cod: { learn: 'Using repeats and finding bugs in a program.', terms: [
+          ['Repeat (loop)', '“Repeat 3 times” means doing the same commands 3 times in a row.'],
+          ['Bug', 'A wrong command that stops the program getting where it should.'],
+        ] },
         c3op: { learn: 'The four operations in columns, division with remainders and checking your answers.', terms: [
           ['Carrying and borrowing', 'Carrying moves 1 to the column on the left in an addition; borrowing exchanges 1 from the column on the left for 10 in a subtraction.'],
           ['× 10, 100, 1,000', 'Multiplying a whole number by 10 adds one zero, by 100 two zeros, by 1,000 three zeros: 7 × 100 = 700.'],
@@ -153,6 +165,10 @@
     4: {
       intro: 'In Grade 4 you work with <b>thousands</b> and <b>decimals</b>, learn to multiply and divide by <b>2-digit numbers</b>, equivalent fractions, unit conversions, angles in degrees, <b>perimeter</b> and <b>area</b>.',
       mods: {
+        c4cod: { learn: 'Programs that choose what to do, and drawings made with a loop.', terms: [
+          ['If… then… otherwise', 'The program checks a condition: if it is true it does one thing, if it is false it does another.'],
+          ['Polygon with a loop', 'Repeating “forward, turn” until the robot has turned all the way round (360°) draws a regular polygon.'],
+        ] },
         c4op: { learn: 'Multiplying and dividing by 2-digit numbers, multiples, factors and the properties of the operations.', terms: [
           ['Partial product', 'In a 2-digit multiplication, the answer on each row: 34 × 26 → 34 × 6 and 34 × 20, then add them up.'],
           ['Multiple', 'A number you get by multiplying by a whole number: the multiples of 4 are 4, 8, 12, 16…'],
@@ -210,6 +226,10 @@
     5: {
       intro: 'In Grade 5 you reach <b>millions</b> and <b>billions</b>, and learn to calculate with decimals, <b>order of operations</b>, <b>percentages</b>, <b>powers</b>, negative numbers, the areas of shapes, <b>circles</b> and <b>probability</b>.',
       mods: {
+        c5cod: { learn: 'Using variables and following loops with conditions.', terms: [
+          ['Variable', 'A box with a name holding a value that can change: x = x + 2.'],
+          ['Loop with a condition', 'The instructions repeat for each number in a list, but only when the condition is true.'],
+        ] },
         c5calc: { learn: 'The four operations with decimals, and expressions with brackets.', terms: [
           ['Decimal places', 'The digits after the decimal point. 2.5 has one decimal place, 3.75 has two.'],
           ['Multiplying decimals', 'Multiply without the decimal points; the answer has as many decimal places as the two numbers together.'],

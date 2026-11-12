@@ -351,6 +351,8 @@
     lv('soldi5', 'Prezzo unitario e prezzo totale', 'Prezzo totale = prezzo di un oggetto × quantità. Prezzo di un oggetto (prezzo unitario) = prezzo totale : quantità.', () => { const COSE = [['quaderni', 'quaderno'], ['biglietti', 'biglietto'], ['gelati', 'gelato'], ['penne', 'penna'], ['panini', 'panino']]; const [pl, sg] = pick(COSE), q = R(2, 9), u = R(9, 150) * 5; if (Math.random() < 0.5) return num(`Compri ${q} ${pl} a ${EURO(u)} ${sg === 'penna' ? 'l\'una' : 'l\'uno'}. Quanto spendi in tutto?`, q * u / 100, { unit: '€', x: `${EURO(u)} × ${q} = ${EURO(q * u)}` }); return num(`${q} ${pl} costano in tutto ${EURO(q * u)}. Quanto costa ${sg === 'penna' ? 'una' : 'un'} ${sg}?`, u / 100, { unit: '€', x: `${EURO(q * u)} : ${q} = ${EURO(u)}` }); }),
   );
   // i moduli delle operazioni al primo posto in ogni classe
+  // coding e algoritmi, un modulo per classe (Nuove Indicazioni nazionali 2025)
+  (root.Coding || require('./coding.js'))(W, { lv, mod, choice, num, R, pick, shuffle, V }, false);
   const FIRST = { 1: ['c1op'], 2: ['c2op', 'c2mol'], 3: ['c3op'], 4: ['c4op'], 5: ['c5calc', 'c5op'] };
   for (const w of W) { const ids = FIRST[w.n] || []; w.modules.sort((x, y) => { const ix = ids.indexOf(x.id), iy = ids.indexOf(y.id); return (ix < 0 ? 99 : ix) - (iy < 0 ? 99 : iy); }); }
 

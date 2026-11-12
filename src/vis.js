@@ -269,6 +269,16 @@
     for (let i = 0; i < n; i++) s += `<rect x="${14 + (i + 1) * cw - 11}" y="90" width="22" height="30" rx="4" fill="#fff3bf" stroke="#f59f00"/>`;
     return svg(w, 126, s);
   };
+  // griglia del coding: il robot, la stella e le caselle segnate con le lettere
+  V.grid = function (cols, rows, o = {}) {
+    const S = 48, P = 4; let b = '';
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) b += `<rect x="${P + x * S}" y="${P + y * S}" width="${S}" height="${S}" fill="${(x + y) % 2 ? '#eef3ff' : '#f8faff'}" stroke="#c9d6ff" stroke-width="1.5"/>`;
+    const at = (p, s, size = 28) => T(P + p[0] * S + S / 2, P + p[1] * S + S / 2 + size * 0.36, s, size);
+    for (const [k, p] of Object.entries(o.marks || {})) b += `<circle cx="${P + p[0] * S + S / 2}" cy="${P + p[1] * S + S / 2}" r="17" fill="#ffd166" stroke="#e0a100" stroke-width="2"/>` + T(P + p[0] * S + S / 2, P + p[1] * S + S / 2 + 7, k, 20, '#2b2d42', 'middle', 800);
+    if (o.star) b += at(o.star, '⭐');
+    if (o.robot) b += at(o.robot, '🤖');
+    return svg(cols * S + 2 * P, rows * S + 2 * P, b);
+  };
   root.Vis = V;
   if (typeof module !== 'undefined') module.exports = V;
 })(typeof window !== 'undefined' ? window : globalThis);

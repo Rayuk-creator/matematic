@@ -352,6 +352,8 @@
     lv('soldi5', 'Unit price and total price', 'Total price = price of one item × number of items. Price of one item (unit price) = total price ÷ number of items.', () => { const THINGS = [['notebooks', 'notebook'], ['tickets', 'ticket'], ['ice creams', 'ice cream'], ['pens', 'pen'], ['sandwiches', 'sandwich']]; const [pl, sg] = pick(THINGS), q = R(2, 9), u = R(9, 150) * 5; if (Math.random() < 0.5) return num(`${q} ${pl} cost ${EC(u)} each. How much do you spend altogether?`, q * u / 100, { unit: '€', x: `${EC(u)} × ${q} = ${EC(q * u)}` }); return num(`${q} ${pl} cost ${EC(q * u)} altogether. How much does one ${sg} cost?`, u / 100, { unit: '€', x: `${EC(q * u)} ÷ ${q} = ${EC(u)}` }); }),
   );
   // operations modules first in every grade
+  // coding e algoritmi, un modulo per classe (Nuove Indicazioni nazionali 2025)
+  (root.Coding || require('./coding.js'))(W, { lv, mod, choice, num, R, pick, shuffle, V }, true);
   const FIRST = { 1: ['c1op'], 2: ['c2op', 'c2mol'], 3: ['c3op'], 4: ['c4op'], 5: ['c5calc', 'c5op'] };
   for (const w of W) { const ids = FIRST[w.n] || []; w.modules.sort((x, y) => { const ix = ids.indexOf(x.id), iy = ids.indexOf(y.id); return (ix < 0 ? 99 : ix) - (iy < 0 ? 99 : iy); }); }
 
