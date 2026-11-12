@@ -195,6 +195,7 @@ Si creano con `sh build.sh && python3 store/schermate.py && python3 store/grafic
 | Grafica in evidenza | 1024×500, PNG a 24 bit | `grafica/grafica-in-evidenza-it.png` e `-en.png` |
 | Schermate telefono | 1080×1920, 8 per lingua | `schermate/it/telefono/` e `schermate/en/telefono/` |
 | Schermate tablet 7" e 10" | 1920×1200, 8 per lingua | `schermate/it/tablet/` e `schermate/en/tablet/` |
+| Schermate desktop (Chromebook) | 1920×1080 (16:9), 8 per lingua | `schermate/it/desktop/` e `schermate/en/desktop/` |
 
 Le stesse schermate «tablet» vanno caricate sia nella sezione dei tablet da 7 pollici sia in quella da 10.
 

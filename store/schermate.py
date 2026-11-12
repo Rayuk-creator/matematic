@@ -4,8 +4,8 @@ from playwright.sync_api import sync_playwright
 import os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.environ.get('OUT', ROOT + '/store/schermate')
-# formato: nome → (larghezza, altezza, scala)  → telefono 1080×1920, tablet 1920×1200
-FORMATI = {'telefono': (360, 640, 3), 'tablet': (960, 600, 2)}
+# formato: nome → (larghezza, altezza, scala)  → telefono 1080×1920, tablet 1920×1200, desktop 1920×1080
+FORMATI = {'telefono': (360, 640, 3), 'tablet': (960, 600, 2), 'desktop': (1280, 720, 1.5)}
 LINGUE = {'it': ('matematica-file.html', 'Giulia', ','), 'en': ('maths-file.html', 'Emma', '.')}
 # (mondo, modulo, livello, cosa mostrare)
 SCENE = [(3, 'c3op', 'add3', 'passi'), (2, 'c2mis', 'ore', 'domanda'),
